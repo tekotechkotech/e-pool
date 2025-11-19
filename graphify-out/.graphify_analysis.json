@@ -1,0 +1,1246 @@
+{
+  "communities": {
+    "0": [
+      "public_vendor_filepond_filepond",
+      "public_vendor_filepond_filepond_applydecorateddescriptor",
+      "public_vendor_filepond_filepond_asyncgeneratordelegate",
+      "public_vendor_filepond_filepond_asyncgeneratorstep",
+      "public_vendor_filepond_filepond_asynciterator",
+      "public_vendor_filepond_filepond_asynctogenerator",
+      "public_vendor_filepond_filepond_awaitasyncgenerator",
+      "public_vendor_filepond_filepond_awaitvalue",
+      "public_vendor_filepond_filepond_classcallcheck",
+      "public_vendor_filepond_filepond_classnametdzerror",
+      "public_vendor_filepond_filepond_classprivatefielddestructureset",
+      "public_vendor_filepond_filepond_classprivatefieldget",
+      "public_vendor_filepond_filepond_classprivatefieldloosebase",
+      "public_vendor_filepond_filepond_classprivatefieldloosekey",
+      "public_vendor_filepond_filepond_classprivatefieldset",
+      "public_vendor_filepond_filepond_classprivatemethodget",
+      "public_vendor_filepond_filepond_classprivatemethodset",
+      "public_vendor_filepond_filepond_classstaticprivatefieldspecget",
+      "public_vendor_filepond_filepond_classstaticprivatefieldspecset",
+      "public_vendor_filepond_filepond_classstaticprivatemethodget",
+      "public_vendor_filepond_filepond_classstaticprivatemethodset",
+      "public_vendor_filepond_filepond_defaults",
+      "public_vendor_filepond_filepond_defineenumerableproperties",
+      "public_vendor_filepond_filepond_destroy",
+      "public_vendor_filepond_filepond_extends",
+      "public_vendor_filepond_filepond_getheight",
+      "public_vendor_filepond_filepond_getwidth",
+      "public_vendor_filepond_filepond_inheritsloose",
+      "public_vendor_filepond_filepond_initializerdefineproperty",
+      "public_vendor_filepond_filepond_initializerwarninghelper",
+      "public_vendor_filepond_filepond_instanceof",
+      "public_vendor_filepond_filepond_interoprequiredefault",
+      "public_vendor_filepond_filepond_interoprequirewildcard",
+      "public_vendor_filepond_filepond_jsx",
+      "public_vendor_filepond_filepond_newarrowcheck",
+      "public_vendor_filepond_filepond_objectdestructuringempty",
+      "public_vendor_filepond_filepond_rationale_10023",
+      "public_vendor_filepond_filepond_rationale_10486",
+      "public_vendor_filepond_filepond_rationale_11593",
+      "public_vendor_filepond_filepond_readonlyerror",
+      "public_vendor_filepond_filepond_registerplugin",
+      "public_vendor_filepond_filepond_setheight",
+      "public_vendor_filepond_filepond_setwidth",
+      "public_vendor_filepond_filepond_skipfirstgeneratornext",
+      "public_vendor_filepond_filepond_taggedtemplateliteral",
+      "public_vendor_filepond_filepond_taggedtemplateliteralloose",
+      "public_vendor_filepond_filepond_temporalref",
+      "public_vendor_filepond_filepond_typeof",
+      "public_vendor_filepond_filepond_wrapasyncgenerator"
+    ],
+    "1": [
+      "app_models_danatransaksi_danatransaksi",
+      "app_models_danatransaksi_danatransaksi_casts",
+      "app_models_danatransaksi_danatransaksi_dana",
+      "app_models_danatransaksi_danatransaksi_referensi",
+      "app_models_muzakki",
+      "app_models_muzakki_muzakki",
+      "app_models_muzakki_muzakki_person",
+      "app_models_pengajuanlpjba",
+      "app_models_pengajuanlpjba_pengajuanlpjba",
+      "app_models_pengajuanlpjba_pengajuanlpjba_buktikembalikansisa",
+      "app_models_pengajuanlpjba_pengajuanlpjba_casts",
+      "app_models_pengajuanlpjba_pengajuanlpjba_createdby",
+      "app_models_pengajuanlpjba_pengajuanlpjba_lampirandokumentasi",
+      "app_models_pengajuanlpjba_pengajuanlpjba_lampiranlain",
+      "app_models_pengajuanlpjba_pengajuanlpjba_lampirans",
+      "app_models_pengajuanlpjba_pengajuanlpjba_pengajuan",
+      "app_models_pengajuanmustahik",
+      "app_models_pengajuanmustahik_pengajuanmustahik",
+      "app_models_pengajuanmustahik_pengajuanmustahik_asnaf",
+      "app_models_pengajuanmustahik_pengajuanmustahik_mustahik",
+      "app_models_pengajuanmustahik_pengajuanmustahik_pengajuan",
+      "app_models_pengajuanmustahik_pengajuanmustahik_program",
+      "app_models_pengajuanmustahik_pengajuanmustahik_subprogram",
+      "app_models_pengajuanmustahik_pengajuanmustahik_sumberdana",
+      "app_models_pengajuanpenyaluran_pengajuanpenyaluran",
+      "app_models_pengajuanpenyaluran_pengajuanpenyaluran_buktipenyaluran",
+      "app_models_pengajuanpenyaluran_pengajuanpenyaluran_casts",
+      "app_models_pengajuanpenyaluran_pengajuanpenyaluran_createdby",
+      "app_models_pengajuanpenyaluran_pengajuanpenyaluran_danatransaksis",
+      "app_models_pengajuanpenyaluran_pengajuanpenyaluran_pengajuan",
+      "app_models_pengajuanpersetujuan_pengajuanpersetujuan",
+      "app_models_pengajuanpersetujuan_pengajuanpersetujuan_approvedby",
+      "app_models_pengajuanpersetujuan_pengajuanpersetujuan_casts",
+      "app_models_pengajuanpersetujuan_pengajuanpersetujuan_pengajuan",
+      "app_models_pengajuansurvey_pengajuansurvey",
+      "app_models_pengajuansurvey_pengajuansurvey_casts",
+      "app_models_pengajuansurvey_pengajuansurvey_details",
+      "app_models_pengajuansurvey_pengajuansurvey_lampiransurvey",
+      "app_models_pengajuansurvey_pengajuansurvey_pengajuan",
+      "app_models_pengurus_pengurus",
+      "app_models_pengurus_pengurus_casts",
+      "app_models_pengurus_pengurus_lembaga",
+      "app_models_pengurus_pengurus_pengurusjabatan",
+      "app_models_pengurus_pengurus_person",
+      "database_seeders_pengajuanbantuanseeder_pengajuanbantuanseeder_run",
+      "illuminate_database_eloquent_relations_belongsto",
+      "illuminate_database_eloquent_relations_morphmany",
+      "illuminate_database_eloquent_relations_morphto"
+    ],
+    "2": [
+      "composer",
+      "composer_allow_plugins_pestphp_pest_plugin",
+      "composer_allow_plugins_php_http_discovery",
+      "composer_autoload",
+      "composer_autoload_dev",
+      "composer_autoload_dev_psr_4",
+      "composer_autoload_psr_4",
+      "composer_config",
+      "composer_config_allow_plugins",
+      "composer_config_optimize_autoloader",
+      "composer_config_preferred_install",
+      "composer_config_sort_packages",
+      "composer_description",
+      "composer_extra",
+      "composer_extra_laravel",
+      "composer_keywords",
+      "composer_laravel_dont_discover",
+      "composer_license",
+      "composer_minimum_stability",
+      "composer_name",
+      "composer_prefer_stable",
+      "composer_psr_4_app",
+      "composer_psr_4_database_factories",
+      "composer_psr_4_database_seeders",
+      "composer_psr_4_tests",
+      "composer_require",
+      "composer_require_dev",
+      "composer_require_dev_fakerphp_faker",
+      "composer_require_dev_laravel_pail",
+      "composer_require_dev_laravel_pao",
+      "composer_require_dev_laravel_pint",
+      "composer_require_dev_mockery_mockery",
+      "composer_require_dev_nunomaduro_collision",
+      "composer_require_dev_pestphp_pest",
+      "composer_require_dev_pestphp_pest_plugin_laravel",
+      "composer_require_laravel_framework",
+      "composer_require_laravel_tinker",
+      "composer_require_livewire_livewire",
+      "composer_require_livewire_volt",
+      "composer_require_maatwebsite_excel",
+      "composer_require_php",
+      "composer_schema",
+      "composer_type",
+      "ref_framework",
+      "ref_laravel"
+    ],
+    "3": [
+      "public_vendor_filepond_filepond_plugin_image_preview",
+      "public_vendor_filepond_filepond_plugin_image_preview_applydecorateddescriptor",
+      "public_vendor_filepond_filepond_plugin_image_preview_assertthisinitialized",
+      "public_vendor_filepond_filepond_plugin_image_preview_asyncgeneratordelegate",
+      "public_vendor_filepond_filepond_plugin_image_preview_asyncgeneratorstep",
+      "public_vendor_filepond_filepond_plugin_image_preview_asynciterator",
+      "public_vendor_filepond_filepond_plugin_image_preview_asynctogenerator",
+      "public_vendor_filepond_filepond_plugin_image_preview_awaitasyncgenerator",
+      "public_vendor_filepond_filepond_plugin_image_preview_awaitvalue",
+      "public_vendor_filepond_filepond_plugin_image_preview_classcallcheck",
+      "public_vendor_filepond_filepond_plugin_image_preview_classnametdzerror",
+      "public_vendor_filepond_filepond_plugin_image_preview_classprivatefieldget",
+      "public_vendor_filepond_filepond_plugin_image_preview_classprivatefieldloosebase",
+      "public_vendor_filepond_filepond_plugin_image_preview_classprivatefieldloosekey",
+      "public_vendor_filepond_filepond_plugin_image_preview_classprivatefieldset",
+      "public_vendor_filepond_filepond_plugin_image_preview_classprivatemethodget",
+      "public_vendor_filepond_filepond_plugin_image_preview_classprivatemethodset",
+      "public_vendor_filepond_filepond_plugin_image_preview_classstaticprivatefieldspecget",
+      "public_vendor_filepond_filepond_plugin_image_preview_classstaticprivatefieldspecset",
+      "public_vendor_filepond_filepond_plugin_image_preview_classstaticprivatemethodget",
+      "public_vendor_filepond_filepond_plugin_image_preview_classstaticprivatemethodset",
+      "public_vendor_filepond_filepond_plugin_image_preview_defaults",
+      "public_vendor_filepond_filepond_plugin_image_preview_defineenumerableproperties",
+      "public_vendor_filepond_filepond_plugin_image_preview_extends",
+      "public_vendor_filepond_filepond_plugin_image_preview_inheritsloose",
+      "public_vendor_filepond_filepond_plugin_image_preview_initializerdefineproperty",
+      "public_vendor_filepond_filepond_plugin_image_preview_initializerwarninghelper",
+      "public_vendor_filepond_filepond_plugin_image_preview_instanceof",
+      "public_vendor_filepond_filepond_plugin_image_preview_interoprequiredefault",
+      "public_vendor_filepond_filepond_plugin_image_preview_interoprequirewildcard",
+      "public_vendor_filepond_filepond_plugin_image_preview_jsx",
+      "public_vendor_filepond_filepond_plugin_image_preview_newarrowcheck",
+      "public_vendor_filepond_filepond_plugin_image_preview_objectdestructuringempty",
+      "public_vendor_filepond_filepond_plugin_image_preview_possibleconstructorreturn",
+      "public_vendor_filepond_filepond_plugin_image_preview_readonlyerror",
+      "public_vendor_filepond_filepond_plugin_image_preview_skipfirstgeneratornext",
+      "public_vendor_filepond_filepond_plugin_image_preview_taggedtemplateliteral",
+      "public_vendor_filepond_filepond_plugin_image_preview_taggedtemplateliteralloose",
+      "public_vendor_filepond_filepond_plugin_image_preview_temporalref",
+      "public_vendor_filepond_filepond_plugin_image_preview_typeof",
+      "public_vendor_filepond_filepond_plugin_image_preview_wrapasyncgenerator"
+    ],
+    "4": [
+      "addpysumberdana",
+      "addreferensidana",
+      "ajukanpengajuan",
+      "closeajukanmodal",
+      "closeconfirmmodal",
+      "closemustahikmodal",
+      "confirmajukan",
+      "deletelampiransurvey_lamp_id",
+      "deletelpjlampiran_lampiran_id",
+      "editmustahik_pm_id",
+      "executeaction",
+      "opendisposisimodal",
+      "openlampiransurveymodal",
+      "openlpjlampiranmodal",
+      "openmustahikmodal",
+      "removepysumberdana_index",
+      "removereferensidana_index",
+      "resources_views_livewire_pengajuan_show_blade",
+      "resources_views_livewire_pengajuan_show_blade_php_closelampiranmodal",
+      "resources_views_livewire_pengajuan_show_blade_php_components_import_mustahik_modal",
+      "resources_views_livewire_pengajuan_show_blade_php_openconfirm",
+      "resources_views_livewire_pengajuan_show_blade_php_openimportmodal",
+      "resources_views_livewire_pengajuan_show_blade_php_savelampiran",
+      "resources_views_livewire_pengajuan_show_blade_php_set",
+      "savedisposisi",
+      "savelampiransurvey",
+      "savemustahik",
+      "savepenyaluran_set",
+      "savepersetujuan",
+      "savesurvey",
+      "searchnik",
+      "settab"
+    ],
+    "5": [
+      "app_models_pengajuanbantuan_pengajuanbantuan",
+      "app_models_pengajuanbantuan_pengajuanbantuan_casts",
+      "app_models_pengajuanbantuan_pengajuanbantuan_createdby",
+      "app_models_pengajuanbantuan_pengajuanbantuan_disposisi",
+      "app_models_pengajuanbantuan_pengajuanbantuan_lampiranpengajuan",
+      "app_models_pengajuanbantuan_pengajuanbantuan_lampirans",
+      "app_models_pengajuanbantuan_pengajuanbantuan_lampiransurat",
+      "app_models_pengajuanbantuan_pengajuanbantuan_lembaga",
+      "app_models_pengajuanbantuan_pengajuanbantuan_lpjba",
+      "app_models_pengajuanbantuan_pengajuanbantuan_mustahik",
+      "app_models_pengajuanbantuan_pengajuanbantuan_pengajuanmustahiks",
+      "app_models_pengajuanbantuan_pengajuanbantuan_penyaluran",
+      "app_models_pengajuanbantuan_pengajuanbantuan_penyalurans",
+      "app_models_pengajuanbantuan_pengajuanbantuan_persetujuan",
+      "app_models_pengajuanbantuan_pengajuanbantuan_piclembaga",
+      "app_models_pengajuanbantuan_pengajuanbantuan_survey",
+      "app_models_pengajuandisposisi_pengajuandisposisi",
+      "app_models_pengajuandisposisi_pengajuandisposisi_pengajuan",
+      "app_models_pengajuandisposisi_pengajuandisposisi_pimpinan",
+      "app_models_person_person_mustahik",
+      "app_models_person_person_muzakki",
+      "app_models_person_person_user",
+      "app_services_pengajuanservice_pengajuanservice",
+      "app_services_pengajuanservice_pengajuanservice_lanjutkedisposisilangsung",
+      "app_services_pengajuanservice_pengajuanservice_lanjutkesurvey",
+      "app_services_pengajuanservice_pengajuanservice_prosesdisposisi",
+      "app_services_pengajuanservice_pengajuanservice_submithasilsurvey",
+      "illuminate_database_eloquent_relations_hasone",
+      "illuminate_database_eloquent_relations_morphone"
+    ],
+    "6": [
+      "composer_scripts",
+      "composer_scripts_dev",
+      "composer_scripts_post_autoload_dump",
+      "composer_scripts_post_create_project_cmd",
+      "composer_scripts_post_root_package_install",
+      "composer_scripts_post_update_cmd",
+      "composer_scripts_pre_package_uninstall",
+      "composer_scripts_setup",
+      "composer_scripts_test",
+      "ref_composer_config_disableprocesstimeout",
+      "ref_composer_install",
+      "ref_illuminate_foundation_composerscripts_postautoloaddump",
+      "ref_illuminate_foundation_composerscripts_prepackageuninstall",
+      "ref_npm_install_ignore_scripts",
+      "ref_npm_run_build",
+      "ref_npx_concurrently_c_93c5fd_c4b5fd_fdba74_php_artisan_serve_php_artisan_queue_listen_tries_1_npm_run_dev_names_server_queue_vite",
+      "ref_php_artisan_config_clear_ansi_no_additional_args",
+      "ref_php_artisan_key_generate",
+      "ref_php_artisan_key_generate_ansi",
+      "ref_php_artisan_migrate_force",
+      "ref_php_artisan_migrate_graceful_ansi",
+      "ref_php_artisan_package_discover_ansi",
+      "ref_php_artisan_test",
+      "ref_php_artisan_vendor_publish_tag_laravel_assets_ansi_force",
+      "ref_php_r_file_exists_database_database_sqlite_touch_database_database_sqlite",
+      "ref_php_r_file_exists_env_copy_env_example_env"
+    ],
+    "7": [
+      "concurrently",
+      "laravel_vite_plugin",
+      "package",
+      "package_devdependencies",
+      "package_devdependencies_concurrently",
+      "package_devdependencies_laravel_vite_plugin",
+      "package_devdependencies_prettier",
+      "package_devdependencies_prettier_plugin_blade",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_tailwindcss_vite",
+      "package_devdependencies_vite",
+      "package_packagemanager",
+      "package_private",
+      "package_schema",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_type",
+      "prettier",
+      "prettier_plugin_blade",
+      "tailwindcss",
+      "tailwindcss_vite",
+      "vite"
+    ],
+    "8": [
+      "app_models_pengurus",
+      "app_models_pengurusjabatan",
+      "app_models_pengurusjabatan_pengurusjabatan",
+      "app_models_pengurusjabatan_pengurusjabatan_casts",
+      "app_models_pengurusjabatan_pengurusjabatan_penguruses",
+      "app_models_person",
+      "app_models_person_person",
+      "app_models_person_person_casts",
+      "app_models_person_person_kabupaten",
+      "app_models_person_person_kecamatan",
+      "app_models_person_person_kelurahan",
+      "app_models_person_person_penguruses",
+      "app_models_person_person_provinsi",
+      "database_seeders_lembagaseeder",
+      "database_seeders_lembagaseeder_lembagaseeder",
+      "database_seeders_lembagaseeder_lembagaseeder_run",
+      "database_seeders_userpengurusseeder",
+      "database_seeders_userpengurusseeder_userpengurusseeder",
+      "database_seeders_userpengurusseeder_userpengurusseeder_run"
+    ],
+    "9": [
+      "app_models_lembaga_lembaga",
+      "app_models_lembaga_lembaga_casts",
+      "app_models_lembaga_lembaga_kabupaten",
+      "app_models_lembaga_lembaga_kecamatan",
+      "app_models_lembaga_lembaga_kelurahan",
+      "app_models_lembaga_lembaga_ketua",
+      "app_models_lembaga_lembaga_mustahiks",
+      "app_models_lembaga_lembaga_pengajuanbantuans",
+      "app_models_lembaga_lembaga_penguruses",
+      "app_models_lembaga_lembaga_provinsi",
+      "app_models_mustahik_mustahik",
+      "app_models_mustahik_mustahik_lembaga",
+      "app_models_mustahik_mustahik_lembagas",
+      "app_models_mustahik_mustahik_pengajuanbantuans",
+      "app_models_mustahik_mustahik_pengajuanmustahiks",
+      "app_models_mustahik_mustahik_person",
+      "database_seeders_mustahikseeder_mustahikseeder_run",
+      "illuminate_database_eloquent_relations_belongstomany"
+    ],
+    "10": [
+      "app_models_danatransaksi",
+      "app_models_lampiran",
+      "app_models_lampiran_lampiran",
+      "app_models_lampiran_lampiran_lampiranable",
+      "app_models_lembaga",
+      "app_models_mustahik",
+      "app_models_pengajuanbantuan",
+      "app_models_pengajuandisposisi",
+      "app_models_pengajuanpenyaluran",
+      "app_models_pengajuanpersetujuan",
+      "app_models_pengajuansurvey",
+      "app_services_pengajuanservice",
+      "database_seeders_mustahikseeder",
+      "database_seeders_mustahikseeder_mustahikseeder",
+      "database_seeders_pengajuanbantuanseeder",
+      "database_seeders_pengajuanbantuanseeder_pengajuanbantuanseeder",
+      "illuminate_database_eloquent_model"
+    ],
+    "11": [
+      "app_exports_mustahiktemplateexport",
+      "app_exports_mustahiktemplateexport_mustahiktemplateexport",
+      "app_exports_mustahiktemplateexport_mustahiktemplateexport_headings",
+      "app_exports_mustahiktemplateexport_mustahiktemplateexport_styles",
+      "app_exports_pengajuanbantuanimporttemplate",
+      "app_exports_pengajuanbantuanimporttemplate_pengajuanbantuanimporttemplate",
+      "app_exports_pengajuanbantuanimporttemplate_pengajuanbantuanimporttemplate_construct",
+      "app_exports_pengajuanbantuanimporttemplate_pengajuanbantuanimporttemplate_headings",
+      "app_exports_pengajuanbantuanimporttemplate_pengajuanbantuanimporttemplate_registerevents",
+      "app_exports_pengajuanbantuanimporttemplate_pengajuanbantuanimporttemplate_title",
+      "maatwebsite_excel_concerns_shouldautosize",
+      "maatwebsite_excel_concerns_withevents",
+      "maatwebsite_excel_concerns_withheadings",
+      "maatwebsite_excel_concerns_withstyles",
+      "maatwebsite_excel_concerns_withtitle",
+      "phpoffice_phpspreadsheet_worksheet_worksheet"
+    ],
+    "12": [
+      "app_models_pengajuansurveydetail",
+      "app_models_pengajuansurveydetail_pengajuansurveydetail",
+      "app_models_pengajuansurveydetail_pengajuansurveydetail_casts",
+      "app_models_pengajuansurveydetail_pengajuansurveydetail_survey",
+      "app_models_user",
+      "app_models_user_user",
+      "app_models_user_user_casts",
+      "app_models_user_user_pengajuanbantuans",
+      "app_models_user_user_pengurus",
+      "app_models_user_user_penyalurans",
+      "app_models_user_user_persetujuans",
+      "app_models_user_user_person",
+      "illuminate_database_eloquent_factories_hasfactory",
+      "illuminate_foundation_auth_user",
+      "illuminate_notifications_notifiable"
+    ],
+    "13": [
+      "batalimport",
+      "closepersonmodal",
+      "downloadtemplate",
+      "openlampiranmodal_index",
+      "openpersonmodal_index",
+      "removelampiran_index",
+      "removerow_index",
+      "resources_views_livewire_pengajuan_import_blade",
+      "resources_views_livewire_pengajuan_import_blade_php_closelampiranmodal",
+      "resources_views_livewire_pengajuan_import_blade_php_set",
+      "saveimport",
+      "savelampiranmodal",
+      "savepersonmodal",
+      "setpersonexact_index",
+      "setpersonnew_index"
+    ],
+    "14": [
+      "app_models_program",
+      "app_models_program_program",
+      "app_models_program_program_casts",
+      "app_models_program_program_pengajuanbantuans",
+      "app_models_program_program_subprograms",
+      "app_models_subprogram",
+      "app_models_subprogram_subprogram",
+      "app_models_subprogram_subprogram_casts",
+      "app_models_subprogram_subprogram_pengajuanbantuans",
+      "app_models_subprogram_subprogram_program",
+      "database_seeders_programsubprogramseeder",
+      "database_seeders_programsubprogramseeder_programsubprogramseeder",
+      "database_seeders_programsubprogramseeder_programsubprogramseeder_run"
+    ],
+    "15": [
+      "database_seeders_databaseseeder",
+      "database_seeders_databaseseeder_databaseseeder",
+      "database_seeders_databaseseeder_databaseseeder_run",
+      "database_seeders_pengurusjabatanseeder",
+      "database_seeders_pengurusjabatanseeder_pengurusjabatanseeder",
+      "database_seeders_pengurusjabatanseeder_pengurusjabatanseeder_run",
+      "database_seeders_unused",
+      "database_seeders_unused_userseeder",
+      "database_seeders_unused_userseeder_run",
+      "database_seeders_wilayahseeder",
+      "database_seeders_wilayahseeder_wilayahseeder",
+      "database_seeders_wilayahseeder_wilayahseeder_run",
+      "illuminate_database_seeder"
+    ],
+    "16": [
+      "public_vendor_filepond_filepond_coalesceclasselements",
+      "public_vendor_filepond_filepond_coalescegettersetter",
+      "public_vendor_filepond_filepond_create",
+      "public_vendor_filepond_filepond_createelementdescriptor",
+      "public_vendor_filepond_filepond_decorate",
+      "public_vendor_filepond_filepond_find",
+      "public_vendor_filepond_filepond_getdecoratorsapi",
+      "public_vendor_filepond_filepond_hasdecorators",
+      "public_vendor_filepond_filepond_isdatadescriptor",
+      "public_vendor_filepond_filepond_optionalcallableproperty",
+      "public_vendor_filepond_filepond_parse",
+      "public_vendor_filepond_filepond_toprimitive",
+      "public_vendor_filepond_filepond_topropertykey"
+    ],
+    "17": [
+      "clearpersonselection",
+      "delete_mustahik_id",
+      "detail_mustahik_id",
+      "edit_mustahik_id",
+      "resources_views_livewire_manajemen_mustahik_blade",
+      "resources_views_livewire_manajemen_mustahik_blade_php_closedetailmodal",
+      "resources_views_livewire_manajemen_mustahik_blade_php_closemodal",
+      "resources_views_livewire_manajemen_mustahik_blade_php_components_import_mustahik_modal",
+      "resources_views_livewire_manajemen_mustahik_blade_php_create",
+      "resources_views_livewire_manajemen_mustahik_blade_php_openimportmodal",
+      "selectperson_person_id",
+      "togglenewperson"
+    ],
+    "18": [
+      "closeprogrammodal",
+      "closesubprogrammodal",
+      "confirmdeletesubprogram_sub_id",
+      "createprogram",
+      "createsubprogram",
+      "editsubprogram_sub_id",
+      "movedownasnaf_asnaf_id",
+      "moveupasnaf_asnaf_id",
+      "resources_views_livewire_master_programs_blade",
+      "resources_views_livewire_master_programs_blade_php_closedeletemodal",
+      "resources_views_livewire_master_programs_blade_php_executedelete",
+      "selectprogram_program_id"
+    ],
+    "19": [
+      "app_models_wilayah",
+      "app_models_wilayah_wilayah",
+      "app_models_wilayah_wilayah_gettipeattribute",
+      "app_models_wilayah_wilayah_kabupaten",
+      "app_models_wilayah_wilayah_kabupatens",
+      "app_models_wilayah_wilayah_kecamatan",
+      "app_models_wilayah_wilayah_kecamatans",
+      "app_models_wilayah_wilayah_kelurahan",
+      "app_models_wilayah_wilayah_kelurahans",
+      "app_models_wilayah_wilayah_provinsi",
+      "app_models_wilayah_wilayah_provinsis"
+    ],
+    "20": [
+      "public_vendor_filepond_filepond_arraywithholes",
+      "public_vendor_filepond_filepond_arraywithoutholes",
+      "public_vendor_filepond_filepond_iterabletoarray",
+      "public_vendor_filepond_filepond_iterabletoarraylimit",
+      "public_vendor_filepond_filepond_iterabletoarraylimitloose",
+      "public_vendor_filepond_filepond_noniterablerest",
+      "public_vendor_filepond_filepond_noniterablespread",
+      "public_vendor_filepond_filepond_slicedtoarray",
+      "public_vendor_filepond_filepond_slicedtoarrayloose",
+      "public_vendor_filepond_filepond_toarray",
+      "public_vendor_filepond_filepond_toconsumablearray"
+    ],
+    "21": [
+      "app_http_middleware_rolemiddleware",
+      "app_http_middleware_rolemiddleware_rolemiddleware",
+      "app_http_middleware_rolemiddleware_rolemiddleware_handle",
+      "bootstrap_app",
+      "closure",
+      "config_auth",
+      "illuminate_http_request",
+      "public_index",
+      "routes_web",
+      "symfony_component_httpfoundation_response"
+    ],
+    "22": [
+      "app_models_dana",
+      "app_models_dana_dana",
+      "app_models_dana_dana_casts",
+      "app_models_dana_dana_transaksikeluar",
+      "app_models_dana_dana_transaksimasuk",
+      "app_models_dana_dana_transaksis",
+      "database_seeders_danaseeder",
+      "database_seeders_danaseeder_danaseeder",
+      "database_seeders_danaseeder_danaseeder_run",
+      "illuminate_database_eloquent_relations_hasmany"
+    ],
+    "23": [
+      "cariperson",
+      "cariupz",
+      "jenis_permohonan",
+      "kembali",
+      "removetemplampiran_index",
+      "resources_views_livewire_pengajuan_create_blade",
+      "resources_views_livewire_pengajuan_create_blade_php_closelampiranmodal",
+      "resources_views_livewire_pengajuan_create_blade_php_openlampiranmodal",
+      "savetemplampiran",
+      "selectjenis"
+    ],
+    "24": [
+      "public_vendor_filepond_filepond_plugin_image_preview_coalesceclasselements",
+      "public_vendor_filepond_filepond_plugin_image_preview_coalescegettersetter",
+      "public_vendor_filepond_filepond_plugin_image_preview_createelementdescriptor",
+      "public_vendor_filepond_filepond_plugin_image_preview_decorate",
+      "public_vendor_filepond_filepond_plugin_image_preview_getdecoratorsapi",
+      "public_vendor_filepond_filepond_plugin_image_preview_hasdecorators",
+      "public_vendor_filepond_filepond_plugin_image_preview_isdatadescriptor",
+      "public_vendor_filepond_filepond_plugin_image_preview_optionalcallableproperty",
+      "public_vendor_filepond_filepond_plugin_image_preview_toprimitive",
+      "public_vendor_filepond_filepond_plugin_image_preview_topropertykey"
+    ],
+    "25": [
+      "app_providers_appserviceprovider",
+      "app_providers_appserviceprovider_appserviceprovider",
+      "app_providers_appserviceprovider_appserviceprovider_boot",
+      "app_providers_appserviceprovider_appserviceprovider_register",
+      "app_providers_voltserviceprovider",
+      "app_providers_voltserviceprovider_voltserviceprovider",
+      "app_providers_voltserviceprovider_voltserviceprovider_boot",
+      "app_providers_voltserviceprovider_voltserviceprovider_register",
+      "illuminate_support_serviceprovider"
+    ],
+    "26": [
+      "closedanamodal",
+      "closedetailtransaksi",
+      "createdana",
+      "opendetailtransaksi_transaksi_id",
+      "resetselection",
+      "resources_views_livewire_master_danas_blade",
+      "resources_views_livewire_master_danas_blade_php_closedeletemodal",
+      "resources_views_livewire_master_danas_blade_php_executedelete",
+      "selectdana_dana_id"
+    ],
+    "27": [
+      "app_exports_mustahiktemplateexport_mustahiktemplateexport_registerevents",
+      "app_models_asnaf",
+      "app_models_asnaf_asnaf",
+      "app_models_asnaf_asnaf_casts",
+      "app_models_asnaf_asnaf_pengajuanmustahiks",
+      "database_seeders_asnafseeder",
+      "database_seeders_asnafseeder_asnafseeder",
+      "database_seeders_asnafseeder_asnafseeder_run"
+    ],
+    "28": [
+      "public_vendor_filepond_filepond_defineproperty",
+      "public_vendor_filepond_filepond_get",
+      "public_vendor_filepond_filepond_getprototypeof",
+      "public_vendor_filepond_filepond_objectspread",
+      "public_vendor_filepond_filepond_objectspread2",
+      "public_vendor_filepond_filepond_ownkeys",
+      "public_vendor_filepond_filepond_set",
+      "public_vendor_filepond_filepond_superpropbase"
+    ],
+    "29": [
+      "delete_p_id",
+      "edit_p_id",
+      "editinfo",
+      "resources_views_livewire_manajemen_baznas_blade",
+      "resources_views_livewire_manajemen_baznas_blade_php_closemodal",
+      "resources_views_livewire_manajemen_baznas_blade_php_create",
+      "resources_views_livewire_manajemen_baznas_blade_php_set"
+    ],
+    "30": [
+      "delete_person_id",
+      "detail_person_id",
+      "edit_person_id",
+      "resources_views_livewire_manajemen_pengguna_blade",
+      "resources_views_livewire_manajemen_pengguna_blade_php_closedetailmodal",
+      "resources_views_livewire_manajemen_pengguna_blade_php_closemodal",
+      "resources_views_livewire_manajemen_pengguna_blade_php_create"
+    ],
+    "31": [
+      "public_vendor_filepond_filepond_construct",
+      "public_vendor_filepond_filepond_inherits",
+      "public_vendor_filepond_filepond_isnativefunction",
+      "public_vendor_filepond_filepond_isnativereflectconstruct",
+      "public_vendor_filepond_filepond_setprototypeof",
+      "public_vendor_filepond_filepond_wrapnativesuper",
+      "public_vendor_filepond_filepond_wrapregexp"
+    ],
+    "32": [
+      "public_vendor_filepond_filepond_plugin_image_preview_arraywithholes",
+      "public_vendor_filepond_filepond_plugin_image_preview_iterabletoarraylimit",
+      "public_vendor_filepond_filepond_plugin_image_preview_iterabletoarraylimitloose",
+      "public_vendor_filepond_filepond_plugin_image_preview_noniterablerest",
+      "public_vendor_filepond_filepond_plugin_image_preview_slicedtoarray",
+      "public_vendor_filepond_filepond_plugin_image_preview_slicedtoarrayloose",
+      "public_vendor_filepond_filepond_plugin_image_preview_toarray"
+    ],
+    "33": [
+      "public_vendor_filepond_filepond_plugin_image_preview_construct",
+      "public_vendor_filepond_filepond_plugin_image_preview_inherits",
+      "public_vendor_filepond_filepond_plugin_image_preview_isnativefunction",
+      "public_vendor_filepond_filepond_plugin_image_preview_isnativereflectconstruct",
+      "public_vendor_filepond_filepond_plugin_image_preview_setprototypeof",
+      "public_vendor_filepond_filepond_plugin_image_preview_wrapnativesuper",
+      "public_vendor_filepond_filepond_plugin_image_preview_wrapregexp"
+    ],
+    "34": [
+      "closeimportmodal",
+      "downloadtemplatemustahik",
+      "finalizeimport",
+      "previewimport",
+      "resources_views_components_import_mustahik_modal_blade",
+      "resources_views_components_import_mustahik_modal_blade_php_set"
+    ],
+    "35": [
+      "database_factories_userfactory",
+      "database_factories_userfactory_userfactory",
+      "database_factories_userfactory_userfactory_definition",
+      "database_factories_userfactory_userfactory_unverified",
+      "illuminate_database_eloquent_factories_factory",
+      "static"
+    ],
+    "36": [
+      "public_vendor_filepond_filepond_plugin_image_preview_defineproperty",
+      "public_vendor_filepond_filepond_plugin_image_preview_get",
+      "public_vendor_filepond_filepond_plugin_image_preview_getprototypeof",
+      "public_vendor_filepond_filepond_plugin_image_preview_objectspread",
+      "public_vendor_filepond_filepond_plugin_image_preview_set",
+      "public_vendor_filepond_filepond_plugin_image_preview_superpropbase"
+    ],
+    "37": [
+      "app_imports_mustahikimport",
+      "app_imports_mustahikimport_mustahikimport",
+      "app_imports_mustahikimport_mustahikimport_array",
+      "maatwebsite_excel_concerns_toarray",
+      "maatwebsite_excel_concerns_withheadingrow"
+    ],
+    "38": [
+      "deletelampiran_lamp_id",
+      "resources_views_livewire_pengajuan_edit_blade",
+      "resources_views_livewire_pengajuan_edit_blade_php_closelampiranmodal",
+      "resources_views_livewire_pengajuan_edit_blade_php_openlampiranmodal",
+      "resources_views_livewire_pengajuan_edit_blade_php_savelampiran"
+    ],
+    "39": [
+      "illuminate_foundation_testing_testcase",
+      "tests_pest",
+      "tests_pest_something",
+      "tests_testcase",
+      "tests_testcase_testcase"
+    ],
+    "40": [
+      "opendetailmodal_upz_id",
+      "resources_views_livewire_manajemen_upz_blade",
+      "resources_views_livewire_manajemen_upz_blade_php_closedetailmodal",
+      "switchtab"
+    ],
+    "41": [
+      "public_vendor_filepond_filepond_asyncgenerator",
+      "public_vendor_filepond_filepond_asyncgenerator_next",
+      "public_vendor_filepond_filepond_asyncgenerator_return",
+      "public_vendor_filepond_filepond_asyncgenerator_throw"
+    ],
+    "42": [
+      "public_vendor_filepond_filepond_plugin_image_preview_arraywithoutholes",
+      "public_vendor_filepond_filepond_plugin_image_preview_iterabletoarray",
+      "public_vendor_filepond_filepond_plugin_image_preview_noniterablespread",
+      "public_vendor_filepond_filepond_plugin_image_preview_toconsumablearray"
+    ],
+    "43": [
+      "public_vendor_filepond_filepond_plugin_image_preview_asyncgenerator",
+      "public_vendor_filepond_filepond_plugin_image_preview_asyncgenerator_next",
+      "public_vendor_filepond_filepond_plugin_image_preview_asyncgenerator_return",
+      "public_vendor_filepond_filepond_plugin_image_preview_asyncgenerator_throw"
+    ],
+    "44": [
+      "database_migrations_0000_01_01_000000_create_persons_table",
+      "database_migrations_0000_01_01_000000_create_persons_table_down",
+      "database_migrations_0000_01_01_000000_create_persons_table_up"
+    ],
+    "45": [
+      "database_migrations_0001_01_01_000000_create_users_table",
+      "database_migrations_0001_01_01_000000_create_users_table_down",
+      "database_migrations_0001_01_01_000000_create_users_table_up"
+    ],
+    "46": [
+      "database_migrations_0001_01_01_000001_create_cache_table",
+      "database_migrations_0001_01_01_000001_create_cache_table_down",
+      "database_migrations_0001_01_01_000001_create_cache_table_up"
+    ],
+    "47": [
+      "database_migrations_0001_01_01_000002_create_jobs_table",
+      "database_migrations_0001_01_01_000002_create_jobs_table_down",
+      "database_migrations_0001_01_01_000002_create_jobs_table_up"
+    ],
+    "48": [
+      "database_migrations_2026_05_27_041552_create_muzakkis_table",
+      "database_migrations_2026_05_27_041552_create_muzakkis_table_down",
+      "database_migrations_2026_05_27_041552_create_muzakkis_table_up"
+    ],
+    "49": [
+      "database_migrations_2026_05_27_112250_create_asnafs_table",
+      "database_migrations_2026_05_27_112250_create_asnafs_table_down",
+      "database_migrations_2026_05_27_112250_create_asnafs_table_up"
+    ],
+    "50": [
+      "database_migrations_2026_05_27_112251_create_programs_table",
+      "database_migrations_2026_05_27_112251_create_programs_table_down",
+      "database_migrations_2026_05_27_112251_create_programs_table_up"
+    ],
+    "51": [
+      "database_migrations_2026_05_27_112252_create_subprograms_table",
+      "database_migrations_2026_05_27_112252_create_subprograms_table_down",
+      "database_migrations_2026_05_27_112252_create_subprograms_table_up"
+    ],
+    "52": [
+      "database_migrations_2026_05_27_112253_create_pengurus_jabatans_table",
+      "database_migrations_2026_05_27_112253_create_pengurus_jabatans_table_down",
+      "database_migrations_2026_05_27_112253_create_pengurus_jabatans_table_up"
+    ],
+    "53": [
+      "database_migrations_2026_05_27_112254_create_lembagas_table",
+      "database_migrations_2026_05_27_112254_create_lembagas_table_down",
+      "database_migrations_2026_05_27_112254_create_lembagas_table_up"
+    ],
+    "54": [
+      "database_migrations_2026_05_27_112255_create_penguruses_table",
+      "database_migrations_2026_05_27_112255_create_penguruses_table_down",
+      "database_migrations_2026_05_27_112255_create_penguruses_table_up"
+    ],
+    "55": [
+      "database_migrations_2026_05_27_112256_create_mustahik_table",
+      "database_migrations_2026_05_27_112256_create_mustahik_table_down",
+      "database_migrations_2026_05_27_112256_create_mustahik_table_up"
+    ],
+    "56": [
+      "database_migrations_2026_05_27_112257_create_pengajuan_bantuans_table",
+      "database_migrations_2026_05_27_112257_create_pengajuan_bantuans_table_down",
+      "database_migrations_2026_05_27_112257_create_pengajuan_bantuans_table_up"
+    ],
+    "57": [
+      "database_migrations_2026_05_27_112257_create_pengajuan_persetujuans_table",
+      "database_migrations_2026_05_27_112257_create_pengajuan_persetujuans_table_down",
+      "database_migrations_2026_05_27_112257_create_pengajuan_persetujuans_table_up"
+    ],
+    "58": [
+      "database_migrations_2026_05_27_112258_create_pengajuan_surveys_table",
+      "database_migrations_2026_05_27_112258_create_pengajuan_surveys_table_down",
+      "database_migrations_2026_05_27_112258_create_pengajuan_surveys_table_up"
+    ],
+    "59": [
+      "database_migrations_2026_05_27_112259_create_lembaga_mustahik_table",
+      "database_migrations_2026_05_27_112259_create_lembaga_mustahik_table_down",
+      "database_migrations_2026_05_27_112259_create_lembaga_mustahik_table_up"
+    ],
+    "60": [
+      "database_migrations_2026_05_27_112300_create_pengajuan_penyalurans_table",
+      "database_migrations_2026_05_27_112300_create_pengajuan_penyalurans_table_down",
+      "database_migrations_2026_05_27_112300_create_pengajuan_penyalurans_table_up"
+    ],
+    "61": [
+      "database_migrations_2026_05_27_112301_create_pengajuan_lpj_bas_table",
+      "database_migrations_2026_05_27_112301_create_pengajuan_lpj_bas_table_down",
+      "database_migrations_2026_05_27_112301_create_pengajuan_lpj_bas_table_up"
+    ],
+    "62": [
+      "database_migrations_2026_06_17_063620_create_danas_table",
+      "database_migrations_2026_06_17_063620_create_danas_table_down",
+      "database_migrations_2026_06_17_063620_create_danas_table_up"
+    ],
+    "63": [
+      "database_migrations_2026_06_17_063630_create_pengajuan_mustahiks_table",
+      "database_migrations_2026_06_17_063630_create_pengajuan_mustahiks_table_down",
+      "database_migrations_2026_06_17_063630_create_pengajuan_mustahiks_table_up"
+    ],
+    "64": [
+      "database_migrations_2026_06_17_063631_create_pengajuan_disposisis_table",
+      "database_migrations_2026_06_17_063631_create_pengajuan_disposisis_table_down",
+      "database_migrations_2026_06_17_063631_create_pengajuan_disposisis_table_up"
+    ],
+    "65": [
+      "database_migrations_2026_06_17_073106_create_dana_transaksis_table",
+      "database_migrations_2026_06_17_073106_create_dana_transaksis_table_down",
+      "database_migrations_2026_06_17_073106_create_dana_transaksis_table_up"
+    ],
+    "66": [
+      "database_migrations_2026_06_29_235032_create_lampirans_table",
+      "database_migrations_2026_06_29_235032_create_lampirans_table_down",
+      "database_migrations_2026_06_29_235032_create_lampirans_table_up"
+    ],
+    "67": [
+      "database_migrations_2026_07_17_022442_create_pengajuan_survey_details_table",
+      "database_migrations_2026_07_17_022442_create_pengajuan_survey_details_table_down",
+      "database_migrations_2026_07_17_022442_create_pengajuan_survey_details_table_up"
+    ],
+    "68": [
+      "detail",
+      "resources_views_livewire_manajemen_keluarga_blade",
+      "resources_views_livewire_manajemen_keluarga_blade_php_closedetailmodal"
+    ],
+    "69": [
+      "public_images_logo_baznas_garuda_pancasila",
+      "public_images_logo_baznas_logo",
+      "public_images_logo_baznas_organization_branding"
+    ],
+    "70": [
+      "readme_agentic_development",
+      "readme_laravel_boost",
+      "readme_laravel_framework"
+    ],
+    "71": [
+      "resources_views_components_pengajuan_detail_modern_blade",
+      "resources_views_components_pengajuan_detail_modern_blade_php_openconfirm",
+      "resources_views_components_pengajuan_detail_modern_blade_php_openlampiranmodal"
+    ],
+    "72": [
+      "app_http_controllers_controller",
+      "app_http_controllers_controller_controller"
+    ],
+    "73": [
+      "artisan",
+      "routes_console"
+    ],
+    "74": [
+      "public_vendor_filepond_filepond_assertthisinitialized",
+      "public_vendor_filepond_filepond_possibleconstructorreturn"
+    ],
+    "75": [
+      "public_vendor_filepond_filepond_createclass",
+      "public_vendor_filepond_filepond_defineproperties"
+    ],
+    "76": [
+      "public_vendor_filepond_filepond_getoptions",
+      "public_vendor_filepond_filepond_setoptions"
+    ],
+    "77": [
+      "public_vendor_filepond_filepond_objectwithoutproperties",
+      "public_vendor_filepond_filepond_objectwithoutpropertiesloose"
+    ],
+    "78": [
+      "public_vendor_filepond_filepond_plugin_image_preview_createclass",
+      "public_vendor_filepond_filepond_plugin_image_preview_defineproperties"
+    ],
+    "79": [
+      "public_vendor_filepond_filepond_plugin_image_preview_objectwithoutproperties",
+      "public_vendor_filepond_filepond_plugin_image_preview_objectwithoutpropertiesloose"
+    ],
+    "80": [
+      "readme_eloquent_orm",
+      "readme_schema_migrations"
+    ],
+    "81": [
+      "readme_event_broadcasting",
+      "readme_queue_job_processing"
+    ],
+    "82": [
+      "_yarnrc_nodelinker"
+    ],
+    "83": [
+      "bootstrap_providers"
+    ],
+    "84": [
+      "config_app"
+    ],
+    "85": [
+      "config_cache"
+    ],
+    "86": [
+      "config_database"
+    ],
+    "87": [
+      "config_filesystems"
+    ],
+    "88": [
+      "config_logging"
+    ],
+    "89": [
+      "config_mail"
+    ],
+    "90": [
+      "config_queue"
+    ],
+    "91": [
+      "config_services"
+    ],
+    "92": [
+      "config_session"
+    ],
+    "93": [
+      "public_robots_crawler_rules"
+    ],
+    "94": [
+      "public_vendor_filepond_filepond_plugin_file_validate_size"
+    ],
+    "95": [
+      "public_vendor_filepond_filepond_plugin_file_validate_type"
+    ],
+    "96": [
+      "resources_js_app"
+    ],
+    "97": [
+      "resources_views_layouts_app_blade"
+    ],
+    "98": [
+      "resources_views_layouts_guest_blade"
+    ],
+    "99": [
+      "resources_views_livewire_auth_login_blade"
+    ],
+    "100": [
+      "resources_views_livewire_auth_select_jabatan_blade"
+    ],
+    "101": [
+      "resources_views_livewire_dashboard_blade"
+    ],
+    "102": [
+      "resources_views_livewire_pengajuan_edit_pemohon_blade"
+    ],
+    "103": [
+      "resources_views_livewire_pengajuan_index_blade"
+    ],
+    "104": [
+      "resources_views_livewire_profile_blade"
+    ],
+    "105": [
+      "resources_views_welcome_blade"
+    ],
+    "106": [
+      "tests_feature_exampletest"
+    ],
+    "107": [
+      "tests_unit_exampletest"
+    ],
+    "108": [
+      "vite_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.04081632653061224,
+    "1": 0.06471631205673758,
+    "2": 0.044444444444444446,
+    "3": 0.05,
+    "4": 0.0625,
+    "5": 0.08620689655172414,
+    "6": 0.08,
+    "7": 0.08695652173913043,
+    "8": 0.14035087719298245,
+    "9": 0.11764705882352941,
+    "10": 0.19117647058823528,
+    "11": 0.2,
+    "12": 0.1619047619047619,
+    "13": 0.13333333333333333,
+    "14": 0.1794871794871795,
+    "15": 0.20512820512820512,
+    "16": 0.1794871794871795,
+    "17": 0.16666666666666666,
+    "18": 0.16666666666666666,
+    "19": 0.18181818181818182,
+    "20": 0.21818181818181817,
+    "21": 0.26666666666666666,
+    "22": 0.28888888888888886,
+    "23": 0.2,
+    "24": 0.24444444444444444,
+    "25": 0.2777777777777778,
+    "26": 0.2222222222222222,
+    "27": 0.2857142857142857,
+    "28": 0.25,
+    "29": 0.2857142857142857,
+    "30": 0.2857142857142857,
+    "31": 0.3333333333333333,
+    "32": 0.38095238095238093,
+    "33": 0.3333333333333333,
+    "34": 0.3333333333333333,
+    "35": 0.4666666666666667,
+    "36": 0.3333333333333333,
+    "37": 0.6,
+    "38": 0.4,
+    "39": 0.4,
+    "40": 0.5,
+    "41": 0.5,
+    "42": 0.5,
+    "43": 0.5,
+    "44": 0.6666666666666666,
+    "45": 0.6666666666666666,
+    "46": 0.6666666666666666,
+    "47": 0.6666666666666666,
+    "48": 0.6666666666666666,
+    "49": 0.6666666666666666,
+    "50": 0.6666666666666666,
+    "51": 0.6666666666666666,
+    "52": 0.6666666666666666,
+    "53": 0.6666666666666666,
+    "54": 0.6666666666666666,
+    "55": 0.6666666666666666,
+    "56": 0.6666666666666666,
+    "57": 0.6666666666666666,
+    "58": 0.6666666666666666,
+    "59": 0.6666666666666666,
+    "60": 0.6666666666666666,
+    "61": 0.6666666666666666,
+    "62": 0.6666666666666666,
+    "63": 0.6666666666666666,
+    "64": 0.6666666666666666,
+    "65": 0.6666666666666666,
+    "66": 0.6666666666666666,
+    "67": 0.6666666666666666,
+    "68": 0.6666666666666666,
+    "69": 0.6666666666666666,
+    "70": 1.0,
+    "71": 0.6666666666666666,
+    "72": 1.0,
+    "73": 1.0,
+    "74": 1.0,
+    "75": 1.0,
+    "76": 1.0,
+    "77": 1.0,
+    "78": 1.0,
+    "79": 1.0,
+    "80": 1.0,
+    "81": 1.0,
+    "82": 1.0,
+    "83": 1.0,
+    "84": 1.0,
+    "85": 1.0,
+    "86": 1.0,
+    "87": 1.0,
+    "88": 1.0,
+    "89": 1.0,
+    "90": 1.0,
+    "91": 1.0,
+    "92": 1.0,
+    "93": 1.0,
+    "94": 1.0,
+    "95": 1.0,
+    "96": 1.0,
+    "97": 1.0,
+    "98": 1.0,
+    "99": 1.0,
+    "100": 1.0,
+    "101": 1.0,
+    "102": 1.0,
+    "103": 1.0,
+    "104": 1.0,
+    "105": 1.0,
+    "106": 1.0,
+    "107": 1.0,
+    "108": 1.0
+  },
+  "gods": [
+    {
+      "id": "app_models_pengajuanbantuan_pengajuanbantuan",
+      "label": "PengajuanBantuan",
+      "degree": 24
+    },
+    {
+      "id": "app_models_lembaga_lembaga",
+      "label": "Lembaga",
+      "degree": 15
+    },
+    {
+      "id": "app_models_person_person",
+      "label": "Person",
+      "degree": 15
+    },
+    {
+      "id": "app_models_user_user",
+      "label": "User",
+      "degree": 13
+    },
+    {
+      "id": "app_models_wilayah_wilayah",
+      "label": "Wilayah",
+      "degree": 11
+    },
+    {
+      "id": "app_models_pengajuanlpjba_pengajuanlpjba",
+      "label": "PengajuanLpjBa",
+      "degree": 10
+    },
+    {
+      "id": "app_exports_pengajuanbantuanimporttemplate_pengajuanbantuanimporttemplate",
+      "label": "PengajuanBantuanImportTemplate",
+      "degree": 9
+    },
+    {
+      "id": "app_models_mustahik_mustahik",
+      "label": "Mustahik",
+      "degree": 9
+    },
+    {
+      "id": "app_models_pengajuanmustahik_pengajuanmustahik",
+      "label": "PengajuanMustahik",
+      "degree": 9
+    },
+    {
+      "id": "app_models_pengurus_pengurus",
+      "label": "Pengurus",
+      "degree": 9
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Asnaf",
+      "target": "Illuminate\\Database\\Eloquent\\Model",
+      "source_files": [
+        "app/Models/Asnaf.php",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "inherits",
+      "note": "Bridges community 27 → community 10"
+    },
+    {
+      "source": "Dana",
+      "target": "Illuminate\\Database\\Eloquent\\Model",
+      "source_files": [
+        "app/Models/Dana.php",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "inherits",
+      "note": "Bridges community 22 → community 10"
+    },
+    {
+      "source": "DanaTransaksi",
+      "target": "Illuminate\\Database\\Eloquent\\Model",
+      "source_files": [
+        "app/Models/DanaTransaksi.php",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "inherits",
+      "note": "Bridges community 1 → community 10"
+    },
+    {
+      "source": "Lembaga",
+      "target": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+      "source_files": [
+        "app/Models/Lembaga.php",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "mixes_in",
+      "note": "Bridges community 9 → community 12"
+    },
+    {
+      "source": "Lembaga",
+      "target": "Illuminate\\Database\\Eloquent\\Model",
+      "source_files": [
+        "app/Models/Lembaga.php",
+        ""
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "inherits",
+      "note": "Bridges community 9 → community 10"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `PengajuanBantuan` connect `Community 5` to `Community 1`, `Community 10`?",
+      "why": "High betweenness centrality (0.012) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Lembaga` connect `Community 9` to `Community 8`, `Community 1`, `Community 10`, `Community 12`?",
+      "why": "High betweenness centrality (0.008) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Wilayah` connect `Community 19` to `Community 10`?",
+      "why": "High betweenness centrality (0.007) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `Controller`, `$schema`, `name` to the rest of the system?",
+      "why": "160 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 1` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06471631205673758 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 2` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

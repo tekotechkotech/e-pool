@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Str;
+
+class PengajuanMustahik extends Model
+{
+    protected $fillable = [
+        'pengajuan_id',
+        'mustahik_id',
+        'asnaf_id',
+        'program_id',
+        'subprogram_id',
+        'sumber_dana_id',
+        'bentuk_bantuan',
+        'nama_barang',
+        'jumlah_barang',
+        'satuan_barang',
+        'pengadaan_barang_id',
+        'nominal',
+        'keterangan',
+        'tanggal_penyaluran',
+        'metode_penyaluran',
+        'catatan_penyaluran',
+        'jumlah_jiwa',
+        'jumlah_kk',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'tanggal_penyaluran'  => 'date',
+            'nominal'             => 'integer',
+            'jumlah_barang'       => 'integer',
+            'pengadaan_barang_id' => 'integer',
+            'jumlah_jiwa'         => 'integer',
+            'jumlah_kk'           => 'integer',
+        ];
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (self $pm) {
+            if (!$pm->survey) {
+                $survey = $pm->survey()->firstOrCreate([], [
+                    'token' => Str::random(32),
+                ]);
+                $pm->setRelation('survey', $survey);
+            }
+            static::syncWithPengajuanBantuan($pm);
+        });
+
+        static::updated(function (self $pm) {
+            static::syncWithPengajuanBantuan($pm);
+        });
+
+        static::deleted(function (self $pm) {
+            static::syncWithPengajuanBantuan($pm);
+        });
+    }
+
+    protected static function syncWithPengajuanBantuan(self $pm): void
+    {
+        if ($pm->relationLoaded('pengajuan')) {
+            $pengajuan = $pm->pengajuan;
+        } else {
+            $pengajuan = $pm->pengajuan()->withoutGlobalScopes()->first();
+        }
+
+        if ($pengajuan) {
+            $pengajuan->touch();
+        }
+    }
+
+    public function pengajuan(): BelongsTo
+    {
+        return $this->belongsTo(PengajuanBantuan::class, 'pengajuan_id');
+    }
+
+    public function mustahik(): BelongsTo
+    {
+        return $this->belongsTo(Mustahik::class);
+    }
+
+    public function asnaf(): BelongsTo
+    {
+        return $this->belongsTo(Asnaf::class);
+    }
+
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(Program::class);
+    }
+
+    public function subprogram(): BelongsTo
+    {
+        return $this->belongsTo(Subprogram::class);
+    }
+
+    public function sumberDana(): BelongsTo
+    {
+        return $this->belongsTo(Dana::class, 'sumber_dana_id');
+    }
+
+    public function survey(): HasOne
+    {
+        return $this->hasOne(PengajuanSurvey::class, 'pengajuan_mustahik_id');
+    }
+
+    public function disposisi(): HasOne
+    {
+        return $this->hasOne(PengajuanDisposisi::class, 'pengajuan_mustahik_id');
+    }
+
+    public function danaTransaksi(): MorphOne
+    {
+        return $this->morphOne(DanaTransaksi::class, 'referensi');
+    }
+
+    public function barangTransaksi(): MorphOne
+    {
+        return $this->morphOne(BarangTransaksi::class, 'referensi');
+    }
+
+    public function pengadaanBarang(): BelongsTo
+    {
+        return $this->belongsTo(PengadaanBarang::class, 'pengadaan_barang_id');
+    }
+
+    public function buktiPenyaluran(): MorphOne
+    {
+        return $this->morphOne(Lampiran::class, 'lampiranable')->where('category', 'bukti_penyaluran');
+    }
+
+    public function lampirans(): MorphMany
+    {
+        return $this->morphMany(Lampiran::class, 'lampiranable');
+    }
+
+    public function getIsDisalurkanAttribute(): bool
+    {
+        return !is_null($this->tanggal_penyaluran);
+    }
+}
+

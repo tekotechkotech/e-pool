@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
+class PengajuanLpjBa extends Model
+{
+    protected $table = 'pengajuan_lpj_bas';
+
+    protected $fillable = [
+        'pengajuan_id',
+        'tanggal_lpj',
+        'nominal_realisasi',
+        'nominal_sisa',
+        'sisa_dikembalikan',
+        'file_lpj',
+        'file_ba',
+        'catatan',
+        'created_by',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'tanggal_lpj'       => 'date',
+            'nominal_realisasi' => 'integer',
+            'nominal_sisa'      => 'integer',
+            'sisa_dikembalikan' => 'boolean',
+        ];
+    }
+
+    public function pengajuan(): BelongsTo
+    {
+        return $this->belongsTo(PengajuanBantuan::class, 'pengajuan_id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function lampirans(): MorphMany
+    {
+        return $this->morphMany(Lampiran::class, 'lampiranable');
+    }
+
+    public function lampiranDokumentasi(): MorphMany
+    {
+        return $this->morphMany(Lampiran::class, 'lampiranable')->where('category', 'dokumentasi');
+    }
+
+    public function lampiranLain(): MorphMany
+    {
+        return $this->morphMany(Lampiran::class, 'lampiranable')->where('category', 'lain');
+    }
+
+    public function buktiKembalikanSisa(): MorphMany
+    {
+        return $this->morphMany(Lampiran::class, 'lampiranable')->where('category', 'bukti_kembalikan_sisa');
+    }
+}
+

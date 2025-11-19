@@ -1,0 +1,174 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="max-w-5xl mx-auto space-y-6" x-data="setoranForm()">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">Input Setoran UPZ Baru</h1>
+            <p class="text-sm text-slate-500">Form setoran dana ZIS yang dihimpun UPZ beserta rincian muzakki.</p>
+        </div>
+        <a href="{{ route('pengumpulan.upz.index') }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all">
+            Kembali
+        </a>
+    </div>
+
+    @if($errors->any())
+        <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('pengumpulan.upz.store') }}" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-6">
+        @csrf
+
+        <div class="border-b border-slate-100 pb-4">
+            <h2 class="text-base font-bold text-slate-900">1. Data Induk Setoran</h2>
+            <p class="text-xs text-slate-500">Pilih UPZ dan tentukan tanggal setoran serta periode.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-1">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Pengumpul Zakat (UPZ) *</label>
+                <select name="lembaga_id" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    <option value="">-- Pilih UPZ --</option>
+                    @foreach($upzs as $u)
+                        <option value="{{ $u->id }}" {{ old('lembaga_id') == $u->id ? 'selected' : '' }}>{{ $u->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Setor *</label>
+                <input type="date" name="tanggal_setor" value="{{ old('tanggal_setor', date('Y-m-d')) }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Periode *</label>
+                <input type="text" name="periode" value="{{ old('periode', 'Bulan ' . date('F Y')) }}" required placeholder="Contoh: Januari 2026" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div class="md:col-span-3">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Keterangan</label>
+                <input type="text" name="keterangan" value="{{ old('keterangan') }}" placeholder="Keterangan transfer / bukti bank..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+        </div>
+
+        <div class="border-b border-slate-100 pb-4 pt-2 flex items-center justify-between">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">2. Rincian Muzakki & Munfiq</h2>
+                <p class="text-xs text-slate-500">Tambahkan daftar muzakki beserta nominal setoran Zakat, Infak, Fitrah, atau Titipan.</p>
+            </div>
+            <button type="button" @click="addRow()" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold rounded-lg text-xs flex items-center gap-1 transition-all">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Tambah Baris
+            </button>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-100 rounded-xl">
+            <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-100">
+                    <tr>
+                        <th class="px-3 py-2.5">No</th>
+                        <th class="px-3 py-2.5 min-w-[180px]">Nama Muzakki *</th>
+                        <th class="px-3 py-2.5 min-w-[130px]">NPWZ</th>
+                        <th class="px-3 py-2.5 min-w-[120px]">Zakat (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[120px]">Infak (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[110px]">Fitrah (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[110px]">Titipan (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[140px]">Keterangan</th>
+                        <th class="px-2 py-2.5 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <template x-for="(item, idx) in items" :key="idx">
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="px-3 py-2 text-center font-mono text-slate-400" x-text="idx + 1"></td>
+                            <td class="px-3 py-2">
+                                <input type="text" :name="'items[' + idx + '][nama]'" x-model="item.nama" required placeholder="Nama lengkap" class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs">
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="text" :name="'items[' + idx + '][npwz]'" x-model="item.npwz" placeholder="NPWZ..." class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs font-mono">
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="number" :name="'items[' + idx + '][nominal_zakat]'" x-model.number="item.nominal_zakat" min="0" placeholder="0" class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-right font-mono">
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="number" :name="'items[' + idx + '][nominal_infak]'" x-model.number="item.nominal_infak" min="0" placeholder="0" class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-right font-mono">
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="number" :name="'items[' + idx + '][nominal_fitrah]'" x-model.number="item.nominal_fitrah" min="0" placeholder="0" class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-right font-mono">
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="number" :name="'items[' + idx + '][nominal_titipan]'" x-model.number="item.nominal_titipan" min="0" placeholder="0" class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs text-right font-mono">
+                            </td>
+                            <td class="px-3 py-2">
+                                <input type="text" :name="'items[' + idx + '][keterangan]'" x-model="item.keterangan" placeholder="Keterangan..." class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs">
+                            </td>
+                            <td class="px-2 py-2 text-center">
+                                <button type="button" @click="removeRow(idx)" class="text-red-500 hover:text-red-700 p-1" title="Hapus baris" :disabled="items.length <= 1">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                <tfoot class="bg-slate-50 font-bold border-t border-slate-100 text-slate-800">
+                    <tr>
+                        <td colspan="3" class="px-3 py-2 text-right">TOTAL SETORAN:</td>
+                        <td class="px-3 py-2 text-right font-mono text-emerald-700" x-text="formatRupiah(totalZakat())"></td>
+                        <td class="px-3 py-2 text-right font-mono text-emerald-700" x-text="formatRupiah(totalInfak())"></td>
+                        <td class="px-3 py-2 text-right font-mono text-emerald-700" x-text="formatRupiah(totalFitrah())"></td>
+                        <td class="px-3 py-2 text-right font-mono text-emerald-700" x-text="formatRupiah(totalTitipan())"></td>
+                        <td colspan="2" class="px-3 py-2 text-right font-mono text-emerald-800 font-extrabold" x-text="formatRupiah(grandTotal())"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <a href="{{ route('pengumpulan.upz.index') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all">Batal</a>
+            <button type="submit" class="px-6 py-2.5 bg-[#118243] hover:bg-[#0d6835] text-white font-semibold rounded-xl text-sm shadow-sm transition-all">Simpan & Sinkronkan Kas</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function setoranForm() {
+    return {
+        items: [
+            { nama: '', npwz: '', nominal_zakat: 0, nominal_infak: 0, nominal_fitrah: 0, nominal_titipan: 0, keterangan: '' }
+        ],
+        addRow() {
+            this.items.push({ nama: '', npwz: '', nominal_zakat: 0, nominal_infak: 0, nominal_fitrah: 0, nominal_titipan: 0, keterangan: '' });
+        },
+        removeRow(idx) {
+            if (this.items.length > 1) {
+                this.items.splice(idx, 1);
+            }
+        },
+        totalZakat() {
+            return this.items.reduce((sum, i) => sum + (Number(i.nominal_zakat) || 0), 0);
+        },
+        totalInfak() {
+            return this.items.reduce((sum, i) => sum + (Number(i.nominal_infak) || 0), 0);
+        },
+        totalFitrah() {
+            return this.items.reduce((sum, i) => sum + (Number(i.nominal_fitrah) || 0), 0);
+        },
+        totalTitipan() {
+            return this.items.reduce((sum, i) => sum + (Number(i.nominal_titipan) || 0), 0);
+        },
+        grandTotal() {
+            return this.totalZakat() + this.totalInfak() + this.totalFitrah() + this.totalTitipan();
+        },
+        formatRupiah(val) {
+            return 'Rp ' + (val || 0).toLocaleString('id-ID');
+        }
+    }
+}
+</script>
+@endsection

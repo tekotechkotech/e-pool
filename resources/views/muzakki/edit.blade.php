@@ -1,0 +1,148 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">Edit Data Muzakki</h1>
+            <p class="text-sm text-slate-500">Perbarui informasi muzakki {{ $muzakki->person->nama ?? '' }}.</p>
+        </div>
+        <a href="{{ route('muzakki.index') }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all">
+            Kembali
+        </a>
+    </div>
+
+    @if($errors->any())
+        <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('muzakki.update', $muzakki->id) }}" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-6">
+        @csrf
+        @method('PUT')
+
+        <div class="border-b border-slate-100 pb-4">
+            <h2 class="text-base font-bold text-slate-900">1. Data Pribadi</h2>
+            <p class="text-xs text-slate-500">Informasi dasar perorangan sesuai KTP.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                <input type="text" name="nama" value="{{ old('nama', $muzakki->person->nama ?? '') }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">NIK (16 Digit) *</label>
+                <input type="text" name="nik" value="{{ old('nik', $muzakki->person->nik ?? '') }}" maxlength="16" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Kelamin</label>
+                <select name="jenis_kelamin" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    <option value="">-- Pilih --</option>
+                    <option value="L" {{ old('jenis_kelamin', $muzakki->person->jenis_kelamin ?? '') == 'L' ? 'selected' : '' }}>Pria / Laki-laki</option>
+                    <option value="P" {{ old('jenis_kelamin', $muzakki->person->jenis_kelamin ?? '') == 'P' ? 'selected' : '' }}>Wanita / Perempuan</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Pekerjaan</label>
+                <input type="text" name="pekerjaan" value="{{ old('pekerjaan', $muzakki->pekerjaan) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tempat Lahir</label>
+                <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir', $muzakki->person->tempat_lahir ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Lahir</label>
+                <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', optional($muzakki->person->tanggal_lahir)->format('Y-m-d')) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Handphone / WA</label>
+                <input type="text" name="handphone" value="{{ old('handphone', $muzakki->person->handphone ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
+                <input type="email" name="email" value="{{ old('email', $muzakki->person->email ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Rumah (Sesuai KTP)</label>
+                <textarea name="alamat" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">{{ old('alamat', $muzakki->person->alamat ?? '') }}</textarea>
+            </div>
+        </div>
+
+        <div class="border-b border-slate-100 pb-4 pt-2">
+            <h2 class="text-base font-bold text-slate-900">2. Identitas Muzakki & UPZ</h2>
+            <p class="text-xs text-slate-500">Penetapan UPZ dan nomor registrasi zakat.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Pengumpul Zakat (UPZ)</label>
+                <select name="lembaga_id" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    <option value="">-- Tanpa UPZ (Muzakki Langsung) --</option>
+                    @foreach($upzs as $u)
+                        <option value="{{ $u->id }}" {{ old('lembaga_id', $muzakki->lembaga_id) == $u->id ? 'selected' : '' }}>{{ $u->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">NPWZ (Nomor Pokok Wajib Zakat)</label>
+                <input type="text" name="npwz" value="{{ old('npwz', $muzakki->npwz) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">NPWP</label>
+                <input type="text" name="npwp" value="{{ old('npwp', $muzakki->npwp) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">NIP (Pegawai/ASN)</label>
+                <input type="text" name="nip" value="{{ old('nip', $muzakki->nip) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Zakat Rutin</label>
+                <input type="text" name="jenis_zakat" value="{{ old('jenis_zakat', $muzakki->jenis_zakat) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Registrasi</label>
+                <input type="date" name="tanggal_registrasi" value="{{ old('tanggal_registrasi', optional($muzakki->tanggal_registrasi)->format('Y-m-d')) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Korespondensi</label>
+                <input type="text" name="alamat_korespondensi" value="{{ old('alamat_korespondensi', $muzakki->alamat_korespondensi) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Kantor / Instansi</label>
+                <textarea name="alamat_kantor" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">{{ old('alamat_kantor', $muzakki->alamat_kantor) }}</textarea>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Tambahan</label>
+                <textarea name="keterangan" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">{{ old('keterangan', $muzakki->keterangan) }}</textarea>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <a href="{{ route('muzakki.index') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all">Batal</a>
+            <button type="submit" class="px-6 py-2.5 bg-[#118243] hover:bg-[#0d6835] text-white font-semibold rounded-xl text-sm shadow-sm transition-all">Perbarui Muzakki</button>
+        </div>
+    </form>
+</div>
+@endsection
