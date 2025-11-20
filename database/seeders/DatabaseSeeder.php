@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             DanaSeeder::class,
             LembagaSeeder::class,
             UpzSimbaSeeder::class,
+            PengurusUpzSeeder::class,
             MustahikSeeder::class,
             PengajuanBantuanSeeder::class,
             PengajuanUmumTahapanSeeder::class,

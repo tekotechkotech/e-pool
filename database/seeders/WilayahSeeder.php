@@ -16,8 +16,8 @@ class WilayahSeeder extends Seeder
      */
     public function run(): void
     {
-        if (Schema::hasTable('wilayah')) {
-            $this->command->info('Tabel wilayah sudah ada; impor dilewati.');
+        if (Schema::hasTable('wilayah') && DB::table('wilayah')->count() > 0) {
+            $this->command->info('Data wilayah sudah ada; impor dilewati.');
             return;
         }
 
@@ -35,7 +35,13 @@ class WilayahSeeder extends Seeder
         // 3. Baca isi file SQL
         $sql = File::get($path);
 
-        // 4. Eksekusi query SQL ke database
+        // 4. Jika tabel sudah ada, hapus DDL create & primary key alter agar tidak bentrok
+        if (Schema::hasTable('wilayah')) {
+            $sql = preg_replace('/CREATE TABLE\s+(`?wilayah`?|["\']?wilayah["\']?)\s*\(.*?\)\s*ENGINE=[^;]+;/is', '', $sql, 1);
+            $sql = preg_replace('/ALTER TABLE\s+(`?wilayah`?|["\']?wilayah["\']?)\s+ADD\s+PRIMARY\s+KEY\s*\([^;]+\);/is', '', $sql, 1);
+        }
+
+        // 5. Eksekusi query SQL ke database
         DB::unprepared($sql);
 
         $this->command->info("Data wilayah berhasil dimasukkan!");
