@@ -1,5 +1,13 @@
 @extends('layouts.app')
 
+@php
+    $daftarBulan = $daftarBulan ?? [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    $daftarTahun = $daftarTahun ?? range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+@endphp
+
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -23,7 +31,7 @@
 
     <!-- Filter & Search -->
     <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-        <form method="GET" action="{{ route('pengumpulan.upz.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="GET" action="{{ route('pengumpulan.upz.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div class="relative">
                 <input type="text" name="search" value="{{ $search }}" placeholder="No. Setoran / Ket..." 
                     class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
@@ -42,8 +50,21 @@
             </div>
 
             <div>
-                <input type="text" name="periode" value="{{ $periode }}" placeholder="Periode (e.g. Januari 2026)" 
-                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                <select name="bulan" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                    <option value="">-- Semua Bulan --</option>
+                    @foreach($daftarBulan as $b)
+                        <option value="{{ $b }}" {{ $bulan == $b ? 'selected' : '' }}>{{ $b }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <select name="tahun" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                    <option value="">-- Semua Tahun --</option>
+                    @foreach($daftarTahun as $t)
+                        <option value="{{ $t }}" {{ (string)$tahun === (string)$t ? 'selected' : '' }}>{{ $t }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="flex items-center gap-2">

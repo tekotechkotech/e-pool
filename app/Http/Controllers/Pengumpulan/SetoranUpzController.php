@@ -43,9 +43,22 @@ class SetoranUpzController extends Controller
         $lembagaId = $request->query('lembaga_id');
         $periode = $request->query('periode');
         $bulan = $request->query('bulan');
-        $tahun = $request->query('tahun', date('Y'));
+        $tahun = $request->query('tahun');
         $status = $request->query('status');
         $search = $request->query('search');
+
+        $daftarBulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        $daftarTahun = range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+
+        $namaBulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $bulanKeAngka = array_flip($namaBulan);
 
         $query = SetoranUpz::with(['upz', 'user'])->latest('tanggal_setor');
 
@@ -58,11 +71,24 @@ class SetoranUpzController extends Controller
         }
 
         if ($bulan) {
-            $query->whereMonth('tanggal_setor', $bulan);
+            $bulanNama = is_numeric($bulan) ? ($namaBulan[(int)$bulan] ?? null) : $bulan;
+            $bulanNum = is_numeric($bulan) ? (int)$bulan : ($bulanKeAngka[$bulan] ?? null);
+
+            $query->where(function ($q) use ($bulanNama, $bulanNum) {
+                if ($bulanNama) {
+                    $q->where('periode', 'like', "%{$bulanNama}%");
+                }
+                if ($bulanNum) {
+                    $q->orWhereMonth('tanggal_setor', $bulanNum);
+                }
+            });
         }
 
-        if ($tahun) {
-            $query->whereYear('tanggal_setor', $tahun);
+        if ($tahun && $tahun !== 'semua') {
+            $query->where(function ($q) use ($tahun) {
+                $q->where('periode', 'like', "%{$tahun}%")
+                    ->orWhereYear('tanggal_setor', $tahun);
+            });
         }
 
         if ($status && $status !== 'semua') {
@@ -90,7 +116,9 @@ class SetoranUpzController extends Controller
             'bulan',
             'tahun',
             'status',
-            'search'
+            'search',
+            'daftarBulan',
+            'daftarTahun'
         ));
     }
 
@@ -99,15 +127,29 @@ class SetoranUpzController extends Controller
         $upzs = Upz::active()->orderBy('nama')->get();
         $muzakkis = Muzakki::with('person')->get();
 
-        return view('pengumpulan.upz.create', compact('upzs', 'muzakkis'));
+        $daftarBulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        $daftarTahun = range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+
+        return view('pengumpulan.upz.create', compact('upzs', 'muzakkis', 'daftarBulan', 'daftarTahun'));
     }
 
     public function store(Request $request)
     {
+        if ($request->filled('bulan') && $request->filled('tahun')) {
+            $request->merge([
+                'periode' => trim($request->input('bulan') . ' ' . $request->input('tahun')),
+            ]);
+        }
+
         $validated = $request->validate([
             'lembaga_id' => 'required|exists:lembagas,id',
             'tanggal_setor' => 'required|date',
             'periode' => 'required|string|max:100',
+            'bulan' => 'nullable|string|max:50',
+            'tahun' => 'nullable|string|max:10',
             'keterangan' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.muzakki_id' => 'nullable|exists:muzakkis,id',

@@ -1,5 +1,13 @@
 @extends('layouts.app')
 
+@php
+    $daftarBulan = $daftarBulan ?? [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    $daftarTahun = $daftarTahun ?? range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+@endphp
+
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -23,10 +31,10 @@
 
     <!-- Filter & Search -->
     <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-        <form method="GET" action="{{ route('simba.kas-masuk') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <form method="GET" action="{{ route('simba.kas-masuk') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1">Filter UPZ</label>
-                <select name="lembaga_id" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs">
+                <select name="lembaga_id" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
                     <option value="">-- Semua UPZ --</option>
                     @foreach($upzs as $u)
                         <option value="{{ $u->id }}" {{ $lembagaId == $u->id ? 'selected' : '' }}>{{ $u->nama }} (Kode: {{ $u->kode_simba ?? '-' }})</option>
@@ -35,13 +43,28 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Periode</label>
-                <input type="text" name="periode" value="{{ $periode }}" placeholder="Januari 2026" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Bulan</label>
+                <select name="bulan" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
+                    <option value="">-- Semua Bulan --</option>
+                    @foreach($daftarBulan as $b)
+                        <option value="{{ $b }}" {{ $bulan == $b ? 'selected' : '' }}>{{ $b }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Tahun</label>
+                <select name="tahun" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
+                    <option value="">-- Semua Tahun --</option>
+                    @foreach($daftarTahun as $t)
+                        <option value="{{ $t }}" {{ (string)$tahun === (string)$t ? 'selected' : '' }}>{{ $t }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1">Tgl Setor Mulai</label>
-                <input type="date" name="tanggal_mulai" value="{{ $tanggalMulai }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs">
+                <input type="date" name="tanggal_mulai" value="{{ $tanggalMulai }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
             </div>
 
             <div class="flex items-end gap-2">

@@ -223,5 +223,183 @@ class PengumpulanModulTest extends TestCase
         $this->seed(\Database\Seeders\MuzakkiSeeder::class);
         $this->assertEquals($countBefore, Muzakki::count());
     }
+
+    public function test_setoran_upz_store_combines_bulan_and_tahun(): void
+    {
+        $person = Person::create(['nama' => 'Staff 3', 'nik' => '9999888877776664']);
+        $user = User::create([
+            'person_id' => $person->id,
+            'email' => 'admin3@baznas.go.id',
+            'password' => bcrypt('password'),
+        ]);
+        $this->actingAs($user);
+
+        $upz = Upz::create([
+            'nama' => 'UPZ An-Nur',
+            'kode_simba' => '777',
+            'is_upz' => true,
+            'is_active' => true,
+        ]);
+
+        $postData = [
+            'lembaga_id' => $upz->id,
+            'tanggal_setor' => '2026-11-15',
+            'bulan' => 'November',
+            'tahun' => '2026',
+            'keterangan' => 'Setoran bulan November 2026',
+            'items' => [
+                [
+                    'nama' => 'Muzakki Baru',
+                    'nominal_zakat' => 1000000,
+                    'nominal_infak' => 250000,
+                ]
+            ]
+        ];
+
+        $res = $this->post(route('pengumpulan.upz.store'), $postData);
+        $res->assertRedirect(route('pengumpulan.upz.index'));
+
+        $this->assertDatabaseHas('setoran_upzs', [
+            'lembaga_id' => $upz->id,
+            'periode' => 'November 2026',
+            'total_zakat' => 1000000,
+            'total_infak' => 250000,
+            'total_jumlah' => 1250000,
+        ]);
+
+        $this->assertDatabaseHas('setoran_upz_items', [
+            'nama' => 'Muzakki Baru',
+            'periode' => 'November 2026',
+            'jumlah' => 1250000,
+        ]);
+    }
+
+    public function test_filter_bulan_dan_tahun_pada_setoran_upz_dan_simba(): void
+    {
+        $person = Person::create(['nama' => 'Staff 4', 'nik' => '9999888877776663']);
+        $user = User::create([
+            'person_id' => $person->id,
+            'email' => 'admin4@baznas.go.id',
+            'password' => bcrypt('password'),
+        ]);
+        $this->actingAs($user);
+
+        $upz = Upz::create([
+            'nama' => 'UPZ Filter Test',
+            'kode_simba' => '666',
+            'is_upz' => true,
+            'is_active' => true,
+        ]);
+
+        $setoran1 = SetoranUpz::create([
+            'nomor_setoran' => 'SET-UPZ/2026/01/0001',
+            'lembaga_id' => $upz->id,
+            'tanggal_setor' => '2026-01-10',
+            'periode' => 'Januari 2026',
+            'total_zakat' => 500000,
+            'total_infak' => 0,
+            'total_fitrah' => 0,
+            'total_titipan' => 0,
+            'total_jumlah' => 500000,
+            'status' => 'Terverifikasi',
+            'user_id' => $user->id,
+        ]);
+
+        SetoranUpzItem::create([
+            'setoran_upz_id' => $setoran1->id,
+            'nama' => 'Muzakki Jan',
+            'nominal_zakat' => 500000,
+            'nominal_infak' => 0,
+            'nominal_fitrah' => 0,
+            'nominal_titipan' => 0,
+            'jumlah' => 500000,
+            'periode' => 'Januari 2026',
+        ]);
+
+        $setoran2 = SetoranUpz::create([
+            'nomor_setoran' => 'SET-UPZ/2025/12/0001',
+            'lembaga_id' => $upz->id,
+            'tanggal_setor' => '2025-12-20',
+            'periode' => 'Desember 2025',
+            'total_zakat' => 700000,
+            'total_infak' => 0,
+            'total_fitrah' => 0,
+            'total_titipan' => 0,
+            'total_jumlah' => 700000,
+            'status' => 'Terverifikasi',
+            'user_id' => $user->id,
+        ]);
+
+        SetoranUpzItem::create([
+            'setoran_upz_id' => $setoran2->id,
+            'nama' => 'Muzakki Des',
+            'nominal_zakat' => 700000,
+            'nominal_infak' => 0,
+            'nominal_fitrah' => 0,
+            'nominal_titipan' => 0,
+            'jumlah' => 700000,
+            'periode' => 'Desember 2025',
+        ]);
+
+        // Filter pengumpulan.upz.index: Bulan Januari & Tahun 2026
+        $resFilter1 = $this->get(route('pengumpulan.upz.index', ['bulan' => 'Januari', 'tahun' => '2026']));
+        $resFilter1->assertStatus(200);
+        $resFilter1->assertSee('SET-UPZ/2026/01/0001');
+        $resFilter1->assertDontSee('SET-UPZ/2025/12/0001');
+
+        // Filter pengumpulan.upz.index: Tahun 2025
+        $resFilter2 = $this->get(route('pengumpulan.upz.index', ['tahun' => '2025']));
+        $resFilter2->assertStatus(200);
+        $resFilter2->assertSee('SET-UPZ/2025/12/0001');
+        $resFilter2->assertDontSee('SET-UPZ/2026/01/0001');
+
+        // Filter simba.kas-masuk preview: Bulan Desember
+        $resSimba1 = $this->get(route('simba.kas-masuk', ['bulan' => 'Desember']));
+        $resSimba1->assertStatus(200);
+        $resSimba1->assertSee('Muzakki Des');
+        $resSimba1->assertDontSee('Muzakki Jan');
+
+        // Filter simba.kas-masuk CSV download
+        $resSimbaCsv = $this->get(route('simba.kas-masuk', ['bulan' => 'Januari', 'tahun' => '2026', 'download' => 'csv']));
+        $resSimbaCsv->assertStatus(200);
+        $csvContent = $resSimbaCsv->streamedContent();
+        $this->assertStringContainsString('Muzakki Jan', $csvContent);
+        $this->assertStringNotContainsString('Muzakki Des', $csvContent);
+    }
+
+    public function test_views_contain_bulan_dan_tahun_select_dropdowns(): void
+    {
+        $person = Person::create(['nama' => 'Staff 5', 'nik' => '9999888877776662']);
+        $user = User::create([
+            'person_id' => $person->id,
+            'email' => 'admin5@baznas.go.id',
+            'password' => bcrypt('password'),
+        ]);
+        $this->actingAs($user);
+
+        // 1. View create
+        $resCreate = $this->get(route('pengumpulan.upz.create'));
+        $resCreate->assertStatus(200);
+        $resCreate->assertSee('name="bulan"', false);
+        $resCreate->assertSee('name="tahun"', false);
+        $resCreate->assertSee('Januari');
+        $resCreate->assertSee('Desember');
+
+        // 2. View index
+        $resIndex = $this->get(route('pengumpulan.upz.index'));
+        $resIndex->assertStatus(200);
+        $resIndex->assertSee('name="bulan"', false);
+        $resIndex->assertSee('name="tahun"', false);
+        $resIndex->assertSee('Semua Bulan');
+        $resIndex->assertSee('Semua Tahun');
+
+        // 3. View simba kas-masuk
+        $resSimba = $this->get(route('simba.kas-masuk'));
+        $resSimba->assertStatus(200);
+        $resSimba->assertSee('name="bulan"', false);
+        $resSimba->assertSee('name="tahun"', false);
+        $resSimba->assertSee('Semua Bulan');
+        $resSimba->assertSee('Semua Tahun');
+    }
 }
 
