@@ -24,6 +24,12 @@
     </div>
 
     <!-- Info Cards -->
+    @php
+        $totalMuzakki = $setoran->items->count();
+        $setorCount = $setoran->items->where('jumlah', '>', 0)->count();
+        $nihilCount = $setoran->items->where('jumlah', '<=', 0)->count();
+        $partisipasi = $totalMuzakki > 0 ? round(($setorCount / $totalMuzakki) * 100) : 0;
+    @endphp
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-1">
             <p class="text-xs text-slate-400 font-semibold uppercase">Nama UPZ</p>
@@ -31,19 +37,22 @@
             <p class="text-xs text-slate-400">Kode Simba: {{ $setoran->upz->kode_simba ?? '-' }}</p>
         </div>
         <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-1">
-            <p class="text-xs text-slate-400 font-semibold uppercase">Tanggal Setor</p>
+            <p class="text-xs text-slate-400 font-semibold uppercase">Tanggal Setor & Periode</p>
             <p class="text-base font-bold text-slate-900">{{ optional($setoran->tanggal_setor)->format('d F Y') }}</p>
             <p class="text-xs text-slate-400">Periode: {{ $setoran->periode }}</p>
         </div>
         <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-1">
-            <p class="text-xs text-slate-400 font-semibold uppercase">Total Zakat / Infak</p>
-            <p class="text-sm font-bold text-slate-800">Z: Rp {{ number_format($setoran->total_zakat, 0, ',', '.') }}</p>
-            <p class="text-sm font-bold text-slate-800">I: Rp {{ number_format($setoran->total_infak, 0, ',', '.') }}</p>
+            <p class="text-xs text-slate-400 font-semibold uppercase">Tingkat Partisipasi UPZ</p>
+            <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-xl font-bold text-slate-900">{{ $partisipasi }}%</span>
+                <span class="text-xs text-slate-500 font-medium">({{ $setorCount }} dari {{ $totalMuzakki }} setor)</span>
+            </div>
+            <p class="text-xs text-amber-600 font-medium">{{ $nihilCount }} orang nihil (Rp 0)</p>
         </div>
         <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-1">
             <p class="text-xs text-slate-400 font-semibold uppercase">Grand Total Setoran</p>
             <p class="text-xl font-black text-emerald-700">Rp {{ number_format($setoran->total_jumlah, 0, ',', '.') }}</p>
-            <p class="text-xs text-slate-400">{{ $setoran->items->count() }} orang muzakki</p>
+            <p class="text-xs text-slate-400">Z: Rp {{ number_format($setoran->total_zakat, 0, ',', '.') }} | I: Rp {{ number_format($setoran->total_infak, 0, ',', '.') }}</p>
         </div>
     </div>
 
@@ -64,12 +73,13 @@
                         <th class="px-5 py-3 text-right">Fitrah</th>
                         <th class="px-5 py-3 text-right">Titipan</th>
                         <th class="px-5 py-3 text-right">Jumlah</th>
+                        <th class="px-5 py-3 text-center">Status</th>
                         <th class="px-5 py-3">Keterangan</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs">
                     @forelse($setoran->items as $idx => $item)
-                        <tr class="hover:bg-slate-50/50">
+                        <tr class="hover:bg-slate-50/50 {{ $item->jumlah <= 0 ? 'bg-slate-50/30' : '' }}">
                             <td class="px-5 py-3 font-mono text-slate-400">{{ $idx + 1 }}</td>
                             <td class="px-5 py-3 font-semibold text-slate-800">{{ $item->nama }}</td>
                             <td class="px-5 py-3 font-mono text-slate-500">{{ $item->npwz ?: '-' }}</td>
@@ -77,12 +87,23 @@
                             <td class="px-5 py-3 text-right font-mono">Rp {{ number_format($item->nominal_infak, 0, ',', '.') }}</td>
                             <td class="px-5 py-3 text-right font-mono">Rp {{ number_format($item->nominal_fitrah, 0, ',', '.') }}</td>
                             <td class="px-5 py-3 text-right font-mono">Rp {{ number_format($item->nominal_titipan, 0, ',', '.') }}</td>
-                            <td class="px-5 py-3 text-right font-mono font-bold text-emerald-700">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td class="px-5 py-3 text-right font-mono font-bold {{ $item->jumlah > 0 ? 'text-emerald-700' : 'text-slate-400' }}">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td class="px-5 py-3 text-center">
+                                @if($item->jumlah > 0)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+                                        Setor
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800">
+                                        Nihil (Rp 0)
+                                    </span>
+                                @endif
+                            </td>
                             <td class="px-5 py-3 text-slate-500">{{ $item->keterangan ?: '-' }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-5 py-8 text-center text-slate-400">Tidak ada rincian item.</td>
+                            <td colspan="10" class="px-5 py-8 text-center text-slate-400">Tidak ada rincian item.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -94,7 +115,7 @@
                         <td class="px-5 py-3 text-right font-mono">Rp {{ number_format($setoran->total_fitrah, 0, ',', '.') }}</td>
                         <td class="px-5 py-3 text-right font-mono">Rp {{ number_format($setoran->total_titipan, 0, ',', '.') }}</td>
                         <td class="px-5 py-3 text-right font-mono font-black text-emerald-700">Rp {{ number_format($setoran->total_jumlah, 0, ',', '.') }}</td>
-                        <td></td>
+                        <td colspan="2"></td>
                     </tr>
                 </tfoot>
             </table>

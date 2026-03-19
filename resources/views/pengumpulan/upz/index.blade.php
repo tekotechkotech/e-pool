@@ -6,10 +6,15 @@
         'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
     ];
     $daftarTahun = $daftarTahun ?? range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+    $currentBulanIndo = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ][(int)date('n')];
 @endphp
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ importModalOpen: false, modalUpzId: '' }">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
@@ -19,7 +24,21 @@
             <p class="text-sm text-slate-500">Pencatatan dan arsip bukti setoran ZIS dari Unit Pengumpul Zakat ke BAZNAS.</p>
         </div>
         
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5 flex-wrap">
+            <a :href="'{{ route('pengumpulan.upz.template') }}' + (modalUpzId ? '/' + modalUpzId : '')" class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all" title="Unduh template Excel">
+                <svg class="mr-1.5 h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Template Excel
+            </a>
+
+            <button type="button" @click="importModalOpen = true" class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
+                <svg class="mr-1.5 h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Import Excel
+            </button>
+
             <a href="{{ route('pengumpulan.upz.create') }}" class="inline-flex items-center justify-center rounded-xl bg-[#118243] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0d6835] transition-all">
                 <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -80,7 +99,6 @@
             <table class="w-full text-left text-sm text-slate-600">
                 <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-semibold border-b border-slate-100">
                     <tr>
-                        <!-- <th class="px-6 py-4">No. Setoran</th> -->
                         <th class="px-6 py-4">UPZ</th>
                         <th class="px-6 py-4">Tgl / Periode</th>
                         <th class="px-6 py-4 text-right">Zakat</th>
@@ -93,14 +111,12 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($setorans as $s)
                         <tr class="hover:bg-slate-50/70 transition-colors">
-                            <!-- <td class="px-6 py-4 font-mono font-bold text-slate-900 text-xs">
-                                <a href="{{ route('pengumpulan.upz.show', $s->id) }}" class="text-blue-600 hover:underline">
-                                    {{ $s->nomor_setoran }}
-                                </a>
-                            </td> -->
                             <td class="px-6 py-4">
                                 <div class="font-semibold text-slate-800">{{ $s->upz->nama ?? '-' }}</div>
                                 <div class="text-xs text-slate-400">Kode: {{ $s->upz->kode_simba ?? '-' }}</div>
+                                <div class="text-[11px] font-mono text-emerald-700 mt-0.5">
+                                    <a href="{{ route('pengumpulan.upz.show', $s->id) }}" class="hover:underline">{{ $s->nomor_setoran }}</a>
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-xs">
                                 <div class="font-medium text-slate-700">{{ optional($s->tanggal_setor)->format('d M Y') }}</div>
@@ -140,7 +156,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-12 text-center text-slate-400">
+                            <td colspan="7" class="px-6 py-12 text-center text-slate-400">
                                 Belum ada data setoran UPZ.
                             </td>
                         </tr>
@@ -153,6 +169,89 @@
                 {{ $setorans->links() }}
             </div>
         @endif
+    </div>
+
+    <!-- Modal Import Setoran Excel (Alpine.js Modal, Strictly No JS Native Alert) -->
+    <div x-show="importModalOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;" x-cloak>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" @click="importModalOpen = false"></div>
+
+            <!-- Modal Body -->
+            <div class="relative inline-block w-full max-w-lg p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl border border-slate-100">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800">Import Setoran ZIS UPZ</h3>
+                        <p class="text-xs text-slate-500">Unggah file spreadsheet (XLSX, XLS, CSV) hasil rekap UPZ.</p>
+                    </div>
+                    <button type="button" @click="importModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <form method="POST" action="{{ route('pengumpulan.upz.import-preview') }}" enctype="multipart/form-data" class="mt-4 space-y-4 text-xs">
+                    @csrf
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block font-semibold text-slate-700">Unit Pengumpul Zakat (UPZ) *</label>
+                            <a :href="'{{ route('pengumpulan.upz.template') }}' + (modalUpzId ? '/' + modalUpzId : '')" class="text-emerald-700 hover:underline flex items-center gap-1 font-semibold">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                Unduh Template UPZ
+                            </a>
+                        </div>
+                        <select name="lembaga_id" required x-model="modalUpzId" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                            <option value="">-- Pilih UPZ Tujuan --</option>
+                            @foreach($upzs as $u)
+                                <option value="{{ $u->id }}">{{ $u->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Tanggal Setor *</label>
+                            <input type="date" name="tanggal_setor" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Bulan Periode *</label>
+                            <select name="bulan" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                                @foreach($daftarBulan as $b)
+                                    <option value="{{ $b }}" {{ $b === $currentBulanIndo ? 'selected' : '' }}>{{ $b }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Tahun Periode *</label>
+                            <select name="tahun" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                                @foreach($daftarTahun as $t)
+                                    <option value="{{ $t }}" {{ (string)$t === date('Y') ? 'selected' : '' }}>{{ $t }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">File Spreadsheet (.xlsx, .xls, .csv) *</label>
+                        <input type="file" name="file" required accept=".xlsx,.xls,.csv" class="w-full px-3 py-2 border border-slate-200 rounded-xl file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 focus:outline-none">
+                        <p class="text-[11px] text-slate-400 mt-1">Gunakan template resmi agar baris terpetakan otomatis.</p>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Catatan / Keterangan</label>
+                        <input type="text" name="keterangan" placeholder="Keterangan setoran atau nomor referensi bank..." class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                        <button type="button" @click="importModalOpen = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-all">Batal</button>
+                        <button type="submit" class="px-5 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl font-semibold transition-all flex items-center gap-1.5">
+                            <span>Lanjut ke Verifikasi (Preview)</span>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
