@@ -2,6 +2,25 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto space-y-6">
+    @if(session('success'))
+        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
+    @if($errors->any())
+        <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm">
+            <p class="font-semibold">Terjadi kesalahan:</p>
+            <ul class="list-disc list-inside mt-1">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="flex items-center justify-between">
         <div>
             <div class="flex items-center gap-3">
@@ -53,6 +72,89 @@
             <p class="text-xs text-slate-400 font-semibold uppercase">Grand Total Setoran</p>
             <p class="text-xl font-black text-emerald-700">Rp {{ number_format($setoran->total_jumlah, 0, ',', '.') }}</p>
             <p class="text-xs text-slate-400">Z: Rp {{ number_format($setoran->total_zakat, 0, ',', '.') }} | I: Rp {{ number_format($setoran->total_infak, 0, ',', '.') }}</p>
+        </div>
+    </div>
+
+    <!-- Bukti Transfer Card -->
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4" x-data="{ uploadModal: false }">
+        <div class="flex items-start gap-4">
+            <div class="p-3 rounded-xl {{ $setoran->bukti_setor ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400' }}">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-sm font-bold text-slate-800">Bukti Transfer / Setoran</h3>
+                    @if($setoran->bukti_setor)
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+                            Tersedia
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800">
+                            Belum Diunggah
+                        </span>
+                    @endif
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    @if($setoran->bukti_setor)
+                        File tersimpan: <span class="font-mono text-slate-600">{{ basename($setoran->bukti_setor) }}</span>
+                    @else
+                        Bukti transfer bank atau tanda terima fisik belum dilampirkan.
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            @if($setoran->bukti_setor)
+                <a href="{{ asset('storage/' . $setoran->bukti_setor) }}" target="_blank" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    Lihat Bukti
+                </a>
+                <button type="button" @click="uploadModal = true" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-semibold transition-all inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Ganti Bukti
+                </button>
+            @else
+                <button type="button" @click="uploadModal = true" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-all inline-flex items-center gap-1.5 shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Unggah Bukti Transfer
+                </button>
+            @endif
+        </div>
+
+        <!-- Modal Upload/Ganti Bukti -->
+        <div x-show="uploadModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="uploadModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" @click="uploadModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div x-show="uploadModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-slate-100">
+                    <form action="{{ route('pengumpulan.upz.upload-bukti', $setoran->id) }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+                        @csrf
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                            <h3 class="text-base font-bold text-slate-800" id="modal-title">
+                                {{ $setoran->bukti_setor ? 'Ganti Bukti Transfer' : 'Unggah Bukti Transfer' }}
+                            </h3>
+                            <button type="button" @click="uploadModal = false" class="text-slate-400 hover:text-slate-600">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold text-slate-700">Pilih Berkas (JPG, PNG, WEBP, atau PDF, Max 5MB)</label>
+                            <input type="file" name="bukti_setor" required accept=".jpg,.jpeg,.png,.webp,.pdf" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-slate-200 rounded-xl cursor-pointer bg-slate-50 focus:outline-none" />
+                        </div>
+                        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                            <button type="button" @click="uploadModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl text-xs font-semibold transition-all shadow-sm">
+                                Simpan Bukti
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

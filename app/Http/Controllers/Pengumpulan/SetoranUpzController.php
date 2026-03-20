@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -209,6 +211,176 @@ class SetoranUpzController extends Controller
         });
 
         return response()->json($muzakkis);
+    }
+
+    public function searchUpz(Request $request)
+    {
+        $q = $request->query('q', '');
+        $charCount = strlen(preg_replace('/\s+/', '', (string)$q));
+
+        if ($charCount < 4) {
+            return response()->json([]);
+        }
+
+        $results = Upz::active()
+            ->where(function ($query) use ($q) {
+                $query->where('nama', 'like', "%{$q}%")
+                    ->orWhere('kode_simba', 'like', "%{$q}%");
+            })
+            ->take(20)
+            ->get(['id', 'nama', 'kode_simba']);
+
+        return response()->json($results);
+    }
+
+    public function parseInlineExcel(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+            'lembaga_id' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $lembagaId = $request->input('lembaga_id');
+        $uploadedFile = $request->file('file');
+
+        try {
+            $sheets = Excel::toArray(new SetoranUpzImport, $uploadedFile);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membaca file spreadsheet: ' . $e->getMessage(),
+            ], 422);
+        }
+
+        $rows = $sheets[0] ?? [];
+
+        // Preload muzakki aktif untuk matching cepat (berdasarkan id, npwz, nik)
+        $muzakkiQuery = Muzakki::with('person');
+        if (!empty($lembagaId) && $lembagaId !== 'all') {
+            $muzakkiQuery->where('lembaga_id', $lembagaId);
+        }
+        $allMuzakkis = $muzakkiQuery->get();
+
+        $byId = [];
+        $byNpwz = [];
+        $byNik = [];
+
+        foreach ($allMuzakkis as $m) {
+            $byId[$m->id] = $m;
+            if (!empty($m->npwz)) {
+                $normNpwz = strtolower(preg_replace('/\s+/', '', (string)$m->npwz));
+                $byNpwz[$normNpwz] = $m;
+            }
+            if ($m->person && !empty($m->person->nik)) {
+                $normNik = preg_replace('/\s+/', '', (string)$m->person->nik);
+                $byNik[$normNik] = $m;
+            }
+        }
+
+        $items = [];
+
+        foreach ($rows as $row) {
+            // Dukung pembacaan berbasis slug heading row maupun key alternatif
+            $rawId = $row['id_muzakki'] ?? $row['id'] ?? $row['id_muzaki'] ?? null;
+            $rawNpwz = $row['npwz'] ?? null;
+            $rawNama = $row['nama_lengkap'] ?? $row['nama'] ?? null;
+            $rawNik = $row['nik'] ?? null;
+            $rawZakat = $row['zakat_rp'] ?? $row['zakat'] ?? $row['nominal_zakat'] ?? 0;
+            $rawInfak = $row['infak_rp'] ?? $row['infak'] ?? $row['nominal_infak'] ?? 0;
+            $rawFitrah = $row['fitrah_rp'] ?? $row['fitrah'] ?? $row['nominal_fitrah'] ?? 0;
+            $rawTitipan = $row['titipan_rp'] ?? $row['titipan'] ?? $row['nominal_titipan'] ?? 0;
+            $rawKet = $row['keterangan'] ?? null;
+
+            $cleanId = is_numeric($rawId) ? (int)$rawId : null;
+            $cleanNpwz = is_string($rawNpwz) ? trim($rawNpwz) : ($rawNpwz ? (string)$rawNpwz : '');
+            $cleanNama = is_string($rawNama) ? trim($rawNama) : ($rawNama ? (string)$rawNama : '');
+            $cleanNik = is_string($rawNik) ? trim($rawNik) : ($rawNik ? (string)$rawNik : '');
+            $cleanKet = is_string($rawKet) ? trim($rawKet) : ($rawKet ? (string)$rawKet : '');
+
+            $nominalZakat = $this->parseNominal($rawZakat);
+            $nominalInfak = $this->parseNominal($rawInfak);
+            $nominalFitrah = $this->parseNominal($rawFitrah);
+            $nominalTitipan = $this->parseNominal($rawTitipan);
+            $totalBaris = $nominalZakat + $nominalInfak + $nominalFitrah + $nominalTitipan;
+
+            // Lewati baris kosong cadangan jika seluruh kolom identitas dan nominal 0/kosong
+            if (empty($cleanId) && empty($cleanNpwz) && empty($cleanNama) && empty($cleanNik) && $totalBaris === 0) {
+                continue;
+            }
+
+            // Pencocokan Muzakki: ID -> NPWZ -> NIK
+            $matchedMuzakki = null;
+            if ($cleanId && isset($byId[$cleanId])) {
+                $matchedMuzakki = $byId[$cleanId];
+            } elseif (!empty($cleanNpwz)) {
+                $searchNpwz = strtolower(preg_replace('/\s+/', '', $cleanNpwz));
+                if (isset($byNpwz[$searchNpwz])) {
+                    $matchedMuzakki = $byNpwz[$searchNpwz];
+                }
+            }
+
+            if (!$matchedMuzakki && !empty($cleanNik)) {
+                $searchNik = preg_replace('/\s+/', '', $cleanNik);
+                if (isset($byNik[$searchNik])) {
+                    $matchedMuzakki = $byNik[$searchNik];
+                }
+            }
+
+            // Klasifikasi status: terdaftar, nihil, atau belum_terdaftar
+            if ($matchedMuzakki) {
+                if (empty($cleanNama)) {
+                    $cleanNama = $matchedMuzakki->person?->nama ?? '';
+                }
+                if (empty($cleanNik)) {
+                    $cleanNik = $matchedMuzakki->person?->nik ?? '';
+                }
+                if (empty($cleanNpwz)) {
+                    $cleanNpwz = $matchedMuzakki->npwz ?? '';
+                }
+
+                $status = ($totalBaris > 0) ? 'terdaftar' : 'nihil';
+            } else {
+                $status = 'belum_terdaftar';
+            }
+
+            $items[] = [
+                'row_number' => count($items) + 1,
+                'muzakki_id' => $matchedMuzakki?->id ?? null,
+                'nama' => $cleanNama ?: '-',
+                'nik' => $cleanNik,
+                'npwz' => $cleanNpwz,
+                'nominal_zakat' => $nominalZakat,
+                'nominal_infak' => $nominalInfak,
+                'nominal_fitrah' => $nominalFitrah,
+                'nominal_titipan' => $nominalTitipan,
+                'total' => $totalBaris,
+                'keterangan' => $cleanKet,
+                'status' => $status,
+            ];
+        }
+
+        if (empty($items)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File spreadsheet tidak berisi baris data setoran yang dapat diproses.',
+                'items' => [],
+                'total_rows' => 0,
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'items' => $items,
+            'total_rows' => count($items),
+        ]);
     }
 
     public function downloadTemplate($lembagaId = null)
@@ -586,8 +758,9 @@ class SetoranUpzController extends Controller
             'bulan' => 'nullable|string|max:50',
             'tahun' => 'nullable|string|max:10',
             'keterangan' => 'nullable|string',
+            'bukti_setor' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
             'items' => 'required|array|min:1',
-            'items.*.muzakki_id' => 'nullable|exists:muzakkis,id',
+            'items.*.muzakki_id' => 'nullable',
             'items.*.nama' => 'required|string|max:255',
             'items.*.npwz' => 'nullable|string|max:50',
             'items.*.nominal_zakat' => 'nullable|numeric|min:0',
@@ -598,10 +771,15 @@ class SetoranUpzController extends Controller
             'items.*.periode' => 'nullable|string|max:100',
         ]);
 
+        $pathBukti = null;
+        if ($request->hasFile('bukti_setor')) {
+            $pathBukti = $request->file('bukti_setor')->store('bukti_setor', 'public');
+        }
+
         $tanggal = Carbon::parse($validated['tanggal_setor']);
         $nomorSetoran = $this->generateNomorSetoran($tanggal);
 
-        DB::transaction(function () use ($validated, $nomorSetoran, $tanggal) {
+        DB::transaction(function () use ($validated, $nomorSetoran, $pathBukti) {
             $totalZakat = 0;
             $totalInfak = 0;
             $totalFitrah = 0;
@@ -627,6 +805,7 @@ class SetoranUpzController extends Controller
                 'total_titipan' => $totalTitipan,
                 'total_jumlah' => $totalJumlah,
                 'keterangan' => $validated['keterangan'] ?? null,
+                'bukti_setor' => $pathBukti,
                 'status' => 'Terverifikasi',
                 'user_id' => Auth::id(),
             ]);
@@ -693,7 +872,35 @@ class SetoranUpzController extends Controller
             }
         });
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Setoran UPZ berhasil disimpan dengan nomor {$nomorSetoran}.",
+                'redirect_url' => route('pengumpulan.upz.index'),
+            ]);
+        }
+
         return redirect()->route('pengumpulan.upz.index')->with('success', "Setoran UPZ berhasil disimpan dengan nomor {$nomorSetoran}.");
+    }
+
+    public function uploadBukti(Request $request, $id)
+    {
+        $setoran = SetoranUpz::findOrFail($id);
+
+        $request->validate([
+            'bukti_setor' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+        ]);
+
+        if ($setoran->bukti_setor && Storage::disk('public')->exists($setoran->bukti_setor)) {
+            Storage::disk('public')->delete($setoran->bukti_setor);
+        }
+
+        $path = $request->file('bukti_setor')->store('bukti_setor', 'public');
+        $setoran->update([
+            'bukti_setor' => $path,
+        ]);
+
+        return back()->with('success', 'Bukti setor berhasil diperbarui.');
     }
 
     public function show($id)
@@ -713,6 +920,11 @@ class SetoranUpzController extends Controller
         $setoran = SetoranUpz::findOrFail($id);
 
         DB::transaction(function () use ($setoran) {
+            // Hapus bukti setor fisik jika tersimpan
+            if ($setoran->bukti_setor && Storage::disk('public')->exists($setoran->bukti_setor)) {
+                Storage::disk('public')->delete($setoran->bukti_setor);
+            }
+
             // Hapus referensi transaksi dana
             DanaTransaksi::where('referensi_type', SetoranUpz::class)
                 ->where('referensi_id', $setoran->id)

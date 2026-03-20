@@ -149,11 +149,14 @@ Route::middleware(['auth', 'feature.toggle'])->group(function () {
             Route::get('/', [SetoranUpzController::class, 'index'])->name('index');
             Route::get('/create', [SetoranUpzController::class, 'create'])->name('create');
             Route::post('/', [SetoranUpzController::class, 'store'])->name('store');
+            Route::get('/search-upz', [SetoranUpzController::class, 'searchUpz'])->name('search-upz');
+            Route::post('/parse-inline-excel', [SetoranUpzController::class, 'parseInlineExcel'])->name('parse-inline-excel');
             Route::get('/muzakki-by-upz/{lembagaId}', [SetoranUpzController::class, 'getMuzakkiByUpz'])->name('muzakki-by-upz');
             Route::get('/template/{lembagaId?}', [SetoranUpzController::class, 'downloadTemplate'])->name('template');
             Route::post('/import-preview', [SetoranUpzController::class, 'importPreview'])->name('import-preview');
             Route::post('/quick-store-muzakki', [SetoranUpzController::class, 'quickStoreMuzakki'])->name('quick-store-muzakki');
             Route::post('/import-confirm', [SetoranUpzController::class, 'importConfirm'])->name('import-confirm');
+            Route::post('/{id}/upload-bukti', [SetoranUpzController::class, 'uploadBukti'])->name('upload-bukti');
             Route::get('/{id}', [SetoranUpzController::class, 'show'])->name('show');
             Route::get('/{id}/cetak', [SetoranUpzController::class, 'cetakLampiran'])->name('cetak');
             Route::delete('/{id}', [SetoranUpzController::class, 'destroy'])->name('destroy');
