@@ -33,8 +33,8 @@ class ProfileController extends Controller
         $rules = [
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'nama' => ['required', 'string', 'max:255'],
-            'nik' => ['nullable', 'string', 'max:255', Rule::unique('persons')->ignore($user->person_id)],
-            'nomor_kk' => ['nullable', 'string', 'max:255'],
+            'nik' => ['nullable', 'string', 'digits:16', 'regex:/^[0-9]{16}$/', Rule::unique('persons')->ignore($user->person_id)],
+            'nomor_kk' => ['nullable', 'string', 'digits:16', 'regex:/^[0-9]{16}$/'],
             'jenis_kelamin' => ['nullable', Rule::in(['L', 'P'])],
             'tempat_lahir' => ['nullable', 'string', 'max:255'],
             'tanggal_lahir' => ['nullable', 'date'],

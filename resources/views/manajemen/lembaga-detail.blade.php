@@ -3,12 +3,12 @@
 @section('content')
 <div class="space-y-6" x-data="{
     activeTab: '{{ $activeTab }}',
-    isPengurusModalOpen: false,
-    person_id: '',
-    pengurus_jabatan_id: '',
-    no_sk: '',
-    tanggal_mulai: '{{ date('Y-m-d') }}',
-    tanggal_selesai: '',
+    isPengurusModalOpen: {{ $errors->any() ? 'true' : 'false' }},
+    person_id: '{{ old('person_id', '') }}',
+    pengurus_jabatan_id: '{{ old('pengurus_jabatan_id', '') }}',
+    no_sk: '{{ old('no_sk', '') }}',
+    tanggal_mulai: '{{ old('tanggal_mulai', date('Y-m-d')) }}',
+    tanggal_selesai: '{{ old('tanggal_selesai', '') }}',
     is_active: true
 }">
     <!-- Header with Back Button -->
@@ -207,39 +207,56 @@
 
             <form method="POST" action="{{ route('manajemen.lembaga.pengurus.store', $lembaga->id) }}" class="space-y-4 text-xs">
                 @csrf
+
+                @if($errors->any())
+                    <div class="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700">
+                        <p class="font-semibold mb-1">Periksa kembali data yang Anda masukkan:</p>
+                        <ul class="list-disc pl-4 space-y-0.5">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div>
                     <label class="block font-bold text-gray-700 uppercase mb-1">Pilih Individu <span class="text-red-500">*</span></label>
-                    <select name="person_id" x-model="person_id" required class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-semibold shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all">
+                    <select name="person_id" x-model="person_id" required class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-semibold shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all @error('person_id') border-rose-500 focus:ring-rose-500/20 @enderror">
                         <option value="">-- Pilih Individu --</option>
                         @foreach($persons as $person)
                             <option value="{{ $person->id }}">{{ $person->nik }} - {{ $person->nama }}</option>
                         @endforeach
                     </select>
+                    @error('person_id')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
                     <label class="block font-bold text-gray-700 uppercase mb-1">Jabatan Lembaga <span class="text-red-500">*</span></label>
-                    <select name="pengurus_jabatan_id" x-model="pengurus_jabatan_id" required class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-semibold shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all">
+                    <select name="pengurus_jabatan_id" x-model="pengurus_jabatan_id" required class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs font-semibold shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all @error('pengurus_jabatan_id') border-rose-500 focus:ring-rose-500/20 @enderror">
                         <option value="">-- Pilih Jabatan --</option>
                         @foreach($jabatans as $jabatan)
                             <option value="{{ $jabatan->id }}">{{ $jabatan->nama }}</option>
                         @endforeach
                     </select>
+                    @error('pengurus_jabatan_id')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
                     <label class="block font-bold text-gray-700 uppercase mb-1">Nomor SK</label>
-                    <input type="text" name="no_sk" x-model="no_sk" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all">
+                    <input type="text" name="no_sk" x-model="no_sk" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all @error('no_sk') border-rose-500 focus:ring-rose-500/20 @enderror">
+                    @error('no_sk')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block font-bold text-gray-700 uppercase mb-1">Tanggal Mulai</label>
-                        <input type="date" name="tanggal_mulai" x-model="tanggal_mulai" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all">
+                        <input type="date" name="tanggal_mulai" x-model="tanggal_mulai" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all @error('tanggal_mulai') border-rose-500 focus:ring-rose-500/20 @enderror">
+                        @error('tanggal_mulai')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="block font-bold text-gray-700 uppercase mb-1">Tanggal Selesai</label>
-                        <input type="date" name="tanggal_selesai" x-model="tanggal_selesai" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all">
+                        <input type="date" name="tanggal_selesai" x-model="tanggal_selesai" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:ring-2 focus:ring-[#118243]/20 focus:outline-none transition-all @error('tanggal_selesai') border-rose-500 focus:ring-rose-500/20 @enderror">
+                        @error('tanggal_selesai')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                     </div>
                 </div>
 

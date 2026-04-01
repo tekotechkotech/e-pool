@@ -583,7 +583,7 @@ class SetoranUpzController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'nik' => 'required|string|max:16|unique:persons,nik',
+            'nik' => ['required', 'string', 'digits:16', 'regex:/^[0-9]{16}$/', 'unique:persons,nik'],
             'lembaga_id' => 'required|exists:lembagas,id',
             'jenis_kelamin' => 'nullable|in:L,P,Pria,Wanita',
             'npwz' => 'nullable|string|max:50',

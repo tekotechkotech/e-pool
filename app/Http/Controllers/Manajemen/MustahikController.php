@@ -8,6 +8,7 @@ use App\Models\Mustahik;
 use App\Models\Person;
 use App\Models\Wilayah;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PengajuanBantuanImportTemplate;
 
@@ -41,8 +42,8 @@ class MustahikController extends Controller
         if ($mustahikId) {
             $request->validate([
                 'person_id' => 'required|exists:persons,id',
-                'nik' => 'required|string|max:16|unique:persons,nik,' . $personId,
-                'nomor_kk' => 'nullable|string|max:16',
+                'nik' => ['required', 'string', 'digits:16', 'regex:/^[0-9]{16}$/', Rule::unique('persons', 'nik')->ignore($personId)],
+                'nomor_kk' => ['nullable', 'string', 'digits:16', 'regex:/^[0-9]{16}$/'],
                 'nama' => 'required|string|max:255',
                 'jenis_kelamin' => 'nullable|in:L,P',
                 'tempat_lahir' => 'nullable|string|max:255',
@@ -78,8 +79,8 @@ class MustahikController extends Controller
         } else {
             if ($isNewPerson) {
                 $request->validate([
-                    'nik' => 'required|string|max:16|unique:persons,nik',
-                    'nomor_kk' => 'nullable|string|max:16',
+                    'nik' => ['required', 'string', 'digits:16', 'regex:/^[0-9]{16}$/', Rule::unique('persons', 'nik')],
+                    'nomor_kk' => ['nullable', 'string', 'digits:16', 'regex:/^[0-9]{16}$/'],
                     'nama' => 'required|string|max:255',
                     'jenis_kelamin' => 'nullable|in:L,P',
                     'tempat_lahir' => 'nullable|string|max:255',

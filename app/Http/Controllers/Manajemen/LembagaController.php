@@ -63,7 +63,7 @@ class LembagaController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'ketua_nama' => 'nullable|string|max:255',
-            'ketua_nik' => 'nullable|string|max:20',
+            'ketua_nik' => ['nullable', 'string', 'digits:16', 'regex:/^[0-9]{16}$/'],
             'jenis' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:50',
             'handphone' => 'nullable|string|max:50',

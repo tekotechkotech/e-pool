@@ -9,6 +9,7 @@ use App\Models\Upz;
 use App\Models\Wilayah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MuzakkiController extends Controller
@@ -53,7 +54,7 @@ class MuzakkiController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'nik' => 'required|string|max:16|unique:persons,nik',
+            'nik' => ['required', 'string', 'digits:16', 'regex:/^[0-9]{16}$/', Rule::unique('persons', 'nik')],
             'lembaga_id' => 'nullable|exists:lembagas,id',
             'npwz' => 'nullable|string|max:50',
             'npwp' => 'nullable|string|max:50',
@@ -122,7 +123,7 @@ class MuzakkiController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'nik' => 'required|string|max:16|unique:persons,nik,' . $muzakki->person_id,
+            'nik' => ['required', 'string', 'digits:16', 'regex:/^[0-9]{16}$/', Rule::unique('persons', 'nik')->ignore($muzakki->person_id)],
             'lembaga_id' => 'nullable|exists:lembagas,id',
             'npwz' => 'nullable|string|max:50',
             'npwp' => 'nullable|string|max:50',

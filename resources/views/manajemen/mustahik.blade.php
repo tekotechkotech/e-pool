@@ -2,24 +2,31 @@
 
 @section('content')
 <div class="space-y-6" x-data="{
-    isOpen: false,
-    isEditing: false,
+    isOpen: {{ $errors->any() ? 'true' : 'false' }},
+    isEditing: {{ old('mustahik_id') ? 'true' : 'false' }},
     isDetailOpen: false,
-    mustahik_id: null,
-    person_id: null,
-    nik: '',
-    nomor_kk: '',
-    nama: '',
-    jenis_kelamin: 'L',
-    tempat_lahir: '',
-    tanggal_lahir: '',
-    telepon: '',
-    pekerjaan: '',
-    nim: '',
-    keterangan: '',
-    is_new_person: 1,
+    mustahik_id: {{ json_encode(old('mustahik_id')) }},
+    person_id: {{ json_encode(old('person_id')) }},
+    nik: {{ json_encode((string)old('nik', '')) }},
+    nomor_kk: {{ json_encode((string)old('nomor_kk', '')) }},
+    nama: {{ json_encode((string)old('nama', '')) }},
+    jenis_kelamin: {{ json_encode((string)old('jenis_kelamin', 'L')) }},
+    tempat_lahir: {{ json_encode((string)old('tempat_lahir', '')) }},
+    tanggal_lahir: {{ json_encode((string)old('tanggal_lahir', '')) }},
+    telepon: {{ json_encode((string)old('telepon', '')) }},
+    pekerjaan: {{ json_encode((string)old('pekerjaan', '')) }},
+    nim: {{ json_encode((string)old('nim', '')) }},
+    keterangan: {{ json_encode((string)old('keterangan', '')) }},
+    is_new_person: {{ json_encode(old('is_new_person', 1)) }},
     detailMustahik: null,
-    wilayah: wilayahSelector(),
+    wilayah: wilayahSelector({
+        alamat: {{ json_encode((string)old('alamat', '')) }},
+        id_provinsi: {{ json_encode((string)old('id_provinsi', '')) }},
+        id_kabupaten: {{ json_encode((string)old('id_kabupaten', '')) }},
+        id_kecamatan: {{ json_encode((string)old('id_kecamatan', '')) }},
+        id_kelurahan: {{ json_encode((string)old('id_kelurahan', '')) }},
+        kode_pos: {{ json_encode((string)old('kode_pos', '')) }}
+    }),
 
     async init() {
         await this.wilayah.init();
@@ -200,6 +207,17 @@
                 <input type="hidden" name="person_id" x-model="person_id">
                 <input type="hidden" name="is_new_person" x-model="is_new_person">
 
+                @if($errors->any())
+                    <div class="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700">
+                        <p class="font-semibold mb-1">Periksa kembali data yang Anda masukkan:</p>
+                        <ul class="list-disc pl-4 space-y-0.5">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="space-y-4 text-xs">
                     <x-form.person-fields
                         alpine-model="true"
@@ -212,14 +230,16 @@
                     >
                         <div>
                             <label class="block font-bold text-slate-700 uppercase mb-1">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" x-model="jenis_kelamin" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all">
+                            <select name="jenis_kelamin" x-model="jenis_kelamin" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all @error('jenis_kelamin') border-rose-500 focus:ring-rose-500/20 @enderror">
                                 <option value="L">Laki-laki</option>
                                 <option value="P">Perempuan</option>
                             </select>
+                            @error('jenis_kelamin')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 uppercase mb-1">NIM (Nomor Induk Mustahik)</label>
-                            <input type="text" name="nim" x-model="nim" placeholder="Kosongkan jika tidak ada NIM" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all">
+                            <input type="text" name="nim" x-model="nim" placeholder="Kosongkan jika tidak ada NIM" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all @error('nim') border-rose-500 focus:ring-rose-500/20 @enderror">
+                            @error('nim')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
                     </x-form.person-fields>
 
