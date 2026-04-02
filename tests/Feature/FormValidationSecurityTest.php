@@ -655,4 +655,32 @@ class FormValidationSecurityTest extends TestCase
         $pageResponse->assertSee('value="081234567890"', false);
         $pageResponse->assertSee('bambang@kampus.ac.id');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 7. Rate Limiting pada Login Route (Point 2 Security)
+    |--------------------------------------------------------------------------
+    */
+
+    public function test_login_rate_limiting_triggers_too_many_requests_on_seventh_attempt(): void
+    {
+        \Illuminate\Support\Facades\Auth::logout();
+
+        // 6 Percobaan berturut-turut dengan kredensial salah diizinkan (HTTP 302 redirect)
+        for ($i = 1; $i <= 6; $i++) {
+            $response = $this->post('/login', [
+                'email' => 'unauthorized_attacker@baznas.id',
+                'password' => 'wrong_password_' . $i,
+            ]);
+            $response->assertStatus(302);
+            $response->assertSessionHasErrors('email');
+        }
+
+        // Percobaan ke-7 dalam rentang 1 menit harus diblokir dengan HTTP 429 Too Many Requests
+        $responseSeventh = $this->post('/login', [
+            'email' => 'unauthorized_attacker@baznas.id',
+            'password' => 'wrong_password_7',
+        ]);
+        $responseSeventh->assertStatus(429);
+    }
 }

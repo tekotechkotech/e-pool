@@ -37,7 +37,7 @@ Route::prefix('api/wilayah')->name('api.wilayah.')->group(function () {
 // Guest Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('login.submit');
 });
 
 // Route Survey Publik (Bisa diakses tanpa login/auth oleh Surveyor)
