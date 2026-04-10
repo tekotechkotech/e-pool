@@ -21,9 +21,7 @@
         
         <div>
             <a href="{{ request()->fullUrlWithQuery(['download' => 'csv']) }}" class="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 transition-all">
-                <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
+                <x-heroicon-o-arrow-down-tray class="mr-2 -ml-1 h-5 w-5" />
                 Download CSV Simba
             </a>
         </div>

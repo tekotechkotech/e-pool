@@ -136,9 +136,7 @@
     @if(session('success'))
         <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-emerald-800 text-sm">
             <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+                <x-heroicon-o-check class="w-5 h-5 text-emerald-600" />
                 <span>{{ session('success') }}</span>
             </div>
         </div>
@@ -147,9 +145,7 @@
     @if($errors->any())
         <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-sm space-y-1">
             <div class="font-bold flex items-center gap-2">
-                <svg class="w-5 h-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-rose-600" />
                 <span>Terjadi Kesalahan:</span>
             </div>
             <ul class="list-disc list-inside text-xs pl-2">
@@ -171,9 +167,7 @@
                     <h3 class="text-2xl font-black text-slate-800">{{ number_format($widgets['totalStokAktif'], 0, ',', '.') }} <span class="text-sm font-medium text-slate-400">Unit/Pkt</span></h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-emerald-100 text-[#118243] flex items-center justify-center shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                    </svg>
+                    <x-heroicon-o-cube class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-emerald-600 relative z-10">
@@ -190,13 +184,11 @@
                     <h3 class="text-2xl font-black text-slate-800">{{ number_format($widgets['totalMasuk'], 0, ',', '.') }}</h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                    </svg>
+                    <x-heroicon-o-arrow-down-tray class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-indigo-500 relative z-10">
-                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                <x-heroicon-o-arrow-up class="w-3.5 h-3.5 mr-1" />
                 <span>Akumulasi barang yang dibeli (BA)</span>
             </div>
         </div>
@@ -210,13 +202,11 @@
                     <h3 class="text-2xl font-black text-slate-800">{{ number_format($widgets['totalKeluar'], 0, ',', '.') }}</h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
+                    <x-heroicon-o-arrow-up-tray class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-rose-500 relative z-10">
-                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                <x-heroicon-o-arrow-down class="w-3.5 h-3.5 mr-1" />
                 <span>Barang tersalurkan ke mustahik</span>
             </div>
         </div>
@@ -230,9 +220,7 @@
                     <h3 class="text-2xl font-black text-white">{{ $widgets['totalBarang'] }} <span class="text-sm font-medium text-slate-400">Item</span></h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-slate-700/50 text-white flex items-center justify-center border border-slate-600/50 shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                    </svg>
+                    <x-heroicon-o-archive-box class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-slate-300 relative z-10">
@@ -289,16 +277,16 @@
                             <!-- Action buttons on hover -->
                             <div class="hidden group-hover:flex items-center justify-end space-x-1.5 mt-1" onclick="event.stopPropagation()">
                                 <button type="button" @click="openPengadaan({{ $barang->id }})" class="p-1 text-emerald-600 hover:bg-white rounded transition-colors" title="Catat Pengadaan (Masuk)">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    <x-heroicon-o-plus class="w-3.5 h-3.5" />
                                 </button>
                                 <button type="button" @click="openEditBarang({{ $barang->toJson() }})" class="p-1 text-indigo-600 hover:bg-white rounded transition-colors" title="Edit Master Barang">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                    <x-heroicon-o-pencil-square class="w-3.5 h-3.5" />
                                 </button>
                                 <form method="POST" action="{{ route('master.barangs.destroy', $barang->id) }}" data-confirm="Yakin ingin menghapus item barang ini?" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="p-1 text-rose-500 hover:bg-white rounded transition-colors" title="Hapus Barang">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <x-heroicon-o-trash class="w-3.5 h-3.5" />
                                     </button>
                                 </form>
                             </div>
@@ -314,7 +302,7 @@
             <!-- Footer Add Master Barang Button -->
             <div class="p-4 border-t border-slate-100 bg-slate-50/50">
                 <button type="button" @click="openCreateBarang()" class="w-full py-2.5 px-4 bg-[#118243]/10 hover:bg-[#118243]/20 text-[#118243] font-bold text-xs sm:text-sm rounded-xl transition-colors flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <x-heroicon-o-plus class="w-4 h-4" />
                     Tambah Item Barang Baru
                 </button>
             </div>
@@ -339,19 +327,19 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <!-- Tombol Pengadaan Masuk -->
                     <button type="button" @click="openPengadaan()" class="px-3.5 py-2 bg-[#118243] hover:bg-[#0e6b36] text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <x-heroicon-o-plus class="w-4 h-4" />
                         <span>+ Catat Pengadaan (BA)</span>
                     </button>
 
                     <!-- Tombol Pengeluaran Keluar -->
                     <button type="button" @click="openMutasiKeluar()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                        <x-heroicon-o-minus class="w-4 h-4" />
                         <span>- Catat Stok Keluar</span>
                     </button>
 
                     @if($selectedBarangId || $selectedJenis)
                         <a href="{{ route('master.barangs') }}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <x-heroicon-o-arrow-path class="w-3.5 h-3.5" />
                             <span>Reset Filter</span>
                         </a>
                     @endif
@@ -432,7 +420,7 @@
                                     <!-- Jika referensi PengadaanBarang dan ada file BA -->
                                     @if($t->referensi && isset($t->referensi->file_ba) && $t->referensi->file_ba)
                                         <a href="{{ asset('storage/' . $t->referensi->file_ba) }}" target="_blank" class="text-[10px] text-indigo-600 hover:text-indigo-800 underline inline-flex items-center gap-0.5">
-                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <x-heroicon-o-arrow-down-tray class="w-3 h-3" />
                                             Lihat BA
                                         </a>
                                     @endif
@@ -447,7 +435,7 @@
                             @if($t->referensi && isset($t->referensi->pengajuan_id) && $t->referensi->pengajuan_id && \Illuminate\Support\Facades\Route::has('pengajuan.show'))
                                 <div class="pt-0.5">
                                     <a href="{{ route('pengajuan.show', $t->referensi->pengajuan_id) }}" class="inline-flex items-center gap-1 text-[10px] font-bold text-[#118243] hover:underline">
-                                        <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        <x-heroicon-o-arrow-top-right-on-square class="w-2.5 h-2.5" />
                                         Lihat Pengajuan Terkait
                                     </a>
                                 </div>
@@ -460,7 +448,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-slate-300 hover:text-rose-600 transition-colors p-1" title="Batalkan Transaksi">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    <x-heroicon-o-trash class="w-4 h-4" />
                                 </button>
                             </form>
                         </div>
@@ -489,7 +477,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-base text-slate-800" x-text="isBarangEditing ? 'Edit Master Barang' : 'Tambah Master Barang Baru'"></h3>
                 <button type="button" @click="isBarangModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
@@ -570,7 +558,7 @@
                     <p class="text-xs text-slate-400">Pencatatan pembelian barang inventaris/natura berdasarkan Berita Acara (BA)</p>
                 </div>
                 <button type="button" @click="isPengadaanModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
@@ -722,7 +710,7 @@
                         Batal
                     </button>
                     <button type="submit" class="px-5 py-2.5 bg-[#118243] hover:bg-[#0d6835] text-white font-bold rounded-xl transition-colors shadow-xs flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <x-heroicon-o-check class="w-4 h-4" />
                         <span>Simpan Pengadaan & Tambah Stok</span>
                     </button>
                 </div>
@@ -741,7 +729,7 @@
                     <p class="text-xs text-slate-400">Pengurangan stok barang untuk penyaluran mandiri / penyesuaian</p>
                 </div>
                 <button type="button" @click="isKeluarModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
@@ -785,7 +773,7 @@
                         Batal
                     </button>
                     <button type="submit" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl transition-colors shadow-xs flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                        <x-heroicon-o-minus class="w-4 h-4" />
                         <span>Simpan & Kurangi Stok</span>
                     </button>
                 </div>

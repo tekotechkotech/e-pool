@@ -8,11 +8,11 @@
             <h2 class="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
                 <span class="p-2 rounded-xl {{ $mode === 'masuk' ? 'bg-emerald-100 text-emerald-700' : ($mode === 'keluar' ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700') }}">
                     @if($mode === 'masuk')
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <x-heroicon-o-arrow-up-tray class="w-6 h-6" />
                     @elseif($mode === 'keluar')
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <x-heroicon-o-arrow-down-tray class="w-6 h-6" />
                     @else
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <x-heroicon-o-document-chart-bar class="w-6 h-6" />
                     @endif
                 </span>
                 @if($mode === 'masuk')
@@ -35,15 +35,15 @@
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('laporan.realisasi-dana.export', request()->query()) }}" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <x-heroicon-o-arrow-down-tray class="w-4 h-4" />
                 Ekspor Excel
             </a>
             <button onclick="window.print()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                <x-heroicon-o-printer class="w-4 h-4" />
                 Cetak Laporan
             </button>
             <a href="{{ route('master.danas') }}" class="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                <x-heroicon-o-cog-6-tooth class="w-4 h-4" />
                 Kelola Dana
             </a>
         </div>
@@ -52,17 +52,17 @@
     <!-- 3 Segmented Pills: Switch Jenis Laporan -->
     <div class="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap gap-1.5 print:hidden shadow-inner">
         <a href="{{ route('laporan.realisasi-dana', array_merge(request()->query(), ['mode' => 'semua'])) }}" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all {{ $mode === 'semua' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-            <svg class="w-4 h-4 {{ $mode === 'semua' ? 'text-indigo-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <x-heroicon-o-document-chart-bar class="w-4 h-4 {{ $mode === 'semua' ? 'text-indigo-600' : 'text-slate-400' }}" />
             <span>Semua (Masuk, Keluar & Saldo)</span>
         </a>
 
         <a href="{{ route('laporan.realisasi-dana', array_merge(request()->query(), ['mode' => 'masuk'])) }}" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all {{ $mode === 'masuk' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-            <svg class="w-4 h-4 {{ $mode === 'masuk' ? 'text-emerald-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            <x-heroicon-o-arrow-up-tray class="w-4 h-4 {{ $mode === 'masuk' ? 'text-emerald-600' : 'text-slate-400' }}" />
             <span>Hanya Penerimaan (Masuk)</span>
         </a>
 
         <a href="{{ route('laporan.realisasi-dana', array_merge(request()->query(), ['mode' => 'keluar'])) }}" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all {{ $mode === 'keluar' ? 'bg-white text-rose-700 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-            <svg class="w-4 h-4 {{ $mode === 'keluar' ? 'text-rose-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <x-heroicon-o-arrow-down-tray class="w-4 h-4 {{ $mode === 'keluar' ? 'text-rose-600' : 'text-slate-400' }}" />
             <span>Hanya Penyaluran (Keluar)</span>
         </a>
     </div>

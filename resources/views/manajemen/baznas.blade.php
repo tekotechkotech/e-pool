@@ -45,11 +45,11 @@
         </div>
         <div class="flex items-center gap-3">
             <button type="button" @click="isInfoModalOpen = true" class="bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2 text-sm transition-colors">
-                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                <x-heroicon-o-pencil-square class="w-4 h-4 text-emerald-600" />
                 Edit Informasi BAZNAS
             </button>
             <button type="button" @click="openCreatePengurus()" class="bg-[#118243] hover:bg-[#0d6835] text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center gap-2 text-sm transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <x-heroicon-o-plus class="w-4 h-4" />
                 Tambah Pengurus BAZNAS
             </button>
         </div>
@@ -89,9 +89,7 @@
         <div class="p-4 border-b border-slate-100 flex items-center gap-4 bg-slate-50/50">
             <form method="GET" action="{{ route('manajemen.baznas') }}" class="relative flex-1 max-w-md">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+                    <x-heroicon-o-magnifying-glass class="h-5 w-5 text-gray-400" />
                 </div>
                 <input type="text" name="search" value="{{ $search }}" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] sm:text-sm shadow-xs transition-all" placeholder="Cari Nama Pengurus BAZNAS...">
             </form>
@@ -137,13 +135,13 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end gap-2">
                                 <button type="button" @click="openEditPengurus({{ $p->toJson() }})" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-lg transition-all" title="Edit">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                    <x-heroicon-o-pencil-square class="w-4 h-4" />
                                 </button>
                                  <form method="POST" action="{{ route('manajemen.baznas.pengurus.destroy', $p->id) }}" data-confirm="Yakin ingin menghapus pengurus ini?" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="p-2 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white rounded-lg transition-all" title="Hapus">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <x-heroicon-o-trash class="w-4 h-4" />
                                     </button>
                                 </form>
                             </div>
@@ -170,7 +168,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-base text-gray-900" x-text="isEditing ? 'Edit Pengurus BAZNAS' : 'Tambah Pengurus BAZNAS'"></h3>
                 <button type="button" @click="isModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Tutup">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
@@ -235,7 +233,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-base text-gray-900">Edit Profil Informasi BAZNAS</h3>
                 <button type="button" @click="isInfoModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Tutup">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 

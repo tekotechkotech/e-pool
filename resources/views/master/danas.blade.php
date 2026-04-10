@@ -66,7 +66,7 @@
                     <h3 class="text-2xl font-black text-slate-800">Rp {{ number_format($widgets['saldoAkhir'], 0, ',', '.') }}</h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    <x-heroicon-o-credit-card class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-slate-400 relative z-10">
@@ -83,11 +83,11 @@
                     <h3 class="text-xl font-bold text-slate-800">Rp {{ number_format($widgets['totalMasuk'], 0, ',', '.') }}</h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <x-heroicon-o-arrow-down-tray class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-emerald-500 relative z-10">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                <x-heroicon-o-arrow-up class="w-3 h-3 mr-1" />
                 <span>Dana Masuk (Penerimaan)</span>
             </div>
         </div>
@@ -101,11 +101,11 @@
                     <h3 class="text-xl font-bold text-slate-800">Rp {{ number_format($widgets['totalKeluar'], 0, ',', '.') }}</h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <x-heroicon-o-arrow-up-tray class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-rose-500 relative z-10">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                <x-heroicon-o-arrow-down class="w-3 h-3 mr-1" />
                 <span>Dana Keluar (Penyaluran)</span>
             </div>
         </div>
@@ -119,7 +119,7 @@
                     <h3 class="text-2xl font-black text-white">{{ $widgets['totalDanaAktif'] }} <span class="text-sm font-medium text-slate-400">Aktif</span></h3>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-slate-700/50 text-white flex items-center justify-center border border-slate-600/50 shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <x-heroicon-o-archive-box class="w-6 h-6" />
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs font-medium text-slate-300 relative z-10">
@@ -167,16 +167,16 @@
                         <!-- Action buttons -->
                         <div class="hidden group-hover:flex space-x-2 bg-white/50 px-2 py-1 rounded-md" onclick="event.stopPropagation()">
                             <button type="button" @click="openPenerimaan({{ $dana->id }})" class="text-emerald-600 hover:text-emerald-800 transition-colors" title="Catat Penerimaan">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                <x-heroicon-o-plus class="w-4 h-4" />
                             </button>
                             <button type="button" @click="openEditDana({{ $dana->toJson() }})" class="text-indigo-500 hover:text-indigo-700 transition-colors" title="Edit">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                <x-heroicon-o-pencil-square class="w-4 h-4" />
                             </button>
                             <form method="POST" action="{{ route('master.danas.destroy', $dana->id) }}" data-confirm="Yakin ingin menghapus jenis dana ini?" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:text-red-700 transition-colors" title="Hapus">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    <x-heroicon-o-trash class="w-4 h-4" />
                                 </button>
                             </form>
                         </div>
@@ -190,7 +190,7 @@
             <!-- Add Button -->
             <div class="p-4 flex justify-center mt-auto border-t border-gray-50">
                 <button type="button" @click="openCreateDana()" class="bg-[#118243]/10 text-[#118243] w-full font-semibold text-sm hover:bg-[#118243]/20 py-2.5 rounded-lg flex items-center justify-center transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <x-heroicon-o-plus class="w-4 h-4 mr-2" />
                     Tambah Dana Baru
                 </button>
             </div>
@@ -211,12 +211,12 @@
                 </div>
                 <div class="flex items-center gap-2.5">
                     <button type="button" @click="openPenerimaan()" class="px-4 py-2 bg-[#118243] text-white rounded-lg text-sm font-semibold hover:bg-[#0e6b36] transition-colors flex items-center shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <x-heroicon-o-plus class="w-4 h-4 mr-1.5" />
                         Catat Penerimaan Dana
                     </button>
                     @if($selectedDanaId)
                     <a href="{{ route('master.danas') }}" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors flex items-center shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <x-heroicon-o-arrow-path class="w-4 h-4 mr-1.5" />
                         Tampilkan Semua
                     </a>
                     @endif
@@ -282,7 +282,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-base text-slate-800" x-text="isDanaEditing ? 'Edit Jenis Dana' : 'Tambah Jenis Dana Baru'"></h3>
                 <button type="button" @click="isDanaModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Tutup">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
@@ -350,7 +350,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-base text-slate-800">Catat Penerimaan Kas (Pemasukan)</h3>
                 <button type="button" @click="isPenerimaanModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Tutup">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
