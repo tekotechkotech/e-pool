@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Upz extends Lembaga
 {
@@ -32,5 +33,10 @@ class Upz extends Lembaga
     public function setorans()
     {
         return $this->hasMany(SetoranUpz::class, 'lembaga_id');
+    }
+
+    public function muzakkis(): HasMany
+    {
+        return $this->hasMany(Muzakki::class, 'lembaga_id');
     }
 }

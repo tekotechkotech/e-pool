@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lembaga extends Model
 {
@@ -99,6 +100,11 @@ class Lembaga extends Model
     public function setorans()
     {
         return $this->hasMany(SetoranUpz::class, 'lembaga_id');
+    }
+
+    public function muzakkis(): HasMany
+    {
+        return $this->hasMany(Muzakki::class, 'lembaga_id');
     }
 
     public function scopeActive($query)
