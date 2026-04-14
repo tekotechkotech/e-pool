@@ -148,8 +148,8 @@
                 Cilacap, {{ optional($setoran->tanggal_setor)->format('d F Y') }}<br>
                 <strong>KETUA UNIT PENGUMPUL ZAKAT (UPZ)</strong>
                 <div style="height: 60px;"></div>
-                <strong>( {{ $setoran->upz->ketua_nama ?: '....................................................' }} )</strong><br>
-                NIP. {{ $setoran->upz->ketua_nik ?: '....................................' }}
+                <strong>( {{ $setoran->upz?->ketua?->first()?->person?->nama ?? $setoran->upz?->ketua_nama ?? '..................................' }} )</strong><br>
+                NIP. {{ $setoran->upz?->ketua?->first()?->person?->nik ?? $setoran->upz?->ketua_nik ?? '....................................' }}
             </td>
         </tr>
     </table>

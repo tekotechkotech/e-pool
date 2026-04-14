@@ -146,6 +146,7 @@ class SimbaExportController extends Controller
 
         $query = SetoranUpzItem::with(['setoranUpz.upz', 'muzakki.person'])
             ->whereHas('setoranUpz', function ($sq) use ($lembagaId, $periode, $bulan, $bulanNama, $bulanNum, $tahun, $tanggalMulai, $tanggalSelesai) {
+                $sq->where('status', 'Terverifikasi');
                 if ($lembagaId) {
                     $sq->where('lembaga_id', $lembagaId);
                 }

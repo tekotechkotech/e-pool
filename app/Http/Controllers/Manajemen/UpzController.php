@@ -53,7 +53,23 @@ class UpzController extends Controller
         $persons = Person::orderBy('nama')->get();
         $jabatans = PengurusJabatan::orderBy('nama')->get();
 
-        return view('manajemen.upz-detail', compact('upz', 'activeTab', 'persons', 'jabatans'));
+        $muzakkiSearch = $request->query('muzakki_search');
+        $muzakkiQuery = $upz->muzakkis()->with('person')->orderBy('id', 'desc');
+
+        if ($activeTab === 'muzakki' && $request->filled('muzakki_search')) {
+            $muzakkiQuery->where(function ($q) use ($muzakkiSearch) {
+                $q->where('npwz', 'like', "%{$muzakkiSearch}%")
+                    ->orWhere('nrm', 'like', "%{$muzakkiSearch}%")
+                    ->orWhereHas('person', function ($pq) use ($muzakkiSearch) {
+                        $pq->where('nama', 'like', "%{$muzakkiSearch}%")
+                            ->orWhere('nik', 'like', "%{$muzakkiSearch}%");
+                    });
+            });
+        }
+
+        $muzakkis = $muzakkiQuery->paginate(15, ['*'], 'muzakki_page')->withQueryString();
+
+        return view('manajemen.upz-detail', compact('upz', 'activeTab', 'persons', 'jabatans', 'muzakkis', 'muzakkiSearch'));
     }
 
     public function store(Request $request)

@@ -95,9 +95,91 @@ class SetoranUpzController extends Controller
         return 0;
     }
 
+    private function isVerifierEligible(): bool
+    {
+        $user = Auth::user();
+        return (bool) ($user && ($user->isBaznasRole() || $user->hasBaznasAppointment() || $user->isSuperuser()));
+    }
+
+    private function authorizeBaznas(): void
+    {
+        if (!$this->isVerifierEligible()) {
+            abort(403, 'Akses ditolak. Tindakan ini hanya dapat dilakukan oleh pihak BAZNAS.');
+        }
+    }
+
+    private function syncDanaTransaksi(SetoranUpz $setoran): void
+    {
+        // Pastikan tidak ada duplikasi: bersihkan pencatatan lama untuk referensi setoran ini
+        DanaTransaksi::where('referensi_type', SetoranUpz::class)
+            ->where('referensi_id', $setoran->id)
+            ->delete();
+
+        // Kas masuk hanya dicatat apabila status Terverifikasi
+        if ($setoran->status !== 'Terverifikasi') {
+            return;
+        }
+
+        $danaZakat = Dana::where('kode', '2.2')->first();
+        $danaInfak = Dana::where('kode', '2.7')->first();
+        $danaFitrah = Dana::where('kode', '2.5')->first();
+        $danaTitipan = Dana::where('kode', '2.18')->first();
+        $upzNama = $setoran->upz?->nama ?? 'UPZ';
+
+        if ($setoran->total_zakat > 0 && $danaZakat) {
+            DanaTransaksi::create([
+                'tanggal' => $setoran->tanggal_setor,
+                'dana_id' => $danaZakat->id,
+                'jenis' => 'Masuk',
+                'nominal' => $setoran->total_zakat,
+                'uraian' => "Penerimaan Zakat via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
+                'referensi_type' => SetoranUpz::class,
+                'referensi_id' => $setoran->id,
+            ]);
+        }
+
+        if ($setoran->total_infak > 0 && $danaInfak) {
+            DanaTransaksi::create([
+                'tanggal' => $setoran->tanggal_setor,
+                'dana_id' => $danaInfak->id,
+                'jenis' => 'Masuk',
+                'nominal' => $setoran->total_infak,
+                'uraian' => "Penerimaan Infak via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
+                'referensi_type' => SetoranUpz::class,
+                'referensi_id' => $setoran->id,
+            ]);
+        }
+
+        if ($setoran->total_fitrah > 0 && $danaFitrah) {
+            DanaTransaksi::create([
+                'tanggal' => $setoran->tanggal_setor,
+                'dana_id' => $danaFitrah->id,
+                'jenis' => 'Masuk',
+                'nominal' => $setoran->total_fitrah,
+                'uraian' => "Penerimaan Zakat Fitrah via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
+                'referensi_type' => SetoranUpz::class,
+                'referensi_id' => $setoran->id,
+            ]);
+        }
+
+        if ($setoran->total_titipan > 0 && $danaTitipan) {
+            DanaTransaksi::create([
+                'tanggal' => $setoran->tanggal_setor,
+                'dana_id' => $danaTitipan->id,
+                'jenis' => 'Masuk',
+                'nominal' => $setoran->total_titipan,
+                'uraian' => "Penerimaan Dana Titipan via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
+                'referensi_type' => SetoranUpz::class,
+                'referensi_id' => $setoran->id,
+            ]);
+        }
+    }
+
     public function index(Request $request)
     {
-        $lembagaId = $request->query('lembaga_id');
+        $user = Auth::user();
+        $isUpz = (bool) ($user && $user->isUpzRole());
+        $lembagaId = $isUpz ? $user->upzLembagaId() : $request->query('lembaga_id');
         $periode = $request->query('periode');
         $bulan = $request->query('bulan');
         $tahun = $request->query('tahun');
@@ -117,9 +199,11 @@ class SetoranUpzController extends Controller
         ];
         $bulanKeAngka = array_flip($namaBulan);
 
-        $query = SetoranUpz::with(['upz', 'user'])->latest('tanggal_setor');
+        $query = SetoranUpz::with(['upz', 'user', 'verifiedBy.person'])->latest('tanggal_setor');
 
-        if ($lembagaId) {
+        if ($isUpz) {
+            $query->where('lembaga_id', $user->upzLembagaId());
+        } elseif ($lembagaId) {
             $query->where('lembaga_id', $lembagaId);
         }
 
@@ -163,7 +247,7 @@ class SetoranUpzController extends Controller
         }
 
         $setorans = $query->paginate(15)->withQueryString();
-        $upzs = Upz::active()->orderBy('nama')->get();
+        $upzs = $isUpz ? Upz::where('id', $user->upzLembagaId())->get() : Upz::active()->orderBy('nama')->get();
 
         return view('pengumpulan.upz.index', compact(
             'setorans',
@@ -181,8 +265,19 @@ class SetoranUpzController extends Controller
 
     public function create()
     {
-        $upzs = Upz::active()->orderBy('nama')->get();
-        $muzakkis = Muzakki::with('person')->get();
+        $user = Auth::user();
+        $isUpzUser = $user?->isUpzRole() ?? false;
+        $lockedUpz = null;
+
+        if ($isUpzUser) {
+            $upzId = $user->upzLembagaId();
+            $lockedUpz = $upzId ? Upz::find($upzId) : null;
+            $upzs = $lockedUpz ? collect([$lockedUpz]) : collect();
+            $muzakkis = $lockedUpz ? Muzakki::with('person')->where('lembaga_id', $lockedUpz->id)->get() : collect();
+        } else {
+            $upzs = Upz::active()->orderBy('nama')->get();
+            $muzakkis = Muzakki::with('person')->get();
+        }
 
         $daftarBulan = [
             'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -190,7 +285,7 @@ class SetoranUpzController extends Controller
         ];
         $daftarTahun = range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
 
-        return view('pengumpulan.upz.create', compact('upzs', 'muzakkis', 'daftarBulan', 'daftarTahun'));
+        return view('pengumpulan.upz.create', compact('upzs', 'muzakkis', 'daftarBulan', 'daftarTahun', 'isUpzUser', 'lockedUpz'));
     }
 
     public function getMuzakkiByUpz($lembagaId)
@@ -591,6 +686,11 @@ class SetoranUpzController extends Controller
             'alamat' => 'nullable|string',
         ]);
 
+        $user = Auth::user();
+        if ($user && $user->isUpzRole()) {
+            $validated['lembaga_id'] = $user->upzLembagaId();
+        }
+
         $jk = $validated['jenis_kelamin'] ?? null;
         if ($jk === 'Pria') $jk = 'L';
         if ($jk === 'Wanita') $jk = 'P';
@@ -625,6 +725,7 @@ class SetoranUpzController extends Controller
 
     public function importConfirm(Request $request)
     {
+        $user = Auth::user();
         $staging = session('import_setoran_staging');
 
         // Terima payload jika disubmit via hidden JSON/input
@@ -641,6 +742,12 @@ class SetoranUpzController extends Controller
             if ($request->has('keterangan')) $staging['keterangan'] = $request->input('keterangan');
         }
 
+        if ($user && $user->isUpzRole()) {
+            if (is_array($staging)) {
+                $staging['lembaga_id'] = $user->upzLembagaId();
+            }
+        }
+
         if (!$staging || empty($staging['items']) || !is_array($staging['items']) || count($staging['items']) === 0) {
             return redirect()->route('pengumpulan.upz.index')->with('error', 'Data staging import tidak ditemukan atau kosong. Silakan unggah kembali.');
         }
@@ -648,7 +755,16 @@ class SetoranUpzController extends Controller
         $tanggal = Carbon::parse($staging['tanggal_setor'] ?? date('Y-m-d'));
         $nomorSetoran = $this->generateNomorSetoran($tanggal);
 
-        DB::transaction(function () use ($staging, $nomorSetoran, $tanggal) {
+        $isEligible = $this->isVerifierEligible();
+        $isVerifiedInput = $request->boolean('is_verified', false) || !empty($staging['is_verified']);
+        $isVerified = $isEligible && $isVerifiedInput;
+
+        $status = $isVerified ? 'Terverifikasi' : 'Menunggu Verifikasi';
+        $verifiedBy = $isVerified ? Auth::id() : null;
+        $verifiedAt = $isVerified ? now() : null;
+        $catatanVerifikasi = $request->input('catatan_verifikasi', $staging['catatan_verifikasi'] ?? null);
+
+        DB::transaction(function () use ($staging, $nomorSetoran, $tanggal, $status, $verifiedBy, $verifiedAt, $catatanVerifikasi) {
             $totalZakat = 0;
             $totalInfak = 0;
             $totalFitrah = 0;
@@ -674,8 +790,11 @@ class SetoranUpzController extends Controller
                 'total_titipan' => $totalTitipan,
                 'total_jumlah' => $totalJumlah,
                 'keterangan' => $staging['keterangan'] ?? null,
-                'status' => 'Terverifikasi',
+                'status' => $status,
                 'user_id' => Auth::id(),
+                'verified_by' => $verifiedBy,
+                'verified_at' => $verifiedAt,
+                'catatan_verifikasi' => $catatanVerifikasi,
             ]);
 
             foreach ($staging['items'] as $item) {
@@ -707,35 +826,7 @@ class SetoranUpzController extends Controller
                 ]);
             }
 
-            // Sinkronkan kas masuk ke DanaTransaksi HANYA JIKA totalZakat > 0 (Pos 2.2) dan totalInfak > 0 (Pos 2.7). Kas tidak mencatat nominal 0!
-            $danaZakat = Dana::where('kode', '2.2')->first();
-            $danaInfak = Dana::where('kode', '2.7')->first();
-
-            $upzNama = $setoran->upz?->nama ?? 'UPZ';
-
-            if ($totalZakat > 0 && $danaZakat) {
-                DanaTransaksi::create([
-                    'tanggal' => $setoran->tanggal_setor,
-                    'dana_id' => $danaZakat->id,
-                    'jenis' => 'Masuk',
-                    'nominal' => $totalZakat,
-                    'uraian' => "Penerimaan Zakat via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
-                    'referensi_type' => SetoranUpz::class,
-                    'referensi_id' => $setoran->id,
-                ]);
-            }
-
-            if ($totalInfak > 0 && $danaInfak) {
-                DanaTransaksi::create([
-                    'tanggal' => $setoran->tanggal_setor,
-                    'dana_id' => $danaInfak->id,
-                    'jenis' => 'Masuk',
-                    'nominal' => $totalInfak,
-                    'uraian' => "Penerimaan Infak via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
-                    'referensi_type' => SetoranUpz::class,
-                    'referensi_id' => $setoran->id,
-                ]);
-            }
+            $this->syncDanaTransaksi($setoran);
         });
 
         session()->forget('import_setoran_staging');
@@ -745,6 +836,11 @@ class SetoranUpzController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if ($user && $user->isUpzRole()) {
+            $request->merge(['lembaga_id' => $user->upzLembagaId()]);
+        }
+
         if ($request->filled('bulan') && $request->filled('tahun')) {
             $request->merge([
                 'periode' => trim($request->input('bulan') . ' ' . $request->input('tahun')),
@@ -758,6 +854,8 @@ class SetoranUpzController extends Controller
             'bulan' => 'nullable|string|max:50',
             'tahun' => 'nullable|string|max:10',
             'keterangan' => 'nullable|string',
+            'catatan_verifikasi' => 'nullable|string|max:500',
+            'is_verified' => 'nullable',
             'bukti_setor' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
             'items' => 'required|array|min:1',
             'items.*.muzakki_id' => 'nullable',
@@ -771,15 +869,27 @@ class SetoranUpzController extends Controller
             'items.*.periode' => 'nullable|string|max:100',
         ]);
 
+        if ($user && $user->isUpzRole()) {
+            $validated['lembaga_id'] = $user->upzLembagaId();
+        }
+
         $pathBukti = null;
         if ($request->hasFile('bukti_setor')) {
             $pathBukti = $request->file('bukti_setor')->store('bukti_setor', 'public');
         }
 
+        $isEligible = $this->isVerifierEligible();
+        $isVerified = $isEligible && $request->boolean('is_verified', false);
+
+        $status = $isVerified ? 'Terverifikasi' : 'Menunggu Verifikasi';
+        $verifiedBy = $isVerified ? Auth::id() : null;
+        $verifiedAt = $isVerified ? now() : null;
+        $catatanVerifikasi = $request->input('catatan_verifikasi');
+
         $tanggal = Carbon::parse($validated['tanggal_setor']);
         $nomorSetoran = $this->generateNomorSetoran($tanggal);
 
-        DB::transaction(function () use ($validated, $nomorSetoran, $pathBukti) {
+        DB::transaction(function () use ($validated, $nomorSetoran, $pathBukti, $status, $verifiedBy, $verifiedAt, $catatanVerifikasi) {
             $totalZakat = 0;
             $totalInfak = 0;
             $totalFitrah = 0;
@@ -806,8 +916,11 @@ class SetoranUpzController extends Controller
                 'total_jumlah' => $totalJumlah,
                 'keterangan' => $validated['keterangan'] ?? null,
                 'bukti_setor' => $pathBukti,
-                'status' => 'Terverifikasi',
+                'status' => $status,
                 'user_id' => Auth::id(),
+                'verified_by' => $verifiedBy,
+                'verified_at' => $verifiedAt,
+                'catatan_verifikasi' => $catatanVerifikasi,
             ]);
 
             // Seluruh baris (termasuk nominal 0 / nihil) tetap disimpan demi konsistensi data audit
@@ -840,36 +953,7 @@ class SetoranUpzController extends Controller
                 ]);
             }
 
-            // Sinkronkan otomatis ke DanaTransaksi (Masuk) HANYA JIKA nominal > 0
-            // Pos dana Zakat via UPZ (kode 2.2) dan Infak via UPZ (kode 2.7)
-            $danaZakat = Dana::where('kode', '2.2')->first();
-            $danaInfak = Dana::where('kode', '2.7')->first();
-
-            $upzNama = $setoran->upz?->nama ?? 'UPZ';
-
-            if ($totalZakat > 0 && $danaZakat) {
-                DanaTransaksi::create([
-                    'tanggal' => $setoran->tanggal_setor,
-                    'dana_id' => $danaZakat->id,
-                    'jenis' => 'Masuk',
-                    'nominal' => $totalZakat,
-                    'uraian' => "Penerimaan Zakat via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
-                    'referensi_type' => SetoranUpz::class,
-                    'referensi_id' => $setoran->id,
-                ]);
-            }
-
-            if ($totalInfak > 0 && $danaInfak) {
-                DanaTransaksi::create([
-                    'tanggal' => $setoran->tanggal_setor,
-                    'dana_id' => $danaInfak->id,
-                    'jenis' => 'Masuk',
-                    'nominal' => $totalInfak,
-                    'uraian' => "Penerimaan Infak via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
-                    'referensi_type' => SetoranUpz::class,
-                    'referensi_id' => $setoran->id,
-                ]);
-            }
+            $this->syncDanaTransaksi($setoran);
         });
 
         if ($request->wantsJson()) {
@@ -885,7 +969,12 @@ class SetoranUpzController extends Controller
 
     public function uploadBukti(Request $request, $id)
     {
+        $user = Auth::user();
         $setoran = SetoranUpz::findOrFail($id);
+
+        if ($user && $user->isUpzRole() && (int)$setoran->lembaga_id !== (int)$user->upzLembagaId()) {
+            abort(403);
+        }
 
         $request->validate([
             'bukti_setor' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
@@ -903,21 +992,228 @@ class SetoranUpzController extends Controller
         return back()->with('success', 'Bukti setor berhasil diperbarui.');
     }
 
+    public function verifikasi(Request $request, $id)
+    {
+        $this->authorizeBaznas();
+
+        $setoran = SetoranUpz::findOrFail($id);
+
+        $request->validate([
+            'catatan_verifikasi' => 'nullable|string|max:500',
+        ]);
+
+        DB::transaction(function () use ($setoran, $request) {
+            $setoran->update([
+                'status' => 'Terverifikasi',
+                'verified_by' => Auth::id(),
+                'verified_at' => now(),
+                'catatan_verifikasi' => $request->input('catatan_verifikasi', $setoran->catatan_verifikasi),
+            ]);
+
+            $this->syncDanaTransaksi($setoran);
+        });
+
+        return redirect()->route('pengumpulan.upz.show', $setoran->id)
+            ->with('success', "Setoran UPZ {$setoran->nomor_setoran} berhasil diverifikasi dan disinkronkan ke buku kas.");
+    }
+
+    public function tolak(Request $request, $id)
+    {
+        $this->authorizeBaznas();
+
+        $setoran = SetoranUpz::findOrFail($id);
+
+        $validated = $request->validate([
+            'catatan_verifikasi' => 'required|string|max:500',
+        ]);
+
+        DB::transaction(function () use ($setoran, $validated) {
+            $setoran->update([
+                'status' => 'Ditolak',
+                'verified_by' => Auth::id(),
+                'verified_at' => now(),
+                'catatan_verifikasi' => $validated['catatan_verifikasi'],
+            ]);
+
+            $this->syncDanaTransaksi($setoran);
+        });
+
+        return redirect()->route('pengumpulan.upz.show', $setoran->id)
+            ->with('success', "Setoran UPZ {$setoran->nomor_setoran} telah ditolak.");
+    }
+
+    public function edit($id)
+    {
+        $this->authorizeBaznas();
+
+        $setoran = SetoranUpz::with(['upz', 'items.muzakki.person'])->findOrFail($id);
+        $upzs = Upz::active()->orderBy('nama')->get();
+        $muzakkis = Muzakki::with('person')->where('lembaga_id', $setoran->lembaga_id)->get();
+
+        $daftarBulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        $daftarTahun = range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+
+        return view('pengumpulan.upz.edit', compact('setoran', 'upzs', 'muzakkis', 'daftarBulan', 'daftarTahun'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $this->authorizeBaznas();
+
+        $setoran = SetoranUpz::findOrFail($id);
+
+        if ($request->filled('bulan') && $request->filled('tahun')) {
+            $request->merge([
+                'periode' => trim($request->input('bulan') . ' ' . $request->input('tahun')),
+            ]);
+        }
+
+        $validated = $request->validate([
+            'lembaga_id' => 'required|exists:lembagas,id',
+            'tanggal_setor' => 'required|date',
+            'periode' => 'required|string|max:100',
+            'bulan' => 'nullable|string|max:50',
+            'tahun' => 'nullable|string|max:10',
+            'keterangan' => 'nullable|string',
+            'catatan_verifikasi' => 'nullable|string|max:500',
+            'bukti_setor' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+            'items' => 'required|array|min:1',
+            'items.*.muzakki_id' => 'nullable',
+            'items.*.nama' => 'required|string|max:255',
+            'items.*.npwz' => 'nullable|string|max:50',
+            'items.*.nominal_zakat' => 'nullable|numeric|min:0',
+            'items.*.nominal_infak' => 'nullable|numeric|min:0',
+            'items.*.nominal_fitrah' => 'nullable|numeric|min:0',
+            'items.*.nominal_titipan' => 'nullable|numeric|min:0',
+            'items.*.keterangan' => 'nullable|string|max:255',
+            'items.*.periode' => 'nullable|string|max:100',
+        ]);
+
+        $pathBukti = $setoran->bukti_setor;
+        if ($request->hasFile('bukti_setor')) {
+            if ($pathBukti && Storage::disk('public')->exists($pathBukti)) {
+                Storage::disk('public')->delete($pathBukti);
+            }
+            $pathBukti = $request->file('bukti_setor')->store('bukti_setor', 'public');
+        }
+
+        DB::transaction(function () use ($setoran, $validated, $pathBukti, $request) {
+            $totalZakat = 0;
+            $totalInfak = 0;
+            $totalFitrah = 0;
+            $totalTitipan = 0;
+
+            foreach ($validated['items'] as $item) {
+                $totalZakat += max(0, (int)($item['nominal_zakat'] ?? 0));
+                $totalInfak += max(0, (int)($item['nominal_infak'] ?? 0));
+                $totalFitrah += max(0, (int)($item['nominal_fitrah'] ?? 0));
+                $totalTitipan += max(0, (int)($item['nominal_titipan'] ?? 0));
+            }
+
+            $totalJumlah = $totalZakat + $totalInfak + $totalFitrah + $totalTitipan;
+
+            $setoran->update([
+                'lembaga_id' => $validated['lembaga_id'],
+                'tanggal_setor' => $validated['tanggal_setor'],
+                'periode' => $validated['periode'],
+                'total_zakat' => $totalZakat,
+                'total_infak' => $totalInfak,
+                'total_fitrah' => $totalFitrah,
+                'total_titipan' => $totalTitipan,
+                'total_jumlah' => $totalJumlah,
+                'keterangan' => $validated['keterangan'] ?? null,
+                'bukti_setor' => $pathBukti,
+                'catatan_verifikasi' => $request->input('catatan_verifikasi', $setoran->catatan_verifikasi),
+            ]);
+
+            // Recreate items
+            $setoran->items()->delete();
+
+            foreach ($validated['items'] as $item) {
+                $z = max(0, (int)($item['nominal_zakat'] ?? 0));
+                $i = max(0, (int)($item['nominal_infak'] ?? 0));
+                $f = max(0, (int)($item['nominal_fitrah'] ?? 0));
+                $t = max(0, (int)($item['nominal_titipan'] ?? 0));
+                $subtotal = $z + $i + $f + $t;
+
+                $muzakkiId = !empty($item['muzakki_id']) ? $item['muzakki_id'] : null;
+                $npwz = $item['npwz'] ?? null;
+                if ($muzakkiId && empty($npwz)) {
+                    $m = Muzakki::find($muzakkiId);
+                    $npwz = $m?->npwz;
+                }
+
+                SetoranUpzItem::create([
+                    'setoran_upz_id' => $setoran->id,
+                    'muzakki_id' => $muzakkiId,
+                    'npwz' => $npwz,
+                    'nama' => $item['nama'],
+                    'nominal_zakat' => $z,
+                    'nominal_infak' => $i,
+                    'nominal_fitrah' => $f,
+                    'nominal_titipan' => $t,
+                    'jumlah' => $subtotal,
+                    'keterangan' => $item['keterangan'] ?? null,
+                    'periode' => $item['periode'] ?? $validated['periode'],
+                ]);
+            }
+
+            // Jika setoran Terverifikasi, update DanaTransaksi agar sinkron dengan total baru
+            $this->syncDanaTransaksi($setoran);
+        });
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Setoran UPZ {$setoran->nomor_setoran} berhasil diperbarui.",
+                'redirect_url' => route('pengumpulan.upz.show', $setoran->id),
+            ]);
+        }
+
+        return redirect()->route('pengumpulan.upz.show', $setoran->id)
+            ->with('success', "Setoran UPZ {$setoran->nomor_setoran} berhasil diperbarui.");
+    }
+
     public function show($id)
     {
-        $setoran = SetoranUpz::with(['upz', 'items.muzakki.person', 'user'])->findOrFail($id);
+        $user = Auth::user();
+        $setoran = SetoranUpz::with(['upz', 'items.muzakki.person', 'user', 'verifiedBy.person'])->findOrFail($id);
+
+        if ($user && $user->isUpzRole() && (int)$setoran->lembaga_id !== (int)$user->upzLembagaId()) {
+            abort(403);
+        }
+
         return view('pengumpulan.upz.show', compact('setoran'));
     }
 
     public function cetakLampiran($id)
     {
+        $user = Auth::user();
         $setoran = SetoranUpz::with(['upz.ketua.person', 'items'])->findOrFail($id);
+
+        if ($user && $user->isUpzRole() && (int)$setoran->lembaga_id !== (int)$user->upzLembagaId()) {
+            abort(403);
+        }
+
         return view('pengumpulan.upz.cetak-lampiran', compact('setoran'));
     }
 
     public function destroy($id)
     {
+        $user = Auth::user();
         $setoran = SetoranUpz::findOrFail($id);
+
+        $isVerifier = $this->isVerifierEligible();
+        $isUpzOwner = $user && $user->isUpzRole()
+            && (int)$setoran->lembaga_id === (int)$user->upzLembagaId()
+            && $setoran->status === 'Menunggu Verifikasi';
+
+        if (!$isVerifier && !$isUpzOwner) {
+            abort(403, 'Akses ditolak. Anda tidak berhak menghapus setoran ini.');
+        }
 
         DB::transaction(function () use ($setoran) {
             // Hapus bukti setor fisik jika tersimpan

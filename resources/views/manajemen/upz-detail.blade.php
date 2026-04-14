@@ -15,9 +15,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex items-center gap-4">
             <a href="{{ route('manajemen.upz') }}" class="p-2 bg-white text-gray-600 hover:text-[#118243] hover:bg-[#eaf5ef] rounded-xl border border-slate-200 shadow-sm transition-all inline-flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
+                <x-heroicon-o-arrow-left class="w-5 h-5" />
             </a>
             <div>
                 <div class="flex items-center gap-3">
@@ -37,7 +35,7 @@
         </div>
 
         <button type="button" @click="isPengurusModalOpen = true" class="bg-[#118243] hover:bg-[#0d6835] text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center gap-2 text-sm transition-colors">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <x-heroicon-o-plus class="w-4 h-4" />
             Tambah Pengurus UPZ
         </button>
     </div>
@@ -45,9 +43,7 @@
     <!-- Info Cards Section -->
     <div class="bg-white shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 sm:rounded-2xl p-6">
         <h3 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-[#118243]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <x-heroicon-o-information-circle class="w-5 h-5 text-[#118243]" />
             Informasi Umum UPZ
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs">
@@ -87,6 +83,9 @@
                 </button> -->
                 <button type="button" @click="activeTab = 'mustahik'" :class="activeTab === 'mustahik' ? 'border-[#118243] text-[#118243]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="py-4 px-1 border-b-2 font-bold text-sm transition-colors">
                     Mustahik Binaan ({{ $upz->mustahiks->count() }})
+                </button>
+                <button type="button" @click="activeTab = 'muzakki'" :class="activeTab === 'muzakki' ? 'border-[#118243] text-[#118243]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="py-4 px-1 border-b-2 font-bold text-sm transition-colors">
+                    Muzakki Terdaftar ({{ $muzakkis->total() }})
                 </button>
             </nav>
         </div>
@@ -225,6 +224,58 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Muzakki Tab Content -->
+            <div x-show="activeTab === 'muzakki'" class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <form method="GET" action="{{ route('manajemen.upz.detail', $upz->id) }}" class="flex items-center gap-2 max-w-sm w-full">
+                        <input type="hidden" name="tab" value="muzakki">
+                        <div class="relative w-full">
+                            <input type="text" name="muzakki_search" value="{{ $muzakkiSearch ?? '' }}" placeholder="Cari Muzakki (NIK, Nama, NPWZ)..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-all">
+                            <x-heroicon-o-magnifying-glass class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                        </div>
+                        <button type="submit" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Cari</button>
+                        @if(!empty($muzakkiSearch))
+                            <a href="{{ route('manajemen.upz.detail', ['id' => $upz->id, 'tab' => 'muzakki']) }}" class="px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-xs font-semibold">Reset</a>
+                        @endif
+                    </form>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-xs">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">NPWZ / NRM</th>
+                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">Nama Muzakki</th>
+                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">NIK</th>
+                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">Pekerjaan</th>
+                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">Kontak</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @forelse($muzakkis as $mz)
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 whitespace-nowrap font-mono font-semibold text-slate-900">{{ $mz->npwz ?: $mz->nrm ?: '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900">{{ $mz->person?->nama ?? '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap font-mono text-gray-600">{{ $mz->person?->nik ?? '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $mz->pekerjaan ?: '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $mz->person?->handphone ?: $mz->person?->telepon ?: '-' }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">Belum ada muzakki terdaftar pada UPZ ini.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($muzakkis->hasPages())
+                <div class="pt-3">
+                    {{ $muzakkis->links() }}
+                </div>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -234,7 +285,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-base text-gray-900">Tambah Pengurus UPZ</h3>
                 <button type="button" @click="isPengurusModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Tutup">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
