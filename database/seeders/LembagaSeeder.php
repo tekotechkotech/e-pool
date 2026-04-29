@@ -43,9 +43,9 @@ class LembagaSeeder extends Seeder
                 'id_provinsi'  => '32',
                 'id_kabupaten' => '32.77', // Kota Cimahi
                 'pengurus' => [
-                    ['nama' => 'H. Mahfudz',          'jabatan' => 'Ketua',      'nik' => '3201020101700009', 'nomor_kk' => '3201020101700000'],
-                    ['nama' => 'Deden Suryadi',       'jabatan' => 'Sekretaris', 'nik' => '3201020202800002', 'nomor_kk' => '3201020101700000'],
-                    ['nama' => 'Yanti Nurfitri',      'jabatan' => 'Bendahara',  'nik' => '3201020303850003', 'nomor_kk' => '3201020303850000'],
+                    ['nama' => 'H. Mahfudz',          'jabatan' => 'Ketua',      'nik' => '3201020101700009', 'nomor_kk' => '3201020101700000', 'email' => 'upz@baznas.id'],
+                    ['nama' => 'Deden Suryadi',       'jabatan' => 'Sekretaris', 'nik' => '3201020202800002', 'nomor_kk' => '3201020101700000', 'email' => 'sekretaris.upz@baznas.id'],
+                    ['nama' => 'Yanti Nurfitri',      'jabatan' => 'Bendahara',  'nik' => '3201020303850003', 'nomor_kk' => '3201020303850000', 'email' => 'bendahara.upz@baznas.id'],
                 ],
             ],
             [
@@ -60,8 +60,8 @@ class LembagaSeeder extends Seeder
                 'id_provinsi'  => '32',
                 'id_kabupaten' => '32.73', // Kota Bandung
                 'pengurus' => [
-                    ['nama' => 'dr. Wahyu Santoso',   'jabatan' => 'Ketua',      'nik' => '3201030101780004', 'nomor_kk' => '3201030101780000'],
-                    ['nama' => 'Fitri Amalia',         'jabatan' => 'Sekretaris', 'nik' => '3201030202900005', 'nomor_kk' => '3201030101780000'],
+                    ['nama' => 'dr. Wahyu Santoso',   'jabatan' => 'Ketua',      'nik' => '3201030101780004', 'nomor_kk' => '3201030101780000', 'email' => 'upz.rsud@baznas.id'],
+                    ['nama' => 'Fitri Amalia',         'jabatan' => 'Sekretaris', 'nik' => '3201030202900005', 'nomor_kk' => '3201030101780000', 'email' => 'sekretaris.rsud@baznas.id'],
                 ],
             ],
             [
@@ -114,6 +114,17 @@ class LembagaSeeder extends Seeder
                     'pengurus_jabatan_id' => $jabatanModel ? $jabatanModel->id : null,
                     'is_active' => true,
                 ]);
+
+                if (!empty($pData['email'])) {
+                    $person->update(['email' => $pData['email']]);
+                    \App\Models\User::firstOrCreate(
+                        ['email' => $pData['email']],
+                        [
+                            'person_id' => $person->id,
+                            'password'  => \Illuminate\Support\Facades\Hash::make('password'),
+                        ]
+                    );
+                }
             }
         }
     }
