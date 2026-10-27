@@ -59,7 +59,7 @@
             <table class="w-full text-left text-sm text-slate-600">
                 <thead class="bg-slate-50 text-slate-700 text-xs uppercase font-semibold border-b border-slate-100">
                     <tr>
-                        <th class="px-6 py-4">No. Setoran</th>
+                        <!-- <th class="px-6 py-4">No. Setoran</th> -->
                         <th class="px-6 py-4">UPZ</th>
                         <th class="px-6 py-4">Tgl / Periode</th>
                         <th class="px-6 py-4 text-right">Zakat</th>
@@ -72,11 +72,11 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($setorans as $s)
                         <tr class="hover:bg-slate-50/70 transition-colors">
-                            <td class="px-6 py-4 font-mono font-bold text-slate-900 text-xs">
+                            <!-- <td class="px-6 py-4 font-mono font-bold text-slate-900 text-xs">
                                 <a href="{{ route('pengumpulan.upz.show', $s->id) }}" class="text-blue-600 hover:underline">
                                     {{ $s->nomor_setoran }}
                                 </a>
-                            </td>
+                            </td> -->
                             <td class="px-6 py-4">
                                 <div class="font-semibold text-slate-800">{{ $s->upz->nama ?? '-' }}</div>
                                 <div class="text-xs text-slate-400">Kode: {{ $s->upz->kode_simba ?? '-' }}</div>
