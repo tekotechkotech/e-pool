@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class PengajuanDisposisi extends Model
+{
+    protected $fillable = [
+        'pengajuan_mustahik_id',
+        'pimpinan_id',
+        'instruksi',
+        'diteruskan_kepada',
+        'isi_disposisi',
+        'catatan',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'isi_disposisi' => 'array',
+        ];
+    }
+
+    public function pengajuanMustahik(): BelongsTo
+    {
+        return $this->belongsTo(PengajuanMustahik::class, 'pengajuan_mustahik_id');
+    }
+
+    public function pimpinan(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'pimpinan_id');
+    }
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="calculator-container">
+        <canvas id="calculatorCanvas" width="320" height="480"></canvas>
+        <div id="resultDisplay">Result: 0.0</div>
+        <button onclick="calculate()">Calculate</button>
+        <input type="text" id="operationInput" placeholder="Enter operation (addition, subtraction, multiplication, division)">
+    </div>
+
+    <script>
+        const canvas = document.getElementById('calculatorCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function updateDisplay() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const input = document.getElementById('operationInput').value;
+            if (input === '') return;
+
+            // Parse the operation
+            const operator = input.charAt(0);
+            let value1 = parseFloat(input.slice(1));
+            let value2 = parseFloat(document.getElementById('resultDisplay').innerText);
+
+            switch (operator) {
+                case '+':
+                    ctx.fillText(`${value1} + ${value2}`, 3, 50);
+                    break;
+                case '-':
+                    ctx.fillText(`${value1} - ${value2}`, 3, 70);
+                    break;
+                case '*':
+                    ctx.fillText(`${value1} * ${value2}`, 3, 90);
+                    break;
+                case '/':
+                    if (value2 === 0) {
+                        console.warn('Division by zero is not allowed.');
+                        return;
+                    }
+                    ctx.fillText(`${value1} / ${value2}`, 3, 110);
+                    break;
+                default:
+                    console.warn('Invalid operation.');
+                    return;
+            }
+
+            // Update the result display
+            document.getElementById('resultDisplay').innerText = value1 + value2;
+
+            // Clear input field after calculation
+            document.getElementById('operationInput').value = '';
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function startCalculation() {
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
