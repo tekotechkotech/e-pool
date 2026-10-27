@@ -94,7 +94,7 @@
                 </a>
 
                 <!-- 4. INTEGRASI SIMBA PUSAT -->
-                <div class="pt-5 pb-1.5 px-3">
+                <!-- <div class="pt-5 pb-1.5 px-3">
                     <p class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">INTEGRASI SIMBA PUSAT</p>
                 </div>
 
@@ -110,7 +110,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <span class="text-[14px]">Export Kas Masuk SIMBA</span>
-                </a>
+                </a> -->
 
                 <!-- 5. PELAPORAN -->
                 <div class="pt-5 pb-1.5 px-3">
