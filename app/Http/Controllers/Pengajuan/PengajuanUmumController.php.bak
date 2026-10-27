@@ -1,0 +1,955 @@
+<?php
+
+namespace App\Http\Controllers\Pengajuan;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\PengajuanBantuan;
+use App\Models\PengajuanMustahik;
+use App\Models\Person;
+use App\Models\Mustahik;
+use App\Models\Program;
+use App\Models\Subprogram;
+use App\Models\Dana;
+use App\Models\Asnaf;
+use App\Models\Wilayah;
+use App\Models\Lampiran;
+use App\Models\Lembaga;
+use App\Models\Pengurus;
+use App\Models\PengurusJabatan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+
+class PengajuanUmumController extends Controller
+{
+    private function getRomawiBulan($bulan)
+    {
+        $romawi = ['1'=>'I', '2'=>'II', '3'=>'III', '4'=>'IV', '5'=>'V', '6'=>'VI', '7'=>'VII', '8'=>'VIII', '9'=>'IX', '10'=>'X', '11'=>'XI', '12'=>'XII'];
+        return $romawi[(int)$bulan] ?? 'I';
+    }
+
+    private function generateNomorPengajuan($jenisStr)
+    {
+        $tahun = date('Y');
+        $bulan = date('m');
+        $bulanRomawi = $this->getRomawiBulan($bulan);
+        $jenisStr = ($jenisStr === 'Individu' || $jenisStr === 'Umum') ? 'UMUM' : 'UPZ';
+        
+        $prefix = "E-POOL/{$jenisStr}/{$bulanRomawi}/{$tahun}";
+        
+        $lastPengajuan = PengajuanBantuan::whereYear('created_at', $tahun)
+            ->whereMonth('created_at', $bulan)
+            ->orderBy('id', 'desc')
+            ->first();
+            
+        $increment = 1;
+        if ($lastPengajuan && $lastPengajuan->nomor_pengajuan) {
+            $parts = explode('/', $lastPengajuan->nomor_pengajuan);
+            if (is_numeric($parts[0])) {
+                $increment = (int)$parts[0] + 1;
+            }
+        }
+        
+        return sprintf("%03d/%s", $increment, $prefix);
+    }
+
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
+        $status = $request->query('status', 'semua');
+        $programId = $request->query('program_id') ?? $request->query('program_filter');
+
+        $baseQuery = PengajuanBantuan::query()->whereIn('jenis_permohonan', ['Individu', 'Umum']);
+        if (!auth()->user()->isBaznasRole()) {
+            $baseQuery->whereRaw('1 = 0');
+        }
+
+        $stats = [
+            'total_pengajuan' => (clone $baseQuery)->count(),
+            'total_disetujui' => (clone $baseQuery)->whereHas('persetujuan', fn($q) => $q->where('status', 'disetujui'))->count(),
+            'total_proses' => (clone $baseQuery)->whereNull('ditolak_at')->whereDoesntHave('persetujuan')->count(),
+            'total_ditolak' => (clone $baseQuery)->where(function($q) {
+                $q->whereNotNull('ditolak_at')->orWhereHas('persetujuan', fn($pq) => $pq->where('status', 'ditolak'));
+            })->count(),
+        ];
+
+        $query = (clone $baseQuery)
+            ->with([
+                'mustahik.person',
+                'pengajuanMustahiks.program',
+                'pengajuanMustahiks.subprogram',
+                'pengajuanMustahiks.asnaf',
+                'pengajuanMustahiks.survey',
+                'pengajuanMustahiks.disposisi',
+                'persetujuan',
+                'disposisi',
+                'penyaluran',
+                'lpjBa',
+            ])
+            ->orderBy('id', 'desc');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nomor_pengajuan', 'like', '%' . $search . '%')
+                  ->orWhere('judul_surat', 'like', '%' . $search . '%')
+                  ->orWhere('mustahik_nama_snapshot', 'like', '%' . $search . '%')
+                  ->orWhereHas('mustahik.person', function($pq) use ($search) {
+                      $pq->where('nama', 'like', '%' . $search . '%')
+                         ->orWhere('nik', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        if ($programId) {
+            $query->whereHas('pengajuanMustahiks', fn($q) => $q->where('program_id', $programId));
+        }
+
+        if ($status !== 'semua') {
+            if ($status === 'draft' || $status === 'aktif') {
+                $query->whereNull('ditolak_at')
+                      ->where(function($q) {
+                          $q->whereDoesntHave('persetujuan')
+                            ->orWhereHas('persetujuan', fn($pq) => $pq->where('status', 'disetujui'));
+                      });
+            } elseif ($status === 'proses') {
+                $query->whereNull('ditolak_at')
+                      ->whereDoesntHave('disposisi')
+                      ->whereDoesntHave('persetujuan');
+            } elseif ($status === 'disetujui') {
+                $query->whereHas('persetujuan', fn($q) => $q->where('status', 'disetujui'));
+            } elseif ($status === 'ditolak') {
+                $query->where(function($q) {
+                    $q->whereNotNull('ditolak_at')
+                      ->orWhereHas('persetujuan', fn($pq) => $pq->where('status', 'ditolak'));
+                });
+            } elseif ($status === 'disalurkan') {
+                $query->whereHas('penyaluran');
+            } elseif ($status === 'selesai') {
+                $query->whereHas('lpjBa');
+            }
+        }
+
+        $pengajuans = $query->paginate(10)->withQueryString();
+        $programs = Program::orderBy('nama')->get();
+        $programFilter = $programId;
+
+        return view('pengajuan.umum.index', compact('pengajuans', 'programs', 'search', 'status', 'programId', 'programFilter', 'stats'));
+    }
+
+    public function create()
+    {
+        $programs = Program::orderBy('nama')->get();
+        $subprograms = Subprogram::orderBy('nama')->get();
+        $danas = Dana::active()->ordered()->get();
+        $asnafs = Asnaf::where('is_active', true)->orderBy('id')->get();
+        $provinsis = Wilayah::provinsis()->orderBy('nama')->get();
+        $penerimaManfaat = [];
+
+        return view('pengajuan.umum.create', compact('programs', 'subprograms', 'danas', 'asnafs', 'provinsis', 'penerimaManfaat'));
+    }
+
+    public function searchPeople(Request $request)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+        $q = trim((string) ($request->query('q') ?: $request->query('nama', '')));
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $people = Person::with(['provinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'mustahik'])
+            ->where(function($query) use ($q) {
+                $query->where('nama', 'like', "%{$q}%")
+                      ->orWhere('nik', 'like', "%{$q}%")
+                      ->orWhere('nomor_kk', 'like', "%{$q}%")
+                      ->orWhere('telepon', 'like', "%{$q}%");
+            })
+            ->limit(15)
+            ->get()
+            ->map(function($p) {
+                return [
+                    'id' => $p->id,
+                    'nik' => $p->nik,
+                    'nomor_kk' => $p->nomor_kk,
+                    'nama' => $p->nama,
+                    'jenis_kelamin' => $p->jenis_kelamin ?? 'L',
+                    'tempat_lahir' => $p->tempat_lahir,
+                    'tanggal_lahir' => $p->tanggal_lahir ? $p->tanggal_lahir->format('Y-m-d') : null,
+                    'telepon' => $p->telepon ?: $p->handphone,
+                    'pekerjaan' => $p->mustahik?->pekerjaan ?? '',
+                    'alamat' => $p->alamat,
+                    'id_provinsi' => $p->id_provinsi,
+                    'id_kabupaten' => $p->id_kabupaten,
+                    'id_kecamatan' => $p->id_kecamatan,
+                    'id_kelurahan' => $p->id_kelurahan,
+                    'kode_pos' => $p->kode_pos,
+                    'alamat_lengkap' => $p->alamat_lengkap,
+                ];
+            });
+
+        return response()->json($people);
+    }
+
+    public function searchLembaga(Request $request)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+        $q = trim((string) ($request->query('q') ?: $request->query('nama', '')));
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $lembagas = Lembaga::with(['provinsi', 'kabupaten', 'kecamatan', 'kelurahan'])
+            ->where(function($query) use ($q) {
+                $query->where('nama', 'like', "%{$q}%")
+                      ->orWhere('ketua_nama', 'like', "%{$q}%")
+                      ->orWhere('telepon', 'like', "%{$q}%");
+            })
+            ->limit(15)
+            ->get()
+            ->map(function($l) {
+                return [
+                    'id' => $l->id,
+                    'nama' => $l->nama,
+                    'jenis' => $l->jenis,
+                    'ketua_nama' => $l->ketua_nama,
+                    'ketua_nik' => $l->ketua_nik,
+                    'telepon' => $l->telepon ?: $l->handphone,
+                    'handphone' => $l->handphone,
+                    'email' => $l->email,
+                    'jumlah_anggota' => $l->jumlah_anggota,
+                    'alamat' => $l->alamat,
+                    'id_provinsi' => $l->id_provinsi,
+                    'id_kabupaten' => $l->id_kabupaten,
+                    'id_kecamatan' => $l->id_kecamatan,
+                    'id_kelurahan' => $l->id_kelurahan,
+                    'kode_pos' => $l->kode_pos,
+                    'alamat_lengkap' => $l->alamat_lengkap,
+                    'is_upz' => $l->is_upz,
+                ];
+            });
+
+        return response()->json($lembagas);
+    }
+
+    /**
+     * Search Person by NIK (for mustahik perorangan)
+     */
+    public function searchPersonByNik(Request $request)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+        $nik = trim((string) $request->query('nik', ''));
+        if (strlen($nik) < 4) {
+            return response()->json([]);
+        }
+
+        $persons = Person::with(['provinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'mustahik'])
+            ->where('nik', 'like', "%{$nik}%")
+            ->limit(10)
+            ->get()
+            ->map(function($p) {
+                return [
+                    'id' => $p->id,
+                    'nik' => $p->nik,
+                    'nomor_kk' => $p->nomor_kk,
+                    'nama' => $p->nama,
+                    'jenis_kelamin' => $p->jenis_kelamin ?? 'L',
+                    'tempat_lahir' => $p->tempat_lahir,
+                    'tanggal_lahir' => $p->tanggal_lahir ? $p->tanggal_lahir->format('Y-m-d') : null,
+                    'telepon' => $p->telepon ?: $p->handphone,
+                    'handphone' => $p->handphone,
+                    'email' => $p->email,
+                    'pekerjaan' => $p->mustahik?->pekerjaan ?? '',
+                    'alamat' => $p->alamat,
+                    'id_provinsi' => $p->id_provinsi,
+                    'id_kabupaten' => $p->id_kabupaten,
+                    'id_kecamatan' => $p->id_kecamatan,
+                    'id_kelurahan' => $p->id_kelurahan,
+                    'kode_pos' => $p->kode_pos,
+                    'alamat_lengkap' => $p->alamat_lengkap,
+                ];
+            });
+
+        return response()->json($persons);
+    }
+
+    /**
+     * Search Lembaga by Nama (for mustahik lembaga)
+     */
+    public function searchLembagaByNama(Request $request)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+        $q = trim((string) ($request->query('q') ?: $request->query('nama', '')));
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $lembagas = Lembaga::with(['provinsi', 'kabupaten', 'kecamatan', 'kelurahan'])
+            ->where('nama', 'like', "%{$q}%")
+            ->limit(10)
+            ->get()
+            ->map(function($l) {
+                return [
+                    'id' => $l->id,
+                    'nama' => $l->nama,
+                    'jenis' => $l->jenis,
+                    'ketua_nama' => $l->ketua_nama,
+                    'ketua_nik' => $l->ketua_nik,
+                    'telepon' => $l->telepon ?: $l->handphone,
+                    'handphone' => $l->handphone,
+                    'email' => $l->email,
+                    'jumlah_anggota' => $l->jumlah_anggota,
+                    'alamat' => $l->alamat,
+                    'id_provinsi' => $l->id_provinsi,
+                    'id_kabupaten' => $l->id_kabupaten,
+                    'id_kecamatan' => $l->id_kecamatan,
+                    'id_kelurahan' => $l->id_kelurahan,
+                    'kode_pos' => $l->kode_pos,
+                    'alamat_lengkap' => $l->alamat_lengkap,
+                    'is_upz' => $l->is_upz,
+                ];
+            });
+
+        return response()->json($lembagas);
+    }
+
+    public function store(Request $request)
+    {
+        $jenisPermohonan = $request->input('jenis_permohonan') 
+            ?: ($request->input('tipe_pemohon') === 'lembaga' ? 'Lembaga' : 'Individu');
+
+        $request->validate([
+            'judul_surat' => 'required|string|max:255',
+            'tanggal_surat' => 'required|date',
+            'tanggal_pelaksanaan' => 'nullable|date',
+            'tanggal_diterima' => 'required|date',
+            'uraian_permohonan' => 'nullable|string',
+            'lampiran_surat' => 'nullable|file|max:10240',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $user = Auth::user();
+            $personId = $request->input('person_id');
+            $lembagaId = $request->input('lembaga_id');
+            $mustahikId = null;
+
+            if ($jenisPermohonan === 'Individu') {
+                $nik = trim((string)($request->input('p_nik') ?: $request->input('nik')));
+                $nama = trim((string)($request->input('p_nama') ?: $request->input('nama')));
+
+                if ($personId) {
+                    $person = Person::find($personId);
+                } elseif ($nik) {
+                    $person = Person::firstOrCreate(
+                        ['nik' => $nik],
+                        [
+                            'nomor_kk' => $request->input('p_nomor_kk'),
+                            'nama' => $nama ?: 'Pemohon',
+                            'jenis_kelamin' => $request->input('p_jenis_kelamin', 'L'),
+                            'telepon' => $request->input('p_telepon'),
+                            'alamat' => $request->input('p_alamat'),
+                            'id_provinsi' => $request->input('p_id_provinsi'),
+                            'id_kabupaten' => $request->input('p_id_kabupaten'),
+                            'id_kecamatan' => $request->input('p_id_kecamatan'),
+                            'id_kelurahan' => $request->input('p_id_kelurahan'),
+                            'kode_pos' => $request->input('p_kode_pos'),
+                        ]
+                    );
+                    $personId = $person->id;
+                } elseif ($nama) {
+                    $person = Person::create([
+                        'nama' => $nama,
+                        'nik' => 'TMP' . time() . rand(100, 999),
+                        'nomor_kk' => $request->input('p_nomor_kk'),
+                        'jenis_kelamin' => $request->input('p_jenis_kelamin', 'L'),
+                        'telepon' => $request->input('p_telepon'),
+                        'alamat' => $request->input('p_alamat'),
+                        'id_provinsi' => $request->input('p_id_provinsi'),
+                        'id_kabupaten' => $request->input('p_id_kabupaten'),
+                        'id_kecamatan' => $request->input('p_id_kecamatan'),
+                        'id_kelurahan' => $request->input('p_id_kelurahan'),
+                        'kode_pos' => $request->input('p_kode_pos'),
+                    ]);
+                    $personId = $person->id;
+                }
+
+                $mustahik = $personId ? Mustahik::firstOrCreate(['person_id' => $personId], ['jenis_mustahik' => 'perorangan']) : null;
+                if ($mustahik && $request->filled('p_pekerjaan')) {
+                    $mustahik->update(['pekerjaan' => $request->input('p_pekerjaan')]);
+                }
+                $mustahikId = $mustahik?->id;
+                $lembagaId = null;
+            } else {
+                $mustahikId = null;
+                if (!$lembagaId && $request->filled('l_nama')) {
+                    $lembaga = Lembaga::firstOrCreate(
+                        ['nama' => $request->input('l_nama')],
+                        [
+                            'jenis' => $request->input('l_jenis', 'Masjid'),
+                            'ketua_nama' => $request->input('l_ketua_nama'),
+                            'telepon' => $request->input('l_telepon'),
+                            'alamat' => $request->input('l_alamat'),
+                            'id_provinsi' => $request->input('l_id_provinsi'),
+                            'id_kabupaten' => $request->input('l_id_kabupaten'),
+                            'id_kecamatan' => $request->input('l_id_kecamatan'),
+                            'id_kelurahan' => $request->input('l_id_kelurahan'),
+                            'kode_pos' => $request->input('l_kode_pos'),
+                            'is_upz' => false,
+                            'is_active' => true,
+                        ]
+                    );
+                    $lembagaId = $lembaga->id;
+                }
+            }
+
+            // Snapshots
+            $mustahikSnapshotNama = null;
+            $mustahikSnapshotNik = null;
+            $mustahikSnapshotKontak = null;
+            $mustahikSnapshotAlamat = null;
+            if ($personId) {
+                $pObj = Person::find($personId);
+                if ($pObj) {
+                    $mustahikSnapshotNama = $pObj->nama;
+                    $mustahikSnapshotNik = $pObj->nik;
+                    $mustahikSnapshotKontak = $pObj->telepon ?: $pObj->handphone;
+                    $mustahikSnapshotAlamat = $pObj->alamat_lengkap;
+                }
+            }
+
+            $lembagaSnapshotNama = null;
+            $lembagaSnapshotKontak = null;
+            $lembagaSnapshotAlamat = null;
+            if ($lembagaId) {
+                $lObj = Lembaga::find($lembagaId);
+                if ($lObj) {
+                    $lembagaSnapshotNama = $lObj->nama;
+                    $lembagaSnapshotKontak = $lObj->telepon ?: $lObj->handphone;
+                    $lembagaSnapshotAlamat = $lObj->alamat_lengkap;
+                }
+            }
+
+            $nomorPengajuan = $this->generateNomorPengajuan($jenisPermohonan);
+
+            $pengajuan = PengajuanBantuan::create([
+                'nomor_pengajuan' => $nomorPengajuan,
+                'jenis_permohonan' => $jenisPermohonan,
+                'mustahik_id' => $mustahikId,
+                'lembaga_id' => $lembagaId,
+                'mustahik_nama_snapshot' => $mustahikSnapshotNama,
+                'mustahik_nik_snapshot' => $mustahikSnapshotNik,
+                'mustahik_kontak_snapshot' => $mustahikSnapshotKontak,
+                'mustahik_alamat_snapshot' => $mustahikSnapshotAlamat,
+                'lembaga_nama_snapshot' => $lembagaSnapshotNama,
+                'lembaga_kontak_snapshot' => $lembagaSnapshotKontak,
+                'lembaga_alamat_snapshot' => $lembagaSnapshotAlamat,
+                'judul_surat' => $request->judul_surat,
+                'nomor_surat' => $request->nomor_surat,
+                'tanggal_surat' => $request->tanggal_surat,
+                'tanggal_pelaksanaan' => $request->tanggal_pelaksanaan,
+                'tanggal_diterima' => $request->tanggal_diterima,
+                'uraian_permohonan' => $request->uraian_permohonan ?: $request->judul_surat,
+                'created_by' => $user->id,
+            ]);
+
+            // Save Mustahiks / Program
+            $mustahiksInput = $request->input('penerima_manfaat') ?: $request->input('mustahiks', []);
+            $createdAnyMustahik = false;
+
+            if (is_array($mustahiksInput) && count($mustahiksInput) > 0) {
+                foreach ($mustahiksInput as $mItem) {
+                    if (empty($mItem['program_id'])) continue;
+
+                    $mMustahikId = null;
+                    $mJenis = $mItem['jenis'] ?? null;
+                    $mPersonId = !empty($mItem['person_id']) ? $mItem['person_id'] : null;
+                    $mLembagaId = !empty($mItem['lembaga_id']) ? $mItem['lembaga_id'] : null;
+                    $mNik = !empty($mItem['nik']) ? trim((string)$mItem['nik']) : null;
+                    $mNama = !empty($mItem['nama']) ? trim((string)$mItem['nama']) : null;
+
+                    if ($mPersonId) {
+                        $mMustahik = Mustahik::firstOrCreate(['person_id' => $mPersonId], ['jenis_mustahik' => 'perorangan']);
+                        $mMustahikId = $mMustahik->id;
+                    } elseif ($mLembagaId) {
+                        $mMustahik = Mustahik::firstOrCreate(['lembaga_id' => $mLembagaId], ['jenis_mustahik' => 'lembaga']);
+                        $mMustahikId = $mMustahik->id;
+                    } elseif ($mJenis === 'lembaga' && $mNama) {
+                        $mLembaga = Lembaga::firstOrCreate(['nama' => $mNama], [
+                            'telepon' => $mItem['telepon'] ?? null,
+                            'alamat' => $mItem['alamat'] ?? null,
+                            'is_upz' => false,
+                            'is_active' => true,
+                        ]);
+                        $mMustahik = Mustahik::firstOrCreate(['lembaga_id' => $mLembaga->id], ['jenis_mustahik' => 'lembaga']);
+                        $mMustahikId = $mMustahik->id;
+                    } elseif ($jenisPermohonan === 'Individu' && $mustahikId && (!$mNama || $mNama === $mustahikSnapshotNama)) {
+                        $mMustahikId = $mustahikId;
+                    } elseif ($mNik) {
+                        $mPerson = Person::firstOrCreate(['nik' => $mNik], [
+                            'nama' => $mNama ?: 'Mustahik',
+                            'telepon' => $mItem['telepon'] ?? null,
+                            'alamat' => $mItem['alamat'] ?? null,
+                        ]);
+                        $mMustahik = Mustahik::firstOrCreate(['person_id' => $mPerson->id], ['jenis_mustahik' => 'perorangan']);
+                        $mMustahikId = $mMustahik->id;
+                    } elseif ($mNama) {
+                        $mPerson = Person::create([
+                            'nama' => $mNama,
+                            'nik' => 'TMP' . time() . rand(100, 999),
+                            'telepon' => $mItem['telepon'] ?? null,
+                            'alamat' => $mItem['alamat'] ?? null,
+                        ]);
+                        $mMustahik = Mustahik::firstOrCreate(['person_id' => $mPerson->id], ['jenis_mustahik' => 'perorangan']);
+                        $mMustahikId = $mMustahik->id;
+                    } elseif ($mustahikId) {
+                        $mMustahikId = $mustahikId;
+                    }
+
+                    if ($mMustahikId) {
+                        if (!empty($mItem['pekerjaan'])) {
+                            Mustahik::where('id', $mMustahikId)->update(['pekerjaan' => $mItem['pekerjaan']]);
+                        }
+                        $pengajuan->pengajuanMustahiks()->create([
+                            'mustahik_id' => $mMustahikId,
+                            'program_id' => $mItem['program_id'],
+                            'subprogram_id' => !empty($mItem['subprogram_id']) ? $mItem['subprogram_id'] : null,
+                            'asnaf_id' => !empty($mItem['asnaf_id']) ? $mItem['asnaf_id'] : null,
+                            'keterangan' => !empty($mItem['keterangan']) ? $mItem['keterangan'] : $request->judul_surat,
+                            'nominal' => 0,
+                            'sumber_dana_id' => $mItem['sumber_dana_id'] ?? null,
+                            'bentuk_bantuan' => $mItem['bentuk_bantuan'] ?? 'Uang',
+                            'nama_barang' => $mItem['nama_barang'] ?? null,
+                            'jumlah_barang' => $mItem['jumlah_barang'] ?? null,
+                            'satuan_barang' => $mItem['satuan_barang'] ?? null,
+                            'pengadaan_barang_id' => $mItem['pengadaan_barang_id'] ?? null,
+                            'jumlah_jiwa' => isset($mItem['jumlah_jiwa']) ? (int)$mItem['jumlah_jiwa'] : 1,
+                            'jumlah_kk' => isset($mItem['jumlah_kk']) ? (int)$mItem['jumlah_kk'] : 1,
+                        ]);
+                        $createdAnyMustahik = true;
+                    }
+                }
+            }
+
+            // Fallback if mustahik array didn't create anything but program_id / mustahikId exists
+            if (!$createdAnyMustahik && $mustahikId && $request->filled('program_id')) {
+                $nominal = (int) preg_replace('/\D/', '', $request->nominal_diajukan ?? '0');
+                $pengajuan->pengajuanMustahiks()->create([
+                    'mustahik_id' => $mustahikId,
+                    'program_id' => $request->program_id,
+                    'subprogram_id' => $request->subprogram_id,
+                    'keterangan' => $request->judul_surat,
+                    'nominal' => $nominal,
+                    'sumber_dana_id' => $request->sumber_dana_id ?? null,
+                    'bentuk_bantuan' => $request->bentuk_bantuan ?? 'Uang',
+                    'nama_barang' => $request->nama_barang ?? null,
+                    'jumlah_barang' => $request->jumlah_barang ?? null,
+                    'satuan_barang' => $request->satuan_barang ?? null,
+                    'pengadaan_barang_id' => $request->pengadaan_barang_id ?? null,
+                    'jumlah_jiwa' => 1,
+                    'jumlah_kk' => 1,
+                ]);
+            }
+
+            // Update jumlah_orang snapshot
+            $pengajuan->update([
+                'jumlah_orang' => $pengajuan->pengajuanMustahiks()->count() ?: 1,
+            ]);
+
+            // Upload Lampiran Surat jika ada
+            if ($request->hasFile('lampiran_surat')) {
+                $path = $request->file('lampiran_surat')->store('lampiran_pengajuan', 'public');
+                $pengajuan->lampirans()->create([
+                    'name' => 'Surat Permohonan / Proposal',
+                    'category' => 'surat',
+                    'file_path' => $path,
+                ]);
+            }
+
+            // Upload Lampiran Tambahan jika ada
+            if ($request->hasFile('lampiran_tambahan')) {
+                foreach ($request->file('lampiran_tambahan') as $file) {
+                    $path = $file->store('lampiran_pengajuan', 'public');
+                    $pengajuan->lampirans()->create([
+                        'name' => $file->getClientOriginalName(),
+                        'category' => 'pendukung',
+                        'file_path' => $path,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('pengajuan.umum.show', ['pengajuan' => $pengajuan->id])->with('success', 'Pengajuan bantuan umum berhasil dibuat.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal membuat pengajuan: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+    /**
+     * Create Person (Identitas Pemohon)
+     * POST /pengajuan/umum/person
+     */
+    public function storePerson(Request $request)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+
+        if (!$request->filled('wilayah_id') && $request->filled('id_kelurahan')) {
+            $request->merge(['wilayah_id' => $request->input('id_kelurahan')]);
+        }
+
+        $validated = $request->validate([
+            'nik' => 'required|string|digits:16|unique:persons,nik',
+            'nama' => 'required|string|max:255',
+            'nomor_kk' => 'nullable|string|max:20',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'tempat_lahir' => 'nullable|string|max:100',
+            'tanggal_lahir' => 'nullable|date',
+            'telepon' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:100',
+            'pekerjaan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string|max:500',
+            'wilayah_id' => 'nullable|string|max:50',
+            'id_provinsi' => 'nullable|string|max:10',
+            'id_kabupaten' => 'nullable|string|max:10',
+            'id_kecamatan' => 'nullable|string|max:10',
+            'id_kelurahan' => 'nullable|string|max:20',
+            'kode_pos' => 'nullable|string|max:10',
+        ]);
+
+        $person = Person::create([
+            'nik' => $validated['nik'],
+            'nomor_kk' => $validated['nomor_kk'] ?? null,
+            'nama' => $validated['nama'],
+            'jenis_kelamin' => $validated['jenis_kelamin'] ?? 'L',
+            'tempat_lahir' => $validated['tempat_lahir'] ?? null,
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'telepon' => $validated['telepon'] ?? null,
+            'handphone' => $validated['telepon'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'alamat' => $validated['alamat'] ?? null,
+            'id_provinsi' => $validated['id_provinsi'] ?? null,
+            'id_kabupaten' => $validated['id_kabupaten'] ?? null,
+            'id_kecamatan' => $validated['id_kecamatan'] ?? null,
+            'id_kelurahan' => $validated['id_kelurahan'] ?? $validated['wilayah_id'] ?? null,
+            'kode_pos' => $validated['kode_pos'] ?? null,
+        ]);
+
+        // Create mustahik record untuk person baru
+        $mustahik = Mustahik::firstOrCreate(
+            ['person_id' => $person->id],
+            ['jenis_mustahik' => 'perorangan']
+        );
+
+        // Simpan pekerjaan ke mustahik jika ada
+        if (!empty($validated['pekerjaan'])) {
+            $mustahik->update(['pekerjaan' => $validated['pekerjaan']]);
+        }
+
+        return response()->json([
+            'id' => $person->id,
+            'person_id' => $person->id,
+            'nik' => $person->nik,
+            'nomor_kk' => $person->nomor_kk,
+            'nama' => $person->nama,
+            'jenis_kelamin' => $person->jenis_kelamin,
+            'tempat_lahir' => $person->tempat_lahir,
+            'tanggal_lahir' => $person->tanggal_lahir ? $person->tanggal_lahir->format('Y-m-d') : null,
+            'telepon' => $person->telepon,
+            'email' => $person->email,
+            'pekerjaan' => $mustahik->pekerjaan,
+            'alamat' => $person->alamat,
+            'id_provinsi' => $person->id_provinsi,
+            'id_kabupaten' => $person->id_kabupaten,
+            'id_kecamatan' => $person->id_kecamatan,
+            'id_kelurahan' => $person->id_kelurahan,
+            'kode_pos' => $person->kode_pos,
+            'alamat_lengkap' => $person->alamat_lengkap,
+        ], 201);
+    }
+
+    /**
+     * Create Lembaga + Pengurus (Identitas Lembaga)
+     * POST /pengajuan/umum/lembaga
+     */
+    public function storeLembaga(Request $request)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+
+        if (!$request->filled('wilayah_id') && $request->filled('id_kelurahan')) {
+            $request->merge(['wilayah_id' => $request->input('id_kelurahan')]);
+        }
+
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'jenis' => 'nullable|string|max:100',
+            'alamat' => 'required|string|max:500',
+            'wilayah_id' => 'nullable|string|max:50',
+            'telepon' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:100',
+            'id_provinsi' => 'nullable|string|max:10',
+            'id_kabupaten' => 'nullable|string|max:10',
+            'id_kecamatan' => 'nullable|string|max:10',
+            'id_kelurahan' => 'nullable|string|max:20',
+            'kode_pos' => 'nullable|string|max:10',
+            'pengurus' => 'required|array|min:1',
+            'pengurus.*.nik' => 'nullable|string|digits:16',
+            'pengurus.*.nama' => 'required|string|max:255',
+            'pengurus.*.jabatan' => 'required|in:Ketua,Sekretaris,Bendahara,Anggota',
+        ]);
+
+        // Validate exactly 1 Ketua
+        $ketua = collect($validated['pengurus'])->firstWhere('jabatan', 'Ketua');
+        $ketuaCount = collect($validated['pengurus'])->where('jabatan', 'Ketua')->count();
+        if ($ketuaCount !== 1) {
+            throw ValidationException::withMessages([
+                'pengurus' => ['Harus ada tepat 1 pengurus dengan jabatan Ketua'],
+            ]);
+        }
+
+        return DB::transaction(function () use ($validated, $ketua) {
+            $lembaga = Lembaga::create([
+                'nama' => $validated['nama'],
+                'jenis' => $validated['jenis'] ?? 'Lainnya',
+                'ketua_nama' => $ketua['nama'] ?? null,
+                'ketua_nik' => $ketua['nik'] ?? null,
+                'telepon' => $validated['telepon'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'alamat' => $validated['alamat'],
+                'id_provinsi' => $validated['id_provinsi'] ?? null,
+                'id_kabupaten' => $validated['id_kabupaten'] ?? null,
+                'id_kecamatan' => $validated['id_kecamatan'] ?? null,
+                'id_kelurahan' => $validated['id_kelurahan'] ?? $validated['wilayah_id'] ?? null,
+                'kode_pos' => $validated['kode_pos'] ?? null,
+                'is_upz' => false,
+                'is_active' => true,
+            ]);
+
+            $jabatanMap = PengurusJabatan::whereIn('nama', ['Ketua', 'Sekretaris', 'Bendahara', 'Anggota'])
+                ->pluck('id', 'nama')
+                ->toArray();
+
+            foreach ($validated['pengurus'] as $pengurusData) {
+                $person = null;
+                if (!empty($pengurusData['nik'])) {
+                    $person = Person::firstOrCreate(
+                        ['nik' => $pengurusData['nik']],
+                        ['nama' => $pengurusData['nama']]
+                    );
+                } else {
+                    $person = Person::create([
+                        'nik' => 'TMP' . time() . rand(100, 999),
+                        'nama' => $pengurusData['nama'],
+                    ]);
+                }
+
+                Pengurus::create([
+                    'jenis_pengurus' => 'Lembaga',
+                    'lembaga_id' => $lembaga->id,
+                    'person_id' => $person->id,
+                    'pengurus_jabatan_id' => $jabatanMap[$pengurusData['jabatan']] ?? null,
+                    'is_active' => true,
+                ]);
+            }
+
+            return response()->json([
+                'id' => $lembaga->id,
+                'lembaga_id' => $lembaga->id,
+                'nama' => $lembaga->nama,
+                'jenis' => $lembaga->jenis,
+                'ketua_nama' => $lembaga->ketua_nama,
+                'ketua_nik' => $lembaga->ketua_nik,
+                'telepon' => $lembaga->telepon,
+                'email' => $lembaga->email,
+                'alamat' => $lembaga->alamat,
+                'id_provinsi' => $lembaga->id_provinsi,
+                'id_kabupaten' => $lembaga->id_kabupaten,
+                'id_kecamatan' => $lembaga->id_kecamatan,
+                'id_kelurahan' => $lembaga->id_kelurahan,
+                'kode_pos' => $lembaga->kode_pos,
+                'pengurus' => $validated['pengurus'],
+            ], 201);
+        });
+    }
+
+    /**
+     * Update Person (Identitas Pemohon)
+     * PUT /pengajuan/umum/person/{id}
+     */
+    public function updatePerson(Request $request, $id)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+
+        $person = Person::findOrFail($id);
+
+        if (!$request->filled('wilayah_id') && $request->filled('id_kelurahan')) {
+            $request->merge(['wilayah_id' => $request->input('id_kelurahan')]);
+        }
+
+        $validated = $request->validate([
+            'nik' => 'required|string|digits:16|unique:persons,nik,' . $id,
+            'nama' => 'required|string|max:255',
+            'nomor_kk' => 'nullable|string|max:20',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'tempat_lahir' => 'nullable|string|max:100',
+            'tanggal_lahir' => 'nullable|date',
+            'telepon' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:100',
+            'pekerjaan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string|max:500',
+            'wilayah_id' => 'nullable|string|max:50',
+            'id_provinsi' => 'nullable|string|max:10',
+            'id_kabupaten' => 'nullable|string|max:10',
+            'id_kecamatan' => 'nullable|string|max:10',
+            'id_kelurahan' => 'nullable|string|max:20',
+            'kode_pos' => 'nullable|string|max:10',
+        ]);
+
+        $person->update([
+            'nik' => $validated['nik'],
+            'nomor_kk' => $validated['nomor_kk'] ?? $person->nomor_kk,
+            'nama' => $validated['nama'],
+            'jenis_kelamin' => $validated['jenis_kelamin'] ?? $person->jenis_kelamin,
+            'tempat_lahir' => $validated['tempat_lahir'] ?? $person->tempat_lahir,
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? $person->tanggal_lahir,
+            'telepon' => $validated['telepon'] ?? $person->telepon,
+            'handphone' => $validated['telepon'] ?? $person->handphone,
+            'email' => $validated['email'] ?? $person->email,
+            'alamat' => $validated['alamat'] ?? $person->alamat,
+            'id_provinsi' => $validated['id_provinsi'] ?? $person->id_provinsi,
+            'id_kabupaten' => $validated['id_kabupaten'] ?? $person->id_kabupaten,
+            'id_kecamatan' => $validated['id_kecamatan'] ?? $person->id_kecamatan,
+            'id_kelurahan' => $validated['id_kelurahan'] ?? $validated['wilayah_id'] ?? $person->id_kelurahan,
+            'kode_pos' => $validated['kode_pos'] ?? $person->kode_pos,
+        ]);
+
+        // Ensure mustahik record exists
+        $mustahik = Mustahik::firstOrCreate(
+            ['person_id' => $person->id],
+            ['jenis_mustahik' => 'perorangan']
+        );
+
+        // Update pekerjaan di mustahik
+        if (isset($validated['pekerjaan'])) {
+            $mustahik->update(['pekerjaan' => $validated['pekerjaan']]);
+        }
+
+        return response()->json([
+            'id' => $person->id,
+            'person_id' => $person->id,
+            'nik' => $person->nik,
+            'nomor_kk' => $person->nomor_kk,
+            'nama' => $person->nama,
+            'pekerjaan' => $mustahik->pekerjaan,
+            'alamat' => $person->alamat,
+            'alamat_lengkap' => $person->alamat_lengkap,
+        ]);
+    }
+
+    /**
+     * Update Lembaga + Pengurus (Identitas Lembaga)
+     * PUT /pengajuan/umum/lembaga/{id}
+     */
+    public function updateLembaga(Request $request, $id)
+    {
+        abort_unless($request->user()->canPerformPengajuanAction('people-search'), 403);
+
+        $lembaga = Lembaga::findOrFail($id);
+
+        if (!$request->filled('wilayah_id') && $request->filled('id_kelurahan')) {
+            $request->merge(['wilayah_id' => $request->input('id_kelurahan')]);
+        }
+
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'jenis' => 'nullable|string|max:100',
+            'alamat' => 'required|string|max:500',
+            'wilayah_id' => 'nullable|string|max:50',
+            'telepon' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:100',
+            'id_provinsi' => 'nullable|string|max:10',
+            'id_kabupaten' => 'nullable|string|max:10',
+            'id_kecamatan' => 'nullable|string|max:10',
+            'id_kelurahan' => 'nullable|string|max:20',
+            'kode_pos' => 'nullable|string|max:10',
+            'pengurus' => 'required|array|min:1',
+            'pengurus.*.nik' => 'nullable|string|digits:16',
+            'pengurus.*.nama' => 'required|string|max:255',
+            'pengurus.*.jabatan' => 'required|in:Ketua,Sekretaris,Bendahara,Anggota',
+        ]);
+
+        // Validate exactly 1 Ketua
+        $ketua = collect($validated['pengurus'])->firstWhere('jabatan', 'Ketua');
+        $ketuaCount = collect($validated['pengurus'])->where('jabatan', 'Ketua')->count();
+        if ($ketuaCount !== 1) {
+            throw ValidationException::withMessages([
+                'pengurus' => ['Harus ada tepat 1 pengurus dengan jabatan Ketua'],
+            ]);
+        }
+
+        return DB::transaction(function () use ($lembaga, $validated, $ketua) {
+            $lembaga->update([
+                'nama' => $validated['nama'],
+                'jenis' => $validated['jenis'] ?? $lembaga->jenis,
+                'ketua_nama' => $ketua['nama'] ?? $lembaga->ketua_nama,
+                'ketua_nik' => $ketua['nik'] ?? $lembaga->ketua_nik,
+                'telepon' => $validated['telepon'] ?? $lembaga->telepon,
+                'email' => $validated['email'] ?? $lembaga->email,
+                'alamat' => $validated['alamat'],
+                'id_provinsi' => $validated['id_provinsi'] ?? $lembaga->id_provinsi,
+                'id_kabupaten' => $validated['id_kabupaten'] ?? $lembaga->id_kabupaten,
+                'id_kecamatan' => $validated['id_kecamatan'] ?? $lembaga->id_kecamatan,
+                'id_kelurahan' => $validated['id_kelurahan'] ?? $validated['wilayah_id'] ?? $lembaga->id_kelurahan,
+                'kode_pos' => $validated['kode_pos'] ?? $lembaga->kode_pos,
+            ]);
+
+            // Delete existing pengurus
+            Pengurus::where('lembaga_id', $lembaga->id)->delete();
+
+            $jabatanMap = PengurusJabatan::whereIn('nama', ['Ketua', 'Sekretaris', 'Bendahara', 'Anggota'])
+                ->pluck('id', 'nama')
+                ->toArray();
+
+            foreach ($validated['pengurus'] as $pengurusData) {
+                $person = null;
+                if (!empty($pengurusData['nik'])) {
+                    $person = Person::firstOrCreate(
+                        ['nik' => $pengurusData['nik']],
+                        ['nama' => $pengurusData['nama']]
+                    );
+                } else {
+                    $person = Person::create([
+                        'nik' => 'TMP' . time() . rand(100, 999),
+                        'nama' => $pengurusData['nama'],
+                    ]);
+                }
+
+                Pengurus::create([
+                    'jenis_pengurus' => 'Lembaga',
+                    'lembaga_id' => $lembaga->id,
+                    'person_id' => $person->id,
+                    'pengurus_jabatan_id' => $jabatanMap[$pengurusData['jabatan']] ?? null,
+                    'is_active' => true,
+                ]);
+            }
+
+            return response()->json([
+                'id' => $lembaga->id,
+                'lembaga_id' => $lembaga->id,
+                'nama' => $lembaga->nama,
+                'jenis' => $lembaga->jenis,
+                'ketua_nama' => $lembaga->ketua_nama,
+                'ketua_nik' => $lembaga->ketua_nik,
+                'telepon' => $lembaga->telepon,
+                'email' => $lembaga->email,
+                'alamat' => $lembaga->alamat,
+                'id_provinsi' => $lembaga->id_provinsi,
+                'id_kabupaten' => $lembaga->id_kabupaten,
+                'id_kecamatan' => $lembaga->id_kecamatan,
+                'id_kelurahan' => $lembaga->id_kelurahan,
+                'kode_pos' => $lembaga->kode_pos,
+                'pengurus' => $validated['pengurus'],
+            ]);
+        });
+    }
+}

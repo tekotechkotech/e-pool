@@ -1,0 +1,265 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+
+class PengajuanBantuan extends Model
+{
+    protected $fillable = [
+        'nomor_pengajuan',
+        'jenis_permohonan',
+        'lembaga_id',
+        'pic_lembaga_id',
+        'mustahik_id',
+        'created_by',
+        'mustahik_nama_snapshot',
+        'mustahik_nik_snapshot',
+        'mustahik_kontak_snapshot',
+        'mustahik_alamat_snapshot',
+        'lembaga_nama_snapshot',
+        'lembaga_kontak_snapshot',
+        'lembaga_alamat_snapshot',
+        'pic_nama_snapshot',
+        'pic_kontak_snapshot',
+        'judul_surat',
+        'nomor_surat',
+        'tanggal_surat',
+        'tanggal_pelaksanaan',
+        'tanggal_diterima',
+        'jumlah_orang',
+        'jumlah_kk',
+        'jumlah_unit',
+        'is_rekomendasi',
+        'uraian_permohonan',
+        'ditolak_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'tanggal_surat'       => 'date',
+            'tanggal_pelaksanaan' => 'date',
+            'tanggal_diterima'    => 'date',
+            'is_rekomendasi'      => 'boolean',
+            'ditolak_at'          => 'datetime',
+        ];
+    }
+
+    public function lembaga(): BelongsTo
+    {
+        return $this->belongsTo(Lembaga::class);
+    }
+
+    public function upz(): BelongsTo
+    {
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
+    }
+
+    public function picLembaga(): BelongsTo
+    {
+        return $this->belongsTo(Pengurus::class, 'pic_lembaga_id');
+    }
+
+    public function picUpz(): BelongsTo
+    {
+        return $this->belongsTo(Pengurus::class, 'pic_lembaga_id');
+    }
+
+    public function mustahik(): BelongsTo
+    {
+        return $this->belongsTo(Mustahik::class);
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function penyalurans(): HasMany
+    {
+        return $this->hasMany(PengajuanPenyaluran::class, 'pengajuan_id');
+    }
+
+    public function penyaluran(): HasOne
+    {
+        return $this->hasOne(PengajuanPenyaluran::class, 'pengajuan_id');
+    }
+
+    public function lpjBa(): HasOne
+    {
+        return $this->hasOne(PengajuanLpjBa::class, 'pengajuan_id');
+    }
+
+    public function disposisis()
+    {
+        return $this->hasManyThrough(PengajuanDisposisi::class, PengajuanMustahik::class, 'pengajuan_id', 'pengajuan_mustahik_id');
+    }
+
+    public function disposisi()
+    {
+        return $this->hasOneThrough(PengajuanDisposisi::class, PengajuanMustahik::class, 'pengajuan_id', 'pengajuan_mustahik_id');
+    }
+
+    public function pengajuanMustahiks(): HasMany
+    {
+        return $this->hasMany(PengajuanMustahik::class, 'pengajuan_id');
+    }
+
+    public function mustahiks()
+    {
+        return $this->belongsToMany(Mustahik::class, 'pengajuan_mustahiks', 'pengajuan_id', 'mustahik_id');
+    }
+
+    public function getProgramAttribute()
+    {
+        return $this->pengajuanMustahiks->first()?->program;
+    }
+
+    public function getSubprogramAttribute()
+    {
+        return $this->pengajuanMustahiks->first()?->subprogram;
+    }
+
+    public function getIsUpzAttribute(): bool
+    {
+        return in_array($this->jenis_permohonan, ['UPZ/Lembaga', 'Lembaga', 'UPZ']) || !is_null($this->lembaga_id);
+    }
+
+    public function persetujuan(): HasOne
+    {
+        return $this->hasOne(PengajuanPersetujuan::class, 'pengajuan_id');
+    }
+
+    public function lampiranSurat(): MorphOne
+    {
+        return $this->morphOne(Lampiran::class, 'lampiranable')->where('category', 'surat');
+    }
+
+    public function getFileSuratAttribute(): ?string
+    {
+        return $this->lampiranSurat?->file_path;
+    }
+
+    public function lampiranPengajuan(): MorphMany
+    {
+        return $this->morphMany(Lampiran::class, 'lampiranable')->where('category', 'pengajuan');
+    }
+
+    public function lampirans(): MorphMany
+    {
+        return $this->morphMany(Lampiran::class, 'lampiranable');
+    }
+
+    public function getTotalDisetujuiAttribute(): int
+    {
+        return (int) $this->pengajuanMustahiks->sum('nominal');
+    }
+
+    public function getTotalDisalurkanAttribute(): int
+    {
+        return (int) $this->pengajuanMustahiks->whereNotNull('tanggal_penyaluran')->sum('nominal');
+    }
+
+    public function getIsPenyaluranAttribute(): bool
+    {
+        return $this->pengajuanMustahiks->contains(fn($pm) => !is_null($pm->tanggal_penyaluran)) || $this->penyaluran()->exists();
+    }
+
+    public function getStatusTahapanAttribute(): string
+    {
+        if ($this->ditolak_at) {
+            return 'Ditolak';
+        }
+
+        // Cek dari akhir:
+        // 1. LPJ
+        $hasLpj = $this->lpjBa !== null;
+        if ($hasLpj) {
+            return 'Selesai';
+        }
+
+        // 2. Penyaluran
+        $hasSalur = ($this->penyaluran !== null && ($this->penyaluran->is_salur ?? true))
+            || $this->pengajuanMustahiks->contains(fn($pm) => !is_null($pm->tanggal_penyaluran));
+        if ($hasSalur) {
+            return 'Menunggu LPJ';
+        }
+
+        // 3. Disposisi
+        $totalMustahik = $this->pengajuanMustahiks->count();
+        $hasDisposisi = ($this->persetujuan && $this->persetujuan->status === 'disetujui')
+            || ($totalMustahik > 0 && $this->pengajuanMustahiks->every(fn($pm) => $pm->disposisi !== null || ($pm->nominal > 0 && $pm->sumber_dana_id !== null)));
+        if ($hasDisposisi) {
+            return 'Menunggu Penyaluran';
+        }
+
+        // 4. Survey
+        $hasSurvey = $totalMustahik > 0 && $this->pengajuanMustahiks->every(fn($pm) => $pm->survey && !empty($pm->survey->hasil_akhir));
+        if ($hasSurvey) {
+            return 'Menunggu Disposisi';
+        }
+
+        // 5. Default / belum survey
+        return 'Menunggu Survey';
+    }
+
+    public function getStatusTahapanBadgeAttribute(): array
+    {
+        return match ($this->status_tahapan) {
+            'Selesai' => [
+                'label' => 'Selesai',
+                'bg' => 'bg-emerald-100',
+                'text' => 'text-emerald-700',
+                'dot' => 'bg-emerald-500',
+            ],
+            'Menunggu LPJ' => [
+                'label' => 'Menunggu LPJ',
+                'bg' => 'bg-purple-100',
+                'text' => 'text-purple-700',
+                'dot' => 'bg-purple-500',
+            ],
+            'Menunggu Penyaluran' => [
+                'label' => 'Menunggu Penyaluran',
+                'bg' => 'bg-blue-100',
+                'text' => 'text-blue-700',
+                'dot' => 'bg-blue-500',
+            ],
+            'Menunggu Disposisi' => [
+                'label' => 'Menunggu Disposisi',
+                'bg' => 'bg-amber-100',
+                'text' => 'text-amber-700',
+                'dot' => 'bg-amber-500',
+            ],
+            'Menunggu Survey' => [
+                'label' => 'Menunggu Survey',
+                'bg' => 'bg-slate-100',
+                'text' => 'text-slate-700',
+                'dot' => 'bg-slate-500',
+            ],
+            'Ditolak' => [
+                'label' => 'Ditolak',
+                'bg' => 'bg-rose-100',
+                'text' => 'text-rose-700',
+                'dot' => 'bg-rose-500',
+            ],
+            default => [
+                'label' => $this->status_tahapan,
+                'bg' => 'bg-slate-100',
+                'text' => 'text-slate-700',
+                'dot' => 'bg-slate-500',
+            ],
+        };
+    }
+
+    public function pengadaanBarangs(): HasMany
+    {
+        return $this->hasMany(PengadaanBarang::class, 'pengajuan_id');
+    }
+}
+

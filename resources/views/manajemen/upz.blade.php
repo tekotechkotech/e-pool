@@ -1,0 +1,217 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="space-y-6" x-data="{
+    isFormOpen: false,
+    isEditing: false,
+    upz_id: null,
+    nama: '',
+    ketua_nama: '',
+    ketua_nik: '',
+    jenis: 'UPZ Masjid',
+    telepon: '',
+    handphone: '',
+    email: '',
+    is_active: true,
+    wilayah: wilayahSelector(),
+
+    async init() {
+        await this.wilayah.init();
+    },
+
+    openCreate() {
+        this.upz_id = null;
+        this.nama = '';
+        this.ketua_nama = '';
+        this.ketua_nik = '';
+        this.jenis = 'UPZ Masjid';
+        this.telepon = '';
+        this.handphone = '';
+        this.email = '';
+        this.is_active = true;
+        this.wilayah.setValues({
+            alamat: '',
+            id_provinsi: '',
+            id_kabupaten: '',
+            id_kecamatan: '',
+            id_kelurahan: '',
+            kode_pos: ''
+        });
+        this.isEditing = false;
+        this.isFormOpen = true;
+    },
+
+    openEdit(u) {
+        this.upz_id = u.id;
+        this.nama = u.nama;
+        this.ketua_nama = u.ketua_nama || '';
+        this.ketua_nik = u.ketua_nik || '';
+        this.jenis = u.jenis || 'UPZ Masjid';
+        this.telepon = u.telepon || '';
+        this.handphone = u.handphone || u.telepon || '';
+        this.email = u.email || '';
+        this.is_active = !!u.is_active;
+        this.wilayah.setValues({
+            alamat: u.alamat || '',
+            id_provinsi: u.id_provinsi || '',
+            id_kabupaten: u.id_kabupaten || '',
+            id_kecamatan: u.id_kecamatan || '',
+            id_kelurahan: u.id_kelurahan || '',
+            kode_pos: u.kode_pos || ''
+        });
+        this.isEditing = true;
+        this.isFormOpen = true;
+    }
+}">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Unit Pengumpul Zakat (UPZ)</h2>
+            <p class="mt-1 text-sm text-gray-500">Kelola data UPZ instansi, masjid, dan lembaga mitra BAZNAS.</p>
+        </div>
+        <button type="button" @click="openCreate()" class="bg-[#118243] hover:bg-[#0d6835] text-white font-bold py-2.5 px-4 rounded-xl shadow-sm flex items-center gap-2 text-sm transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Tambah UPZ Baru
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 sm:rounded-2xl overflow-hidden">
+        <div class="p-4 border-b border-slate-100 flex items-center gap-4 bg-slate-50/50">
+            <form method="GET" action="{{ route('manajemen.upz') }}" class="relative flex-1 max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input type="text" name="search" value="{{ $search }}" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] sm:text-sm shadow-xs transition-all" placeholder="Cari Nama UPZ, Ketua, atau Jenis...">
+            </form>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama UPZ</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Jenis UPZ</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ketua / Kontak</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($upzs as $upz)
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-bold text-gray-900">{{ $upz->nama }}</div>
+                            <div class="text-xs text-gray-500">{{ $upz->penguruses_count }} Anggota Pengurus</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2.5 py-1 text-xs font-semibold bg-slate-100 text-slate-700 rounded-md">
+                                {{ $upz->jenis }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 font-semibold">{{ $upz->ketua_nama ?: '-' }}</div>
+                            <div class="text-xs text-gray-500">{{ $upz->handphone ?: $upz->telepon ?: '-' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if($upz->is_active)
+                                <span class="px-2 py-0.5 text-[10px] font-bold bg-green-100 text-green-700 rounded-full">Aktif</span>
+                            @else
+                                <span class="px-2 py-0.5 text-[10px] font-bold bg-rose-100 text-rose-700 rounded-full">Nonaktif</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route('manajemen.upz.detail', $upz->id) }}" class="p-2 text-[#118243] bg-[#eaf5ef] hover:bg-[#118243] hover:text-white rounded-lg transition-all" title="Detail UPZ">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </a>
+                                <button type="button" @click="openEdit({{ $upz->toJson() }})" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-lg transition-all" title="Edit UPZ">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                </button>
+                                 <form method="POST" action="{{ route('manajemen.upz.destroy', $upz->id) }}" data-confirm="Yakin ingin menghapus data UPZ ini?" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white rounded-lg transition-all" title="Hapus UPZ">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">Belum ada data UPZ terdaftar.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @if($upzs->hasPages())
+        <div class="px-6 py-4 border-t border-slate-100">
+            {{ $upzs->links() }}
+        </div>
+        @endif
+    </div>
+
+    <!-- Modal Form Create / Edit UPZ -->
+    <div x-show="isFormOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl border border-slate-200 my-8">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-base text-gray-900" x-text="isEditing ? 'Edit Data UPZ' : 'Tambah UPZ Baru'"></h3>
+                <button type="button" @click="isFormOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Tutup">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form method="POST" action="{{ route('manajemen.upz.store') }}" class="space-y-4 text-xs">
+                @csrf
+                <input type="hidden" name="upz_id" x-model="upz_id">
+
+                <x-form.lembaga-fields
+                    alpine-model="true"
+                    label-nama="Nama UPZ"
+                    placeholder-nama="Contoh: UPZ Masjid Agung Cilacap"
+                    :full-width-nama="true"
+                    :show-jenis="true"
+                    :jenis-options="[
+                        'UPZ Masjid' => 'UPZ Masjid',
+                        'UPZ Musholla' => 'UPZ Musholla',
+                        'UPZ Instansi Pemerintah' => 'UPZ Instansi Pemerintah',
+                        'UPZ BUMN / BUMD' => 'UPZ BUMN / BUMD',
+                        'UPZ Perusahaan Swasta' => 'UPZ Perusahaan Swasta',
+                        'UPZ Sekolah / Pesantren' => 'UPZ Sekolah / Pesantren',
+                        'Lembaga / Organisasi' => 'Lembaga / Organisasi',
+                    ]"
+                    :show-ketua="true"
+                    :show-ketua-nik="false"
+                    label-ketua="Nama Ketua UPZ"
+                    name-telepon="handphone"
+                    :show-email="true"
+                    grid-class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                />
+
+                <!-- Alamat & Wilayah -->
+                <x-form.wilayah-select
+                    :standalone="false"
+                    alpine-scope="wilayah"
+                    title="Informasi Alamat & Lokasi Wilayah"
+                    grid-class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                />
+
+                <div class="pt-2">
+                    <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+                        <input type="checkbox" name="is_active" value="1" x-model="is_active" class="rounded text-[#118243]">
+                        <span>Status Aktif</span>
+                    </label>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" @click="isFormOpen = false" class="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#118243] hover:bg-[#0d6835] text-white font-bold rounded-xl shadow-sm">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

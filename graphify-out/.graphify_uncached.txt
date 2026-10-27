@@ -1,0 +1,4 @@
+C:\FAIZ\dev\baznas\e-disday\.yarnrc.yml
+C:\FAIZ\dev\baznas\e-disday\README.md
+C:\FAIZ\dev\baznas\e-disday\public\robots.txt
+C:\FAIZ\dev\baznas\e-disday\public\images\logo-baznas.png
