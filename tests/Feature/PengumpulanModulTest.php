@@ -190,4 +190,38 @@ class PengumpulanModulTest extends TestCase
             'referensi_id' => $setoran->id,
         ]);
     }
+
+    public function test_muzakki_seeder_generates_minimum_records(): void
+    {
+        $upz1 = Upz::create([
+            'nama' => 'UPZ Baiturrahman',
+            'kode_simba' => 'UPZ-001',
+            'is_upz' => true,
+            'is_active' => true,
+        ]);
+
+        $upz2 = Upz::create([
+            'nama' => 'UPZ Al-Ikhlas',
+            'kode_simba' => 'UPZ-002',
+            'is_upz' => true,
+            'is_active' => true,
+        ]);
+
+        $this->seed(\Database\Seeders\MuzakkiSeeder::class);
+
+        $this->assertGreaterThanOrEqual(10, Muzakki::where('lembaga_id', $upz1->id)->count());
+        $this->assertGreaterThanOrEqual(10, Muzakki::where('lembaga_id', $upz2->id)->count());
+
+        $sampleMuzakki = Muzakki::where('lembaga_id', $upz1->id)->first();
+        $this->assertNotNull($sampleMuzakki);
+        $this->assertNotNull($sampleMuzakki->person);
+        $this->assertNotEmpty($sampleMuzakki->person->nik);
+        $this->assertNotEmpty($sampleMuzakki->person->nama);
+
+        // Run again to verify idempotency (should not duplicate if minimum is already met)
+        $countBefore = Muzakki::count();
+        $this->seed(\Database\Seeders\MuzakkiSeeder::class);
+        $this->assertEquals($countBefore, Muzakki::count());
+    }
 }
+
