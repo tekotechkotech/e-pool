@@ -20,8 +20,6 @@ class DatabaseSeeder extends Seeder
             PengurusUpzSeeder::class,
             MuzakkiSeeder::class,
             MustahikSeeder::class,
-            PengajuanBantuanSeeder::class,
-            PengajuanUmumTahapanSeeder::class,
             MuzakkiDanSetoranSeeder::class,
         ]);
     }

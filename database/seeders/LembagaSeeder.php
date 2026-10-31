@@ -35,15 +35,15 @@ class LembagaSeeder extends Seeder
                 'is_upz'  => true,
                 'nama'    => 'UPZ Masjid Al-Ikhlas',
                 'jenis'   => 'Masjid',
-                'ketua_nama' => 'H. Asep Saepudin',
-                'ketua_nik'  => '3201020101700001',
+                'ketua_nama' => 'H. Mahfudz',
+                'ketua_nik'  => '3201020101700009',
                 'alamat'  => 'Jl. Raya Cimahi No. 12',
                 'handphone' => '081111111111',
                 'email'   => 'alikhlas@upz.id',
                 'id_provinsi'  => '32',
                 'id_kabupaten' => '32.77', // Kota Cimahi
                 'pengurus' => [
-                    ['nama' => 'H. Asep Saepudin',   'jabatan' => 'Ketua',      'nik' => '3201020101700001', 'nomor_kk' => '3201020101700000'],
+                    ['nama' => 'H. Mahfudz',          'jabatan' => 'Ketua',      'nik' => '3201020101700009', 'nomor_kk' => '3201020101700000'],
                     ['nama' => 'Deden Suryadi',       'jabatan' => 'Sekretaris', 'nik' => '3201020202800002', 'nomor_kk' => '3201020101700000'],
                     ['nama' => 'Yanti Nurfitri',      'jabatan' => 'Bendahara',  'nik' => '3201020303850003', 'nomor_kk' => '3201020303850000'],
                 ],
