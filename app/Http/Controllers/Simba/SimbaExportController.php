@@ -123,17 +123,50 @@ class SimbaExportController extends Controller
     {
         $lembagaId = $request->query('lembaga_id');
         $periode = $request->query('periode');
+        $bulan = $request->query('bulan');
+        $tahun = $request->query('tahun');
         $tanggalMulai = $request->query('tanggal_mulai');
         $tanggalSelesai = $request->query('tanggal_selesai');
         $isDownload = $request->query('download') === 'csv';
 
+        $daftarBulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        $daftarTahun = range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+
+        $namaBulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $bulanKeAngka = array_flip($namaBulan);
+        $bulanNama = $bulan ? (is_numeric($bulan) ? ($namaBulan[(int)$bulan] ?? null) : $bulan) : null;
+        $bulanNum = $bulan ? (is_numeric($bulan) ? (int)$bulan : ($bulanKeAngka[$bulan] ?? null)) : null;
+
         $query = SetoranUpzItem::with(['setoranUpz.upz', 'muzakki.person'])
-            ->whereHas('setoranUpz', function ($sq) use ($lembagaId, $periode, $tanggalMulai, $tanggalSelesai) {
+            ->whereHas('setoranUpz', function ($sq) use ($lembagaId, $periode, $bulan, $bulanNama, $bulanNum, $tahun, $tanggalMulai, $tanggalSelesai) {
                 if ($lembagaId) {
                     $sq->where('lembaga_id', $lembagaId);
                 }
                 if ($periode) {
                     $sq->where('periode', 'like', "%{$periode}%");
+                }
+                if ($bulan) {
+                    $sq->where(function ($bq) use ($bulanNama, $bulanNum) {
+                        if ($bulanNama) {
+                            $bq->where('periode', 'like', "%{$bulanNama}%");
+                        }
+                        if ($bulanNum) {
+                            $bq->orWhereMonth('tanggal_setor', $bulanNum);
+                        }
+                    });
+                }
+                if ($tahun && $tahun !== 'semua') {
+                    $sq->where(function ($tq) use ($tahun) {
+                        $tq->where('periode', 'like', "%{$tahun}%")
+                            ->orWhereYear('tanggal_setor', $tahun);
+                    });
                 }
                 if ($tanggalMulai) {
                     $sq->whereDate('tanggal_setor', '>=', $tanggalMulai);
@@ -206,8 +239,12 @@ class SimbaExportController extends Controller
             'upzs',
             'lembagaId',
             'periode',
+            'bulan',
+            'tahun',
             'tanggalMulai',
-            'tanggalSelesai'
+            'tanggalSelesai',
+            'daftarBulan',
+            'daftarTahun'
         ));
     }
 }
