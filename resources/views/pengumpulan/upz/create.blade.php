@@ -1,5 +1,27 @@
 @extends('layouts.app')
 
+@php
+    $daftarBulan = $daftarBulan ?? [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    $currentBulanIndo = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ][(int)date('n')];
+    $selectedBulan = old('bulan');
+    $selectedTahun = old('tahun');
+    if (!$selectedBulan && old('periode')) {
+        $parts = explode(' ', old('periode'));
+        $selectedBulan = $parts[0] ?? null;
+        $selectedTahun = $parts[1] ?? null;
+    }
+    $selectedBulan = $selectedBulan ?: $currentBulanIndo;
+    $selectedTahun = $selectedTahun ?: date('Y');
+    $daftarTahun = $daftarTahun ?? range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
+@endphp
+
 @section('content')
 <div class="max-w-5xl mx-auto space-y-6" x-data="setoranForm()">
     <div class="flex items-center justify-between">
@@ -30,8 +52,8 @@
             <p class="text-xs text-slate-500">Pilih UPZ dan tentukan tanggal setoran serta periode.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="md:col-span-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="sm:col-span-2 lg:col-span-1">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Pengumpul Zakat (UPZ) *</label>
                 <select name="lembaga_id" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
                     <option value="">-- Pilih UPZ --</option>
@@ -47,11 +69,24 @@
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Periode *</label>
-                <input type="text" name="periode" value="{{ old('periode', 'Bulan ' . date('F Y')) }}" required placeholder="Contoh: Januari 2026" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Bulan Periode *</label>
+                <select name="bulan" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    @foreach($daftarBulan as $b)
+                        <option value="{{ $b }}" {{ $selectedBulan === $b ? 'selected' : '' }}>{{ $b }}</option>
+                    @endforeach
+                </select>
             </div>
 
-            <div class="md:col-span-3">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tahun Periode *</label>
+                <select name="tahun" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    @foreach($daftarTahun as $t)
+                        <option value="{{ $t }}" {{ (string)$selectedTahun === (string)$t ? 'selected' : '' }}>{{ $t }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="sm:col-span-2 lg:col-span-4">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Keterangan</label>
                 <input type="text" name="keterangan" value="{{ old('keterangan') }}" placeholder="Keterangan transfer / bukti bank..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
             </div>
