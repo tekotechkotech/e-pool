@@ -581,4 +581,59 @@ class SetoranUpzImportDanAutoLoadTest extends TestCase
             unlink($tempCsv);
         }
     }
+
+    public function test_create_view_renders_workspace_elements(): void
+    {
+        $response = $this->get(route('pengumpulan.upz.create'));
+
+        $response->assertStatus(200);
+        $response->assertSee('enctype="multipart/form-data"', false);
+        $response->assertSee('setoranWorkspace()', false);
+        $response->assertSee('searchUpz()', false);
+        $response->assertSee('parse-inline-excel', false);
+        $response->assertSee('quick-store-muzakki', false);
+        $response->assertSee('showFitrahTitipan', false);
+        $response->assertSee('applyBulkNominal()', false);
+        $response->assertSee('markAllNihil()', false);
+    }
+
+    public function test_index_view_renders_bukti_transfer_badge(): void
+    {
+        SetoranUpz::create([
+            'nomor_setoran' => 'SET-UPZ/2026/11/0001',
+            'lembaga_id' => $this->upz->id,
+            'tanggal_setor' => '2026-11-02',
+            'periode' => 'November 2026',
+            'total_zakat' => 500000,
+            'total_infak' => 100000,
+            'total_fitrah' => 0,
+            'total_titipan' => 0,
+            'total_jumlah' => 600000,
+            'bukti_setor' => 'bukti_setor/test.jpg',
+            'status' => 'Terverifikasi',
+            'user_id' => $this->user->id,
+        ]);
+
+        SetoranUpz::create([
+            'nomor_setoran' => 'SET-UPZ/2026/11/0002',
+            'lembaga_id' => $this->upz->id,
+            'tanggal_setor' => '2026-11-02',
+            'periode' => 'November 2026',
+            'total_zakat' => 200000,
+            'total_infak' => 50000,
+            'total_fitrah' => 0,
+            'total_titipan' => 0,
+            'total_jumlah' => 250000,
+            'bukti_setor' => null,
+            'status' => 'Terverifikasi',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->get(route('pengumpulan.upz.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Ada Bukti');
+        $response->assertSee('Tanpa Bukti');
+        $response->assertDontSee('onsubmit="return confirm');
+    }
 }
