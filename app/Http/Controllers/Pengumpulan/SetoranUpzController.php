@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Pengumpulan;
 
+use App\Exports\SetoranUpzTemplateExport;
 use App\Http\Controllers\Controller;
+use App\Imports\SetoranUpzImport;
 use App\Models\Dana;
 use App\Models\DanaTransaksi;
 use App\Models\Muzakki;
+use App\Models\Person;
 use App\Models\SetoranUpz;
 use App\Models\SetoranUpzItem;
 use App\Models\Upz;
@@ -13,6 +16,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SetoranUpzController extends Controller
 {
@@ -36,6 +41,56 @@ class SetoranUpzController extends Controller
         }
 
         return sprintf("SET-UPZ/%s/%s/%04d", $tahun, $bulan, $increment);
+    }
+
+    private function parseNominal(mixed $value): int
+    {
+        if (is_int($value)) {
+            return max(0, $value);
+        }
+
+        if (is_float($value)) {
+            return max(0, (int) round($value));
+        }
+
+        if (is_string($value)) {
+            $cleaned = trim($value);
+            // Hapus prefix Rp atau non-angka kecuali koma dan titik
+            $cleaned = preg_replace('/[^\d,\.]/', '', $cleaned);
+            if ($cleaned === '') {
+                return 0;
+            }
+
+            if (str_contains($cleaned, '.') && str_contains($cleaned, ',')) {
+                if (strrpos($cleaned, ',') > strrpos($cleaned, '.')) {
+                    // Indonesian: 1.500.000,00
+                    $parts = explode(',', $cleaned);
+                    return max(0, (int) str_replace('.', '', $parts[0]));
+                } else {
+                    // US: 1,500,000.00
+                    $parts = explode('.', $cleaned);
+                    return max(0, (int) str_replace(',', '', $parts[0]));
+                }
+            } elseif (str_contains($cleaned, '.')) {
+                if (preg_match('/\.\d{3}(\.|$)/', $cleaned)) {
+                    // Indonesian thousands: e.g. 50.000 atau 1.500.000
+                    return max(0, (int) str_replace('.', '', $cleaned));
+                } else {
+                    return max(0, (int) round((float) $cleaned));
+                }
+            } elseif (str_contains($cleaned, ',')) {
+                if (preg_match('/,\d{3}(,|$)/', $cleaned)) {
+                    return max(0, (int) str_replace(',', '', $cleaned));
+                } else {
+                    $parts = explode(',', $cleaned);
+                    return max(0, (int) $parts[0]);
+                }
+            }
+
+            return max(0, (int) $cleaned);
+        }
+
+        return 0;
     }
 
     public function index(Request $request)
@@ -136,6 +191,386 @@ class SetoranUpzController extends Controller
         return view('pengumpulan.upz.create', compact('upzs', 'muzakkis', 'daftarBulan', 'daftarTahun'));
     }
 
+    public function getMuzakkiByUpz($lembagaId)
+    {
+        $query = Muzakki::with('person');
+
+        if (!empty($lembagaId) && $lembagaId !== 'all') {
+            $query->where('lembaga_id', $lembagaId);
+        }
+
+        $muzakkis = $query->get()->map(function ($m) {
+            return [
+                'id' => $m->id,
+                'npwz' => $m->npwz ?? '',
+                'nama' => $m->person?->nama ?? '',
+                'nik' => $m->person?->nik ?? '',
+            ];
+        });
+
+        return response()->json($muzakkis);
+    }
+
+    public function downloadTemplate($lembagaId = null)
+    {
+        $targetLembagaId = $lembagaId ?: request('lembaga_id');
+        $targetLembagaId = (!empty($targetLembagaId) && $targetLembagaId !== 'all') ? (int)$targetLembagaId : null;
+
+        $upzName = 'all';
+        if ($targetLembagaId) {
+            $upz = Upz::find($targetLembagaId);
+            if ($upz) {
+                $upzName = Str::slug($upz->nama, '_');
+            }
+        }
+
+        $periode = request('periode') ? Str::slug(request('periode'), '_') : date('Y_m');
+        $fileName = "template_setoran_upz_{$upzName}_{$periode}.xlsx";
+
+        return Excel::download(new SetoranUpzTemplateExport($targetLembagaId), $fileName);
+    }
+
+    public function importPreview(Request $request)
+    {
+        $validated = $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+            'lembaga_id' => 'required|exists:lembagas,id',
+            'tanggal_setor' => 'required|date',
+            'bulan' => 'required|string|max:50',
+            'tahun' => 'required|numeric',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $periode = trim($validated['bulan'] . ' ' . $validated['tahun']);
+        $upz = Upz::findOrFail($validated['lembaga_id']);
+        $uploadedFile = $request->file('file');
+
+        try {
+            $sheets = Excel::toArray(new SetoranUpzImport, $uploadedFile);
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal membaca file spreadsheet: ' . $e->getMessage()]);
+        }
+
+        $rows = $sheets[0] ?? [];
+
+        // Preload seluruh muzakki untuk pencocokan cepat tanpa N+1 query
+        $allMuzakkis = Muzakki::with('person')->get();
+        $byId = [];
+        $byNpwz = [];
+        $byNik = [];
+
+        foreach ($allMuzakkis as $m) {
+            $byId[$m->id] = $m;
+            if (!empty($m->npwz)) {
+                $normNpwz = strtolower(preg_replace('/\s+/', '', (string)$m->npwz));
+                $byNpwz[$normNpwz] = $m;
+            }
+            if ($m->person && !empty($m->person->nik)) {
+                $normNik = preg_replace('/\s+/', '', (string)$m->person->nik);
+                $byNik[$normNik] = $m;
+            }
+        }
+
+        $items = [];
+
+        foreach ($rows as $row) {
+            // Dukung pembacaan berbasis slug heading row maupun key alternatif
+            $rawId = $row['id_muzakki'] ?? $row['id'] ?? $row['id_muzaki'] ?? null;
+            $rawNpwz = $row['npwz'] ?? null;
+            $rawNama = $row['nama_lengkap'] ?? $row['nama'] ?? null;
+            $rawNik = $row['nik'] ?? null;
+            $rawZakat = $row['zakat_rp'] ?? $row['zakat'] ?? $row['nominal_zakat'] ?? 0;
+            $rawInfak = $row['infak_rp'] ?? $row['infak'] ?? $row['nominal_infak'] ?? 0;
+            $rawFitrah = $row['fitrah_rp'] ?? $row['fitrah'] ?? $row['nominal_fitrah'] ?? 0;
+            $rawTitipan = $row['titipan_rp'] ?? $row['titipan'] ?? $row['nominal_titipan'] ?? 0;
+            $rawKet = $row['keterangan'] ?? null;
+
+            $cleanId = is_numeric($rawId) ? (int)$rawId : null;
+            $cleanNpwz = is_string($rawNpwz) ? trim($rawNpwz) : ($rawNpwz ? (string)$rawNpwz : '');
+            $cleanNama = is_string($rawNama) ? trim($rawNama) : ($rawNama ? (string)$rawNama : '');
+            $cleanNik = is_string($rawNik) ? trim($rawNik) : ($rawNik ? (string)$rawNik : '');
+            $cleanKet = is_string($rawKet) ? trim($rawKet) : ($rawKet ? (string)$rawKet : '');
+
+            $nominalZakat = $this->parseNominal($rawZakat);
+            $nominalInfak = $this->parseNominal($rawInfak);
+            $nominalFitrah = $this->parseNominal($rawFitrah);
+            $nominalTitipan = $this->parseNominal($rawTitipan);
+            $totalBaris = $nominalZakat + $nominalInfak + $nominalFitrah + $nominalTitipan;
+
+            // Lewati baris kosong cadangan jika seluruh kolom identitas dan nominal 0/kosong
+            if (empty($cleanId) && empty($cleanNpwz) && empty($cleanNama) && empty($cleanNik) && $totalBaris === 0) {
+                continue;
+            }
+
+            // Pencocokan Muzakki: ID -> NPWZ -> NIK
+            $matchedMuzakki = null;
+            if ($cleanId && isset($byId[$cleanId])) {
+                $matchedMuzakki = $byId[$cleanId];
+            } elseif (!empty($cleanNpwz)) {
+                $searchNpwz = strtolower(preg_replace('/\s+/', '', $cleanNpwz));
+                if (isset($byNpwz[$searchNpwz])) {
+                    $matchedMuzakki = $byNpwz[$searchNpwz];
+                }
+            }
+
+            if (!$matchedMuzakki && !empty($cleanNik)) {
+                $searchNik = preg_replace('/\s+/', '', $cleanNik);
+                if (isset($byNik[$searchNik])) {
+                    $matchedMuzakki = $byNik[$searchNik];
+                }
+            }
+
+            // Klasifikasi status: terdaftar, nihil, atau belum_terdaftar
+            if ($matchedMuzakki) {
+                if (empty($cleanNama)) {
+                    $cleanNama = $matchedMuzakki->person?->nama ?? '';
+                }
+                if (empty($cleanNik)) {
+                    $cleanNik = $matchedMuzakki->person?->nik ?? '';
+                }
+                if (empty($cleanNpwz)) {
+                    $cleanNpwz = $matchedMuzakki->npwz ?? '';
+                }
+
+                $status = ($totalBaris > 0) ? 'terdaftar' : 'nihil';
+            } else {
+                $status = 'belum_terdaftar';
+            }
+
+            $items[] = [
+                'row_number' => count($items) + 1,
+                'muzakki_id' => $matchedMuzakki?->id ?? null,
+                'nama' => $cleanNama,
+                'nik' => $cleanNik,
+                'npwz' => $cleanNpwz,
+                'nominal_zakat' => $nominalZakat,
+                'nominal_infak' => $nominalInfak,
+                'nominal_fitrah' => $nominalFitrah,
+                'nominal_titipan' => $nominalTitipan,
+                'total' => $totalBaris,
+                'keterangan' => $cleanKet,
+                'status' => $status,
+            ];
+        }
+
+        if (empty($items)) {
+            return back()->withErrors(['file' => 'File spreadsheet tidak berisi baris data setoran yang dapat diproses.']);
+        }
+
+        $countTerdaftar = 0;
+        $countNihil = 0;
+        $countBelumTerdaftar = 0;
+        $totalNominalAll = 0;
+
+        foreach ($items as $it) {
+            if ($it['status'] === 'terdaftar') $countTerdaftar++;
+            elseif ($it['status'] === 'nihil') $countNihil++;
+            elseif ($it['status'] === 'belum_terdaftar') $countBelumTerdaftar++;
+
+            $totalNominalAll += $it['total'];
+        }
+
+        $stats = [
+            'total' => count($items),
+            'terdaftar' => $countTerdaftar,
+            'nihil' => $countNihil,
+            'belum_terdaftar' => $countBelumTerdaftar,
+            'total_nominal' => $totalNominalAll,
+        ];
+
+        $tanggalSetor = $validated['tanggal_setor'];
+        $bulan = $validated['bulan'];
+        $tahun = $validated['tahun'];
+        $keterangan = $validated['keterangan'] ?? null;
+
+        // Simpan ke session untuk tahap konfirmasi
+        session()->put('import_setoran_staging', [
+            'lembaga_id' => (int)$validated['lembaga_id'],
+            'tanggal_setor' => $tanggalSetor,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'periode' => $periode,
+            'keterangan' => $keterangan,
+            'items' => $items,
+            'stats' => $stats,
+        ]);
+
+        return view('pengumpulan.upz.import-preview', compact(
+            'items',
+            'upz',
+            'tanggalSetor',
+            'bulan',
+            'tahun',
+            'periode',
+            'keterangan',
+            'stats'
+        ));
+    }
+
+    public function quickStoreMuzakki(Request $request)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'required|string|max:16|unique:persons,nik',
+            'lembaga_id' => 'required|exists:lembagas,id',
+            'jenis_kelamin' => 'nullable|in:L,P,Pria,Wanita',
+            'npwz' => 'nullable|string|max:50',
+            'handphone' => 'nullable|string|max:50',
+            'alamat' => 'nullable|string',
+        ]);
+
+        $jk = $validated['jenis_kelamin'] ?? null;
+        if ($jk === 'Pria') $jk = 'L';
+        if ($jk === 'Wanita') $jk = 'P';
+
+        $muzakki = DB::transaction(function () use ($validated, $jk) {
+            $person = Person::create([
+                'nama' => $validated['nama'],
+                'nik' => $validated['nik'],
+                'jenis_kelamin' => $jk,
+                'handphone' => $validated['handphone'] ?? null,
+                'alamat' => $validated['alamat'] ?? null,
+            ]);
+
+            return Muzakki::create([
+                'person_id' => $person->id,
+                'lembaga_id' => $validated['lembaga_id'],
+                'npwz' => $validated['npwz'] ?? null,
+                'tanggal_registrasi' => now()->toDateString(),
+            ]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'muzakki' => [
+                'id' => $muzakki->id,
+                'nama' => $validated['nama'],
+                'nik' => $validated['nik'],
+                'npwz' => $muzakki->npwz ?? '',
+            ],
+        ]);
+    }
+
+    public function importConfirm(Request $request)
+    {
+        $staging = session('import_setoran_staging');
+
+        // Terima payload jika disubmit via hidden JSON/input
+        if ($request->filled('staging_data')) {
+            $decoded = json_decode($request->input('staging_data'), true);
+            if (is_array($decoded) && !empty($decoded['items'])) {
+                $staging = $decoded;
+            }
+        } elseif ($request->filled('items') && is_array($request->input('items'))) {
+            $staging['items'] = $request->input('items');
+            if ($request->filled('lembaga_id')) $staging['lembaga_id'] = $request->input('lembaga_id');
+            if ($request->filled('tanggal_setor')) $staging['tanggal_setor'] = $request->input('tanggal_setor');
+            if ($request->filled('periode')) $staging['periode'] = $request->input('periode');
+            if ($request->has('keterangan')) $staging['keterangan'] = $request->input('keterangan');
+        }
+
+        if (!$staging || empty($staging['items']) || !is_array($staging['items']) || count($staging['items']) === 0) {
+            return redirect()->route('pengumpulan.upz.index')->with('error', 'Data staging import tidak ditemukan atau kosong. Silakan unggah kembali.');
+        }
+
+        $tanggal = Carbon::parse($staging['tanggal_setor'] ?? date('Y-m-d'));
+        $nomorSetoran = $this->generateNomorSetoran($tanggal);
+
+        DB::transaction(function () use ($staging, $nomorSetoran, $tanggal) {
+            $totalZakat = 0;
+            $totalInfak = 0;
+            $totalFitrah = 0;
+            $totalTitipan = 0;
+
+            foreach ($staging['items'] as $item) {
+                $totalZakat += max(0, (int)($item['nominal_zakat'] ?? 0));
+                $totalInfak += max(0, (int)($item['nominal_infak'] ?? 0));
+                $totalFitrah += max(0, (int)($item['nominal_fitrah'] ?? 0));
+                $totalTitipan += max(0, (int)($item['nominal_titipan'] ?? 0));
+            }
+
+            $totalJumlah = $totalZakat + $totalInfak + $totalFitrah + $totalTitipan;
+
+            $setoran = SetoranUpz::create([
+                'nomor_setoran' => $nomorSetoran,
+                'lembaga_id' => $staging['lembaga_id'],
+                'tanggal_setor' => $staging['tanggal_setor'],
+                'periode' => $staging['periode'],
+                'total_zakat' => $totalZakat,
+                'total_infak' => $totalInfak,
+                'total_fitrah' => $totalFitrah,
+                'total_titipan' => $totalTitipan,
+                'total_jumlah' => $totalJumlah,
+                'keterangan' => $staging['keterangan'] ?? null,
+                'status' => 'Terverifikasi',
+                'user_id' => Auth::id(),
+            ]);
+
+            foreach ($staging['items'] as $item) {
+                $z = max(0, (int)($item['nominal_zakat'] ?? 0));
+                $i = max(0, (int)($item['nominal_infak'] ?? 0));
+                $f = max(0, (int)($item['nominal_fitrah'] ?? 0));
+                $t = max(0, (int)($item['nominal_titipan'] ?? 0));
+                $subtotal = $z + $i + $f + $t;
+
+                $muzakkiId = !empty($item['muzakki_id']) ? $item['muzakki_id'] : null;
+                $npwz = $item['npwz'] ?? null;
+                if ($muzakkiId && empty($npwz)) {
+                    $m = Muzakki::find($muzakkiId);
+                    $npwz = $m?->npwz;
+                }
+
+                SetoranUpzItem::create([
+                    'setoran_upz_id' => $setoran->id,
+                    'muzakki_id' => $muzakkiId,
+                    'npwz' => $npwz,
+                    'nama' => !empty($item['nama']) ? $item['nama'] : '-',
+                    'nominal_zakat' => $z,
+                    'nominal_infak' => $i,
+                    'nominal_fitrah' => $f,
+                    'nominal_titipan' => $t,
+                    'jumlah' => $subtotal,
+                    'keterangan' => $item['keterangan'] ?? null,
+                    'periode' => $item['periode'] ?? $staging['periode'],
+                ]);
+            }
+
+            // Sinkronkan kas masuk ke DanaTransaksi HANYA JIKA totalZakat > 0 (Pos 2.2) dan totalInfak > 0 (Pos 2.7). Kas tidak mencatat nominal 0!
+            $danaZakat = Dana::where('kode', '2.2')->first();
+            $danaInfak = Dana::where('kode', '2.7')->first();
+
+            $upzNama = $setoran->upz?->nama ?? 'UPZ';
+
+            if ($totalZakat > 0 && $danaZakat) {
+                DanaTransaksi::create([
+                    'tanggal' => $setoran->tanggal_setor,
+                    'dana_id' => $danaZakat->id,
+                    'jenis' => 'Masuk',
+                    'nominal' => $totalZakat,
+                    'uraian' => "Penerimaan Zakat via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
+                    'referensi_type' => SetoranUpz::class,
+                    'referensi_id' => $setoran->id,
+                ]);
+            }
+
+            if ($totalInfak > 0 && $danaInfak) {
+                DanaTransaksi::create([
+                    'tanggal' => $setoran->tanggal_setor,
+                    'dana_id' => $danaInfak->id,
+                    'jenis' => 'Masuk',
+                    'nominal' => $totalInfak,
+                    'uraian' => "Penerimaan Infak via {$upzNama} ({$setoran->nomor_setoran}) - Periode {$setoran->periode}",
+                    'referensi_type' => SetoranUpz::class,
+                    'referensi_id' => $setoran->id,
+                ]);
+            }
+        });
+
+        session()->forget('import_setoran_staging');
+
+        return redirect()->route('pengumpulan.upz.index')->with('success', "Setoran UPZ berhasil disimpan dengan nomor {$nomorSetoran}.");
+    }
+
     public function store(Request $request)
     {
         if ($request->filled('bulan') && $request->filled('tahun')) {
@@ -173,10 +608,10 @@ class SetoranUpzController extends Controller
             $totalTitipan = 0;
 
             foreach ($validated['items'] as $item) {
-                $totalZakat += (int)($item['nominal_zakat'] ?? 0);
-                $totalInfak += (int)($item['nominal_infak'] ?? 0);
-                $totalFitrah += (int)($item['nominal_fitrah'] ?? 0);
-                $totalTitipan += (int)($item['nominal_titipan'] ?? 0);
+                $totalZakat += max(0, (int)($item['nominal_zakat'] ?? 0));
+                $totalInfak += max(0, (int)($item['nominal_infak'] ?? 0));
+                $totalFitrah += max(0, (int)($item['nominal_fitrah'] ?? 0));
+                $totalTitipan += max(0, (int)($item['nominal_titipan'] ?? 0));
             }
 
             $totalJumlah = $totalZakat + $totalInfak + $totalFitrah + $totalTitipan;
@@ -196,11 +631,12 @@ class SetoranUpzController extends Controller
                 'user_id' => Auth::id(),
             ]);
 
+            // Seluruh baris (termasuk nominal 0 / nihil) tetap disimpan demi konsistensi data audit
             foreach ($validated['items'] as $item) {
-                $z = (int)($item['nominal_zakat'] ?? 0);
-                $i = (int)($item['nominal_infak'] ?? 0);
-                $f = (int)($item['nominal_fitrah'] ?? 0);
-                $t = (int)($item['nominal_titipan'] ?? 0);
+                $z = max(0, (int)($item['nominal_zakat'] ?? 0));
+                $i = max(0, (int)($item['nominal_infak'] ?? 0));
+                $f = max(0, (int)($item['nominal_fitrah'] ?? 0));
+                $t = max(0, (int)($item['nominal_titipan'] ?? 0));
                 $subtotal = $z + $i + $f + $t;
 
                 $muzakkiId = !empty($item['muzakki_id']) ? $item['muzakki_id'] : null;
@@ -225,7 +661,7 @@ class SetoranUpzController extends Controller
                 ]);
             }
 
-            // Sinkronkan otomatis ke DanaTransaksi (Masuk)
+            // Sinkronkan otomatis ke DanaTransaksi (Masuk) HANYA JIKA nominal > 0
             // Pos dana Zakat via UPZ (kode 2.2) dan Infak via UPZ (kode 2.7)
             $danaZakat = Dana::where('kode', '2.2')->first();
             $danaInfak = Dana::where('kode', '2.7')->first();

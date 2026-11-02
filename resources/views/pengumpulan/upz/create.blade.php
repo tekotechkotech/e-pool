@@ -23,15 +23,28 @@
 @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-6" x-data="setoranForm()">
+<div class="max-w-6xl mx-auto space-y-6" x-data="setoranForm()">
     <div class="flex items-center justify-between">
         <div>
+            <div class="flex items-center gap-2 mb-1">
+                <a href="{{ route('pengumpulan.upz.index') }}" class="text-xs font-semibold text-slate-500 hover:text-emerald-700">Setoran UPZ</a>
+                <span class="text-slate-400 text-xs">/</span>
+                <span class="text-xs font-bold text-emerald-700">Form Baru</span>
+            </div>
             <h1 class="text-2xl font-bold text-slate-800">Input Setoran UPZ Baru</h1>
             <p class="text-sm text-slate-500">Form setoran dana ZIS yang dihimpun UPZ beserta rincian muzakki.</p>
         </div>
-        <a href="{{ route('pengumpulan.upz.index') }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all">
-            Kembali
-        </a>
+        <div class="flex items-center gap-2">
+            <template x-if="selectedLembagaId">
+                <a :href="'{{ route('pengumpulan.upz.template') }}/' + selectedLembagaId" class="px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5" title="Download template Excel terisi muzakki UPZ ini">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Template Excel UPZ
+                </a>
+            </template>
+            <a href="{{ route('pengumpulan.upz.index') }}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all">
+                Kembali
+            </a>
+        </div>
     </div>
 
     @if($errors->any())
@@ -47,20 +60,27 @@
     <form method="POST" action="{{ route('pengumpulan.upz.store') }}" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-6">
         @csrf
 
-        <div class="border-b border-slate-100 pb-4">
-            <h2 class="text-base font-bold text-slate-900">1. Data Induk Setoran</h2>
-            <p class="text-xs text-slate-500">Pilih UPZ dan tentukan tanggal setoran serta periode.</p>
+        <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">1. Data Induk Setoran</h2>
+                <p class="text-xs text-slate-500">Pilih UPZ dan tentukan tanggal setoran serta periode.</p>
+            </div>
+            <div x-show="loadingMuzakki" class="text-xs text-emerald-700 font-medium flex items-center gap-1.5">
+                <svg class="animate-spin h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                Memuat muzakki aktif UPZ...
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="sm:col-span-2 lg:col-span-1">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Pengumpul Zakat (UPZ) *</label>
-                <select name="lembaga_id" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <select name="lembaga_id" required x-model="selectedLembagaId" @change="onUpzChange($event.target.value)" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
                     <option value="">-- Pilih UPZ --</option>
                     @foreach($upzs as $u)
                         <option value="{{ $u->id }}" {{ old('lembaga_id') == $u->id ? 'selected' : '' }}>{{ $u->nama }}</option>
                     @endforeach
                 </select>
+                <p class="text-[11px] text-slate-400 mt-1">Pilih UPZ untuk auto-load data muzakki.</p>
             </div>
 
             <div>
@@ -95,26 +115,28 @@
         <div class="border-b border-slate-100 pb-4 pt-2 flex items-center justify-between">
             <div>
                 <h2 class="text-base font-bold text-slate-900">2. Rincian Muzakki & Munfiq</h2>
-                <p class="text-xs text-slate-500">Tambahkan daftar muzakki beserta nominal setoran Zakat, Infak, Fitrah, atau Titipan.</p>
+                <p class="text-xs text-slate-500">Daftar muzakki aktif UPZ termuat otomatis. Muzakki dengan nominal 0 tetap dicatat sebagai laporan nihil.</p>
             </div>
-            <button type="button" @click="addRow()" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold rounded-lg text-xs flex items-center gap-1 transition-all">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Tambah Baris
-            </button>
+            <div class="flex items-center gap-2">
+                <button type="button" @click="addRow()" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold rounded-lg text-xs flex items-center gap-1 transition-all">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Tambah Baris
+                </button>
+            </div>
         </div>
 
         <div class="overflow-x-auto border border-slate-100 rounded-xl">
             <table class="w-full text-left text-xs text-slate-600">
                 <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-100">
                     <tr>
-                        <th class="px-3 py-2.5">No</th>
+                        <th class="px-3 py-2.5 text-center">No</th>
                         <th class="px-3 py-2.5 min-w-[180px]">Nama Muzakki *</th>
-                        <th class="px-3 py-2.5 min-w-[130px]">NPWZ</th>
-                        <th class="px-3 py-2.5 min-w-[120px]">Zakat (Rp)</th>
-                        <th class="px-3 py-2.5 min-w-[120px]">Infak (Rp)</th>
-                        <th class="px-3 py-2.5 min-w-[110px]">Fitrah (Rp)</th>
-                        <th class="px-3 py-2.5 min-w-[110px]">Titipan (Rp)</th>
-                        <th class="px-3 py-2.5 min-w-[140px]">Keterangan</th>
+                        <th class="px-3 py-2.5 min-w-[120px]">NPWZ</th>
+                        <th class="px-3 py-2.5 min-w-[110px]">Zakat (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[110px]">Infak (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[100px]">Fitrah (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[100px]">Titipan (Rp)</th>
+                        <th class="px-3 py-2.5 min-w-[130px]">Keterangan</th>
                         <th class="px-2 py-2.5 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -123,6 +145,7 @@
                         <tr class="hover:bg-slate-50/50">
                             <td class="px-3 py-2 text-center font-mono text-slate-400" x-text="idx + 1"></td>
                             <td class="px-3 py-2">
+                                <input type="hidden" :name="'items[' + idx + '][muzakki_id]'" :value="item.muzakki_id || ''">
                                 <input type="text" :name="'items[' + idx + '][nama]'" x-model="item.nama" required placeholder="Nama lengkap" class="w-full px-2 py-1.5 border border-slate-200 rounded-lg text-xs">
                             </td>
                             <td class="px-3 py-2">
@@ -166,7 +189,7 @@
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
             <a href="{{ route('pengumpulan.upz.index') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all">Batal</a>
-            <button type="submit" class="px-6 py-2.5 bg-[#118243] hover:bg-[#0d6835] text-white font-semibold rounded-xl text-sm shadow-sm transition-all">Simpan & Sinkronkan Kas</button>
+            <button type="submit" class="px-6 py-2.5 bg-[#118243] hover:bg-[#0d6835] text-white font-semibold rounded-xl text-sm shadow-sm transition-all">Simpan Setoran UPZ</button>
         </div>
     </form>
 </div>
@@ -174,11 +197,43 @@
 <script>
 function setoranForm() {
     return {
+        selectedLembagaId: '{{ old('lembaga_id', '') }}',
+        loadingMuzakki: false,
         items: [
-            { nama: '', npwz: '', nominal_zakat: 0, nominal_infak: 0, nominal_fitrah: 0, nominal_titipan: 0, keterangan: '' }
+            { muzakki_id: '', nama: '', npwz: '', nominal_zakat: 0, nominal_infak: 0, nominal_fitrah: 0, nominal_titipan: 0, keterangan: '' }
         ],
+        async onUpzChange(lembagaId) {
+            if (!lembagaId) return;
+            this.loadingMuzakki = true;
+            try {
+                const response = await fetch("{{ url('pengumpulan/upz/muzakki-by-upz') }}/" + lembagaId, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    this.items = data.map(m => ({
+                        muzakki_id: m.id,
+                        nama: m.nama,
+                        npwz: m.npwz || '',
+                        nominal_zakat: 0,
+                        nominal_infak: 0,
+                        nominal_fitrah: 0,
+                        nominal_titipan: 0,
+                        keterangan: ''
+                    }));
+                } else {
+                    this.items = [
+                        { muzakki_id: '', nama: '', npwz: '', nominal_zakat: 0, nominal_infak: 0, nominal_fitrah: 0, nominal_titipan: 0, keterangan: '' }
+                    ];
+                }
+            } catch (err) {
+                console.error('Error auto-loading muzakki:', err);
+            } finally {
+                this.loadingMuzakki = false;
+            }
+        },
         addRow() {
-            this.items.push({ nama: '', npwz: '', nominal_zakat: 0, nominal_infak: 0, nominal_fitrah: 0, nominal_titipan: 0, keterangan: '' });
+            this.items.push({ muzakki_id: '', nama: '', npwz: '', nominal_zakat: 0, nominal_infak: 0, nominal_fitrah: 0, nominal_titipan: 0, keterangan: '' });
         },
         removeRow(idx) {
             if (this.items.length > 1) {
