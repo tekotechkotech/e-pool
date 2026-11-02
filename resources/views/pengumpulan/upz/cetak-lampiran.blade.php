@@ -114,8 +114,8 @@
                     <td class="text-left">{{ strtoupper($item->nama) }}</td>
                     <td class="text-right font-mono">{{ $item->nominal_zakat > 0 ? 'Rp ' . number_format($item->nominal_zakat, 0, ',', '.') : '-' }}</td>
                     <td class="text-right font-mono">{{ $item->nominal_infak > 0 ? 'Rp ' . number_format($item->nominal_infak, 0, ',', '.') : '-' }}</td>
-                    <td class="text-right font-mono" style="font-weight: bold;">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
-                    <td class="text-left">{{ $item->keterangan ?: 'Penerimaan ZIS' }}</td>
+                    <td class="text-right font-mono" style="font-weight: bold;">{{ $item->jumlah > 0 ? 'Rp ' . number_format($item->jumlah, 0, ',', '.') : 'Rp 0 (Nihil)' }}</td>
+                    <td class="text-left">{{ $item->keterangan ?: ($item->jumlah == 0 ? 'Nihil / Tidak Menyetor' : 'Penerimaan ZIS') }}</td>
                     <td class="text-center">{{ $item->periode ?: $setoran->periode }}</td>
                 </tr>
             @empty
