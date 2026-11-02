@@ -132,9 +132,20 @@
                                 Rp {{ number_format($s->total_jumlah, 0, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                                    {{ $s->status }}
-                                </span>
+                                <div class="flex flex-col items-center gap-1.5">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                        {{ $s->status }}
+                                    </span>
+                                    @if($s->bukti_setor)
+                                        <a href="{{ asset('storage/' . $s->bukti_setor) }}" target="_blank" class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors" title="Lihat Bukti Transfer">
+                                            📎 Ada Bukti
+                                        </a>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-500">
+                                            Tanpa Bukti
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <div class="inline-flex items-center gap-1.5">
@@ -144,10 +155,10 @@
                                     <a href="{{ route('pengumpulan.upz.cetak', $s->id) }}" target="_blank" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Cetak Lampiran Setoran">
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                     </a>
-                                    <form action="{{ route('pengumpulan.upz.destroy', $s->id) }}" method="POST" onsubmit="return confirm('Hapus setoran ini beserta sinkronisasi transaksi buku kas terkait?');" class="inline">
+                                    <form action="{{ route('pengumpulan.upz.destroy', $s->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
+                                        <button type="button" @click="$confirm({ title: 'Hapus Setoran UPZ', message: 'Hapus setoran ini beserta sinkronisasi transaksi buku kas terkait?', confirmText: 'Hapus', isDanger: true }).then(ok => { if (ok) $el.closest('form').submit(); })" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         </button>
                                     </form>
