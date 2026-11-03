@@ -20,7 +20,7 @@
             </a>
             <button type="button" @click="submitConfirm()" :disabled="submitting" class="inline-flex items-center justify-center rounded-xl bg-[#118243] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0d6835] transition-all disabled:opacity-50">
                 <span x-show="!submitting" class="flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <x-heroicon-o-check class="w-4 h-4" />
                     Konfirmasi & Simpan Setoran
                 </span>
                 <span x-show="submitting" class="flex items-center gap-1.5">
@@ -80,7 +80,7 @@
 
     <!-- Alert Belum Terdaftar jika ada -->
     <div x-show="countBelumTerdaftar() > 0" class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 text-sm text-amber-800">
-        <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <x-heroicon-o-information-circle class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
         <div class="flex-1">
             <span class="font-bold">Perhatian:</span> Terdapat <span class="font-bold underline" x-text="countBelumTerdaftar()"></span> muzakki yang belum terdaftar di sistem. Anda dapat langsung mengklik tombol <span class="font-semibold bg-amber-100 px-1.5 py-0.5 rounded text-amber-900">Registrasi Cepat</span> pada tabel di bawah untuk mendaftarkannya sekarang, atau tetap menyimpannya sebagai catatan nama lepas.
         </div>
@@ -187,7 +187,7 @@
                         <p class="text-xs text-slate-500">Daftarkan person dan muzakki baru langsung ke UPZ terkait.</p>
                     </div>
                     <button type="button" @click="closeQuickRegister()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <x-heroicon-o-x-mark class="w-5 h-5" />
                     </button>
                 </div>
 
