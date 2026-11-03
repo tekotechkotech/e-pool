@@ -27,12 +27,16 @@ class SetoranUpz extends Model
         'bukti_setor',
         'status',
         'user_id',
+        'verified_by',
+        'verified_at',
+        'catatan_verifikasi',
     ];
 
     protected function casts(): array
     {
         return [
             'tanggal_setor' => 'date',
+            'verified_at' => 'datetime',
             'total_zakat' => 'integer',
             'total_infak' => 'integer',
             'total_fitrah' => 'integer',
@@ -59,5 +63,10 @@ class SetoranUpz extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function verifiedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }
