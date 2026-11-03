@@ -2,18 +2,25 @@
 
 @section('content')
 <div class="space-y-6" x-data="{
-    isFormOpen: false,
-    isEditing: false,
-    lembaga_id: null,
-    nama: '',
-    ketua_nama: '',
-    ketua_nik: '',
-    jenis: 'Masjid',
-    telepon: '',
-    handphone: '',
-    email: '',
-    is_active: true,
-    wilayah: wilayahSelector(),
+    isFormOpen: {{ $errors->any() ? 'true' : 'false' }},
+    isEditing: {{ old('lembaga_id') ? 'true' : 'false' }},
+    lembaga_id: {{ json_encode(old('lembaga_id')) }},
+    nama: {{ json_encode((string)old('nama', '')) }},
+    ketua_nama: {{ json_encode((string)old('ketua_nama', '')) }},
+    ketua_nik: {{ json_encode((string)old('ketua_nik', '')) }},
+    jenis: {{ json_encode((string)old('jenis', 'Masjid')) }},
+    telepon: {{ json_encode((string)old('telepon', '')) }},
+    handphone: {{ json_encode((string)old('handphone', '')) }},
+    email: {{ json_encode((string)old('email', '')) }},
+    is_active: {{ json_encode(old('is_active', '1') == '1') }},
+    wilayah: wilayahSelector({
+        alamat: {{ json_encode((string)old('alamat', '')) }},
+        id_provinsi: {{ json_encode((string)old('id_provinsi', '')) }},
+        id_kabupaten: {{ json_encode((string)old('id_kabupaten', '')) }},
+        id_kecamatan: {{ json_encode((string)old('id_kecamatan', '')) }},
+        id_kelurahan: {{ json_encode((string)old('id_kelurahan', '')) }},
+        kode_pos: {{ json_encode((string)old('kode_pos', '')) }}
+    }),
 
     async init() {
         await this.wilayah.init();
@@ -167,6 +174,17 @@
             <form method="POST" action="{{ route('manajemen.lembaga.store') }}" class="space-y-4 text-xs">
                 @csrf
                 <input type="hidden" name="lembaga_id" x-model="lembaga_id">
+
+                @if($errors->any())
+                    <div class="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700">
+                        <p class="font-semibold mb-1">Periksa kembali data yang Anda masukkan:</p>
+                        <ul class="list-disc pl-4 space-y-0.5">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <x-form.lembaga-fields
                     alpine-model="true"
