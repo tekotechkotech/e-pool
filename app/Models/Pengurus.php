@@ -25,6 +25,8 @@ class Pengurus extends Model
     {
         return [
             'is_active' => 'boolean',
+            'tanggal_mulai' => 'date',
+            'tanggal_selesai' => 'date',
         ];
     }
 
