@@ -8,11 +8,11 @@
             <h2 class="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
                 <span class="p-2 rounded-xl {{ $jenisTransaksi === 'Masuk' ? 'bg-emerald-100 text-emerald-700' : ($jenisTransaksi === 'Keluar' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700') }}">
                     @if($jenisTransaksi === 'Masuk')
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <x-heroicon-o-arrow-up-tray class="w-6 h-6" />
                     @elseif($jenisTransaksi === 'Keluar')
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <x-heroicon-o-arrow-down-tray class="w-6 h-6" />
                     @else
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        <x-heroicon-o-book-open class="w-6 h-6" />
                     @endif
                 </span>
                 @if($jenisTransaksi === 'Masuk')
@@ -35,7 +35,7 @@
         </div>
         <div class="flex items-center gap-3">
             <button onclick="window.print()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                <x-heroicon-o-printer class="w-4 h-4" />
                 Cetak Buku Kas
             </button>
         </div>
@@ -44,17 +44,17 @@
     <!-- 3 Segmented Pills: Switch Jenis Buku Kas (Hidden on print) -->
     <div class="bg-slate-200/80 p-1.5 rounded-2xl flex flex-wrap sm:flex-nowrap gap-1.5 print:hidden shadow-inner">
         <a href="{{ route('laporan.buku-kas', array_merge(request()->query(), ['jenis_transaksi' => 'all'])) }}" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all {{ $jenisTransaksi === 'all' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-            <svg class="w-4 h-4 {{ $jenisTransaksi === 'all' ? 'text-amber-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <x-heroicon-o-book-open class="w-4 h-4 {{ $jenisTransaksi === 'all' ? 'text-amber-600' : 'text-slate-400' }}" />
             <span>Semua Transaksi (Masuk & Keluar)</span>
         </a>
 
         <a href="{{ route('laporan.buku-kas', array_merge(request()->query(), ['jenis_transaksi' => 'Masuk'])) }}" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all {{ $jenisTransaksi === 'Masuk' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-            <svg class="w-4 h-4 {{ $jenisTransaksi === 'Masuk' ? 'text-emerald-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            <x-heroicon-o-arrow-up-tray class="w-4 h-4 {{ $jenisTransaksi === 'Masuk' ? 'text-emerald-600' : 'text-slate-400' }}" />
             <span>Hanya Penerimaan (Masuk)</span>
         </a>
 
         <a href="{{ route('laporan.buku-kas', array_merge(request()->query(), ['jenis_transaksi' => 'Keluar'])) }}" class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all {{ $jenisTransaksi === 'Keluar' ? 'bg-white text-rose-700 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-            <svg class="w-4 h-4 {{ $jenisTransaksi === 'Keluar' ? 'text-rose-600' : 'text-slate-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <x-heroicon-o-arrow-down-tray class="w-4 h-4 {{ $jenisTransaksi === 'Keluar' ? 'text-rose-600' : 'text-slate-400' }}" />
             <span>Hanya Penyaluran (Keluar)</span>
         </a>
     </div>

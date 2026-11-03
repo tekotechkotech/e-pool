@@ -21,7 +21,7 @@
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-6">
         <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-xs text-emerald-800 space-y-2">
             <div class="font-bold text-sm text-emerald-900 flex items-center gap-2">
-                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <x-heroicon-o-information-circle class="w-4 h-4 text-emerald-600" />
                 Panduan Format CSV
             </div>
             <p>1. Header CSV wajib memuat: <code>Nama, NPWP, NIK *, NIP, Tempat Lahir, tanggal lahir, jenis kelamin, pekerjaan, alamat korespondensi, alamat rumah*, alamat kantor, telepon, handphone *, email *, UPZ, zakat, catatan</code>.</p>
@@ -55,7 +55,7 @@
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                 <a href="{{ route('muzakki.index') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all">Batal</a>
                 <button type="submit" class="px-6 py-2.5 bg-[#118243] hover:bg-[#0d6835] text-white font-semibold rounded-xl text-sm shadow-sm transition-all flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <x-heroicon-o-arrow-up-tray class="w-4 h-4" />
                     Proses Import
                 </button>
             </div>
