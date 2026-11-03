@@ -74,7 +74,7 @@
         <div class="flex items-center gap-2">
             <template x-if="selectedLembagaId">
                 <a :href="'{{ route('pengumpulan.upz.template') }}/' + selectedLembagaId" class="px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5" title="Download template Excel terisi muzakki UPZ ini">
-                    <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <x-heroicon-o-arrow-down-tray class="w-4 h-4 text-emerald-600" />
                     Template Excel UPZ
                 </a>
             </template>
@@ -87,7 +87,7 @@
     @if($errors->any())
         <div class="p-4 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-700 shadow-xs">
             <div class="font-bold mb-1 flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <x-heroicon-o-exclamation-triangle class="w-4 h-4 text-red-600" />
                 Terdapat kendala validasi data:
             </div>
             <ul class="list-disc pl-5 space-y-0.5">
@@ -125,7 +125,7 @@
                         <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-lg bg-[#118243] text-white flex items-center justify-center font-bold text-sm shrink-0">
-                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    <x-heroicon-o-building-office-2 class="w-5 h-5" />
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
@@ -145,7 +145,7 @@
                             </div>
                         </div>
                         <div class="p-2.5 bg-emerald-50/50 rounded-xl border border-emerald-200/60 text-[11px] text-emerald-900 flex items-start gap-2">
-                            <svg class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <x-heroicon-o-information-circle class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                             <span>Setoran yang diinput oleh Pengurus UPZ akan disimpan dengan status <strong>"Menunggu Verifikasi"</strong> oleh Admin BAZNAS sebelum dibukukan ke Buku Kas.</span>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                                 class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-slate-400">
                             
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <x-heroicon-o-magnifying-glass class="w-4 h-4" />
                             </div>
 
                             <div x-show="isSearchingUpz" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none" style="display: none;">
@@ -185,7 +185,7 @@
                                             </div>
                                             <span class="text-xs text-emerald-600 font-medium group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
                                                 Pilih
-                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                                <x-heroicon-o-chevron-right class="w-3.5 h-3.5" />
                                             </span>
                                         </button>
                                     </template>
@@ -209,7 +209,7 @@
                         <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-lg bg-[#118243] text-white flex items-center justify-center font-bold text-sm shrink-0">
-                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    <x-heroicon-o-building-office-2 class="w-5 h-5" />
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
@@ -225,7 +225,7 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 <button type="button" @click="changeUpz()" class="px-2.5 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg text-xs font-semibold shadow-xs transition-all flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    <x-heroicon-o-arrow-path class="w-3.5 h-3.5 text-slate-500" />
                                     Ganti UPZ
                                 </button>
                             </div>
@@ -304,9 +304,7 @@
                         class="border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center min-h-[110px]"
                         :class="isDraggingBukti ? 'border-emerald-500 bg-emerald-50/50 ring-2 ring-emerald-500/20' : 'border-slate-200 hover:border-emerald-400 bg-white'"
                     >
-                        <svg class="w-7 h-7 text-slate-400 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                        <x-heroicon-o-photo class="w-7 h-7 text-slate-400 mb-1.5" />
                         <div class="text-xs font-semibold text-slate-700">
                             Tarik file bukti ke sini, atau <span class="text-emerald-700 underline">pilih file</span>
                         </div>
@@ -323,7 +321,7 @@
                             <!-- PDF Icon Preview -->
                             <template x-if="buktiFileType === 'pdf'">
                                 <div class="w-12 h-12 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 flex flex-col items-center justify-center shrink-0 font-bold text-[10px]">
-                                    <svg class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                    <x-heroicon-o-document class="w-5 h-5 mb-0.5" />
                                     PDF
                                 </div>
                             </template>
@@ -337,7 +335,7 @@
                                 Ganti
                             </button>
                             <button type="button" @click="removeBukti()" class="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors" title="Hapus File">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <x-heroicon-o-trash class="w-4 h-4" />
                             </button>
                         </div>
                     </div>
@@ -374,9 +372,7 @@
                         :class="isDraggingExcel ? 'border-emerald-500 bg-emerald-50/50 ring-2 ring-emerald-500/20' : 'border-slate-200 hover:border-emerald-400 bg-white'"
                     >
                         <div x-show="!isParsingExcel" class="flex flex-col items-center">
-                            <svg class="w-7 h-7 text-emerald-600 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                            <x-heroicon-o-document-chart-bar class="w-7 h-7 text-emerald-600 mb-1.5" />
                             <div class="text-xs font-semibold text-slate-700">
                                 Tarik spreadsheet (.xlsx, .csv) ke sini untuk isi tabel in-place
                             </div>
@@ -450,7 +446,7 @@
                         class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5"
                         :class="showFitrahTitipan ? 'bg-amber-50 text-amber-900 border-amber-300' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
                     >
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <x-heroicon-o-sun class="w-3.5 h-3.5" />
                         <span x-text="showFitrahTitipan ? 'Mode Ramadhan Aktif (Fitrah & Titipan)' : '+ Fitrah & Titipan (Ramadhan)'"></span>
                     </button>
 
@@ -460,7 +456,7 @@
                         @click="addRow()" 
                         class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 font-semibold rounded-xl text-xs flex items-center gap-1 transition-all"
                     >
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <x-heroicon-o-plus class="w-3.5 h-3.5" />
                         Tambah Baris
                     </button>
                 </div>
@@ -622,7 +618,7 @@
                                             title="Hapus baris" 
                                             :disabled="items.length <= 1"
                                         >
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            <x-heroicon-o-trash class="w-4 h-4" />
                                         </button>
                                     </div>
                                 </td>
@@ -704,7 +700,7 @@
                     :disabled="submittingForm" 
                     class="px-6 py-2.5 bg-[#118243] hover:bg-[#0d6835] text-white font-bold rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-700/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                    <svg x-show="!submittingForm" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <x-heroicon-o-check x-show="!submittingForm" class="w-4 h-4" />
                     <svg x-show="submittingForm" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" style="display: none;"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
                     <span x-text="submittingForm ? 'Menyimpan...' : 'Simpan Setoran & Arsip Bukti'"></span>
                 </button>
@@ -726,7 +722,7 @@
                         <p class="text-xs text-slate-500">Daftarkan muzakki baru ke data master UPZ & kaitkan otomatis ke baris ini.</p>
                     </div>
                     <button type="button" @click="closeQuickRegister()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <x-heroicon-o-x-mark class="w-5 h-5" />
                     </button>
                 </div>
 
@@ -818,7 +814,7 @@
             <div class="text-slate-600 mt-0.5 leading-relaxed" x-text="notification.message"></div>
         </div>
         <button type="button" @click="notification.show = false" class="text-slate-400 hover:text-slate-600 p-0.5">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <x-heroicon-o-x-mark class="w-4 h-4" />
         </button>
     </div>
 </div>

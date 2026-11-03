@@ -13,7 +13,7 @@
         <div class="max-w-4xl mx-auto px-4 py-3.5 sm:py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/15 flex items-center justify-center text-white shadow-inner shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    <x-heroicon-o-clipboard-document-list class="w-5 h-5 text-white" />
                 </div>
                 <div>
                     <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight">e-Pool BAZNAS</h1>
@@ -42,7 +42,7 @@
         <div class="max-w-4xl mx-auto px-2.5 sm:px-6 py-2">
             <div class="flex items-center justify-between mb-1.5 px-1">
                 <span class="text-[10px] sm:text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 text-[#118243]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+                    <x-heroicon-o-flag class="w-3.5 h-3.5 text-[#118243]" />
                     <span>Alur Survey</span>
                     <span class="text-slate-400">•</span>
                     <span class="text-slate-500 font-normal">Ketuk langkah untuk langsung menuju form</span>
@@ -50,7 +50,7 @@
                 <span class="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full {{ $completedSteps === 4 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
                     <span>{{ $completedSteps }}/4 Selesai</span>
                     @if($isFinalDone)
-                        <svg class="w-3 h-3 text-emerald-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <x-heroicon-o-check class="w-3 h-3 text-emerald-800 shrink-0" />
                     @endif
                 </span>
             </div>
@@ -62,7 +62,7 @@
                    class="group p-1.5 sm:p-2 rounded-xl border transition-all flex flex-col items-center justify-center active:scale-95 {{ $isSurveyorLengkap ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900 hover:bg-emerald-100' : 'bg-amber-50/70 border-amber-300 text-slate-800 hover:bg-amber-100 shadow-xs' }}">
                     <div class="w-5 h-5 rounded-full {{ $isSurveyorLengkap ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white ring-2 ring-amber-200' }} flex items-center justify-center text-[10px] font-black mb-0.5">
                         @if($isSurveyorLengkap)
-                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            <x-heroicon-o-check class="w-3 h-3" />
                         @else
                             1
                         @endif
@@ -78,7 +78,7 @@
                    class="group p-1.5 sm:p-2 rounded-xl border transition-all flex flex-col items-center justify-center active:scale-95 {{ $isHkDone ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900 hover:bg-emerald-100' : ($isSurveyorLengkap ? 'bg-white border-slate-300 text-slate-800 hover:border-amber-400 hover:bg-slate-50' : 'bg-slate-100/70 border-slate-200 text-slate-400 opacity-80') }}">
                     <div class="w-5 h-5 rounded-full {{ $isHkDone ? 'bg-emerald-600 text-white' : ($isSurveyorLengkap ? 'bg-amber-500 text-white' : 'bg-slate-300 text-white') }} flex items-center justify-center text-[10px] font-black mb-0.5">
                         @if($isHkDone)
-                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            <x-heroicon-o-check class="w-3 h-3" />
                         @else
                             2
                         @endif
@@ -94,7 +94,7 @@
                    class="group p-1.5 sm:p-2 rounded-xl border transition-all flex flex-col items-center justify-center active:scale-95 {{ $isAsesmenDone ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900 hover:bg-emerald-100' : ($isSurveyorLengkap ? 'bg-white border-slate-300 text-slate-800 hover:border-amber-400 hover:bg-slate-50' : 'bg-slate-100/70 border-slate-200 text-slate-400 opacity-80') }}">
                     <div class="w-5 h-5 rounded-full {{ $isAsesmenDone ? 'bg-emerald-600 text-white' : ($isSurveyorLengkap ? 'bg-amber-500 text-white' : 'bg-slate-300 text-white') }} flex items-center justify-center text-[10px] font-black mb-0.5">
                         @if($isAsesmenDone)
-                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            <x-heroicon-o-check class="w-3 h-3" />
                         @else
                             3
                         @endif
@@ -110,7 +110,7 @@
                    class="group p-1.5 sm:p-2 rounded-xl border transition-all flex flex-col items-center justify-center active:scale-95 {{ $isFinalDone ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900 hover:bg-emerald-100' : ($isHkDone && $isAsesmenDone ? 'bg-white border-amber-300 text-slate-800 hover:border-amber-400 hover:bg-slate-50 shadow-xs' : 'bg-slate-100/70 border-slate-200 text-slate-400 opacity-80') }}">
                     <div class="w-5 h-5 rounded-full {{ $isFinalDone ? 'bg-emerald-600 text-white' : ($isHkDone && $isAsesmenDone ? 'bg-amber-500 text-white' : 'bg-slate-300 text-white') }} flex items-center justify-center text-[10px] font-black mb-0.5">
                         @if($isFinalDone)
-                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                            <x-heroicon-o-check class="w-3 h-3" />
                         @else
                             4
                         @endif
@@ -132,9 +132,7 @@
             <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl shadow-xs border-2 border-emerald-300 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                        </svg>
+                        <x-heroicon-o-check class="w-6 h-6" />
                     </div>
                     <div>
                         <div class="flex items-center gap-2 flex-wrap">
@@ -154,9 +152,9 @@
                 </div>
                 @if($survey->hadKifayah?->link_had_kifayah)
                     <a href="{{ $survey->hadKifayah->link_had_kifayah }}" target="_blank" class="self-start sm:self-auto px-4 py-2.5 bg-white border border-emerald-300 hover:bg-emerald-50 text-[#118243] font-bold text-xs rounded-xl shadow-2xs transition flex items-center gap-1.5 shrink-0">
-                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <x-heroicon-o-document-text class="w-4 h-4 shrink-0" />
                         <span>Dokumen Puskas</span>
-                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        <x-heroicon-o-arrow-top-right-on-square class="w-3.5 h-3.5 shrink-0" />
                     </a>
                 @endif
             </div>
@@ -166,13 +164,13 @@
             @if(session('success') || session('success_asesmen') || session('success_hk'))
                 <div class="p-3.5 sm:p-4 bg-emerald-50 border-2 border-emerald-300 text-[#118243] rounded-2xl text-xs font-bold flex items-center justify-between shadow-xs">
                     <span class="inline-flex items-center gap-1.5">
-                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <x-heroicon-o-check class="w-4 h-4 shrink-0" />
                         <span>{{ session('success') ?: (session('success_asesmen') ?: session('success_hk')) }}</span>
                     </span>
                     @if(session('link_had_kifayah'))
                         <a href="{{ session('link_had_kifayah') }}" target="_blank" class="px-3 py-1.5 bg-[#118243] text-white text-[11px] font-bold rounded-xl hover:bg-[#0e6c37] inline-flex items-center gap-1">
                             <span>Dokumen Puskas</span>
-                            <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            <x-heroicon-o-arrow-top-right-on-square class="w-3 h-3 shrink-0" />
                         </a>
                     @endif
                 </div>
@@ -185,7 +183,7 @@
                         <div class="flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full {{ $isSurveyorLengkap ? 'bg-emerald-600' : 'bg-amber-500' }} text-white font-black text-xs flex items-center justify-center shrink-0">
                                 @if($isSurveyorLengkap)
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    <x-heroicon-o-check class="w-3.5 h-3.5" />
                                 @else
                                     1
                                 @endif
@@ -200,7 +198,7 @@
                     </div>
                     @if($isSurveyorLengkap)
                         <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                            <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <x-heroicon-o-check class="w-3 h-3 shrink-0" />
                             <span>Lengkap</span>
                         </span>
                     @endif
@@ -241,11 +239,11 @@
 
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 mt-3 border-t border-slate-100 gap-3">
                         <span class="text-[11px] text-[#64748B] inline-flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5 text-amber-500 shrink-0 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                            <x-heroicon-o-light-bulb class="w-3.5 h-3.5 text-amber-500 shrink-0 inline" />
                             <span>Nama & No. HP akan otomatis disinkronkan ke dokumen hasil survei.</span>
                         </span>
                         <button type="submit" class="w-full sm:w-auto px-5 py-3 bg-[#118243] hover:bg-[#0e6c37] active:scale-[0.98] text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <x-heroicon-o-check class="w-4 h-4 shrink-0" />
                             <span>Simpan Data Surveyor</span>
                         </button>
                     </div>
@@ -257,7 +255,7 @@
                 <div class="flex items-center justify-between cursor-pointer select-none" @click="openDetail = !openDetail">
                     <div class="flex items-center gap-2">
                         <span class="w-6 h-6 rounded-full bg-emerald-100 text-[#118243] flex items-center justify-center shrink-0">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <x-heroicon-o-information-circle class="w-3.5 h-3.5" />
                         </span>
                         <div>
                             <h3 class="text-sm sm:text-base font-bold text-[#0F172A]">
@@ -267,7 +265,7 @@
                         </div>
                     </div>
                     <button type="button" class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 transition" :class="openDetail ? 'rotate-180' : ''">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <x-heroicon-o-chevron-down class="w-4 h-4" />
                     </button>
                 </div>
 
@@ -361,9 +359,7 @@
 
             @if(!$isSurveyorLengkap)
                 <div class="p-4 bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl text-xs flex items-start gap-3 shadow-xs">
-                    <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
+                    <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                     <div>
                         <p class="font-bold text-sm">Lengkapi Data Surveyor Terlebih Dahulu</p>
                         <p class="text-amber-700 mt-0.5 leading-relaxed">
@@ -380,9 +376,9 @@
                         <h3 class="text-sm sm:text-base font-bold text-[#0F172A] flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full {{ $isHkDone && $isAsesmenDone ? 'bg-emerald-600' : 'bg-slate-400' }} text-white font-black text-xs flex items-center justify-center shrink-0">
                                 @if($isHkDone && $isAsesmenDone)
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    <x-heroicon-o-check class="w-3.5 h-3.5" />
                                 @else
-                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                    <x-heroicon-s-star class="w-3.5 h-3.5 fill-current" />
                                 @endif
                             </span>
                             <span>Instrumen Survei Lapangan (Langkah 2 & 3)</span>
@@ -403,12 +399,12 @@
                                 </span>
                                 @if(!$isSurveyorLengkap)
                                     <span class="text-xs font-semibold text-slate-400 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                        <x-heroicon-o-lock-closed class="w-3.5 h-3.5 text-slate-400" />
                                         Terkunci
                                     </span>
                                 @elseif($isHkDone)
                                     <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        <x-heroicon-o-check class="w-4 h-4 text-emerald-600 shrink-0" />
                                         <span>Sudah Diisi</span>
                                     </span>
                                 @else
@@ -437,7 +433,7 @@
                                         <div class="pt-1.5 border-t border-emerald-200/60 mt-1 flex justify-end">
                                             <a href="{{ $survey->hadKifayah->link_had_kifayah }}" target="_blank" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 hover:underline inline-flex items-center gap-1">
                                                 <span>Buka Lembar Dokumen Puskas</span>
-                                                <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                <x-heroicon-o-arrow-top-right-on-square class="w-3 h-3 shrink-0" />
                                             </a>
                                         </div>
                                     @endif
@@ -448,13 +444,13 @@
                         @if($isSurveyorLengkap)
                             <button type="button" @click="activeModal = 'had_kifayah'; hk_step = 1" 
                                     class="w-full py-3.5 px-4 {{ $isHkDone ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-500 hover:bg-amber-600 ring-4 ring-amber-100 animate-pulse' }} text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-[0.98]">
-                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                <x-heroicon-o-bolt class="w-4 h-4 shrink-0" />
                                 <span>{{ $isHkDone ? 'Edit Survey Had Kifayah' : 'Mulai Isi Had Kifayah (5 Menit)' }}</span>
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <x-heroicon-o-arrow-right class="w-4 h-4" />
                             </button>
                         @else
                             <button type="button" disabled class="w-full py-3.5 px-4 bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed text-xs font-bold rounded-xl flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                <x-heroicon-o-lock-closed class="w-4 h-4 text-slate-400" />
                                 <span>Isi & Simpan Data Petugas Dulu</span>
                             </button>
                         @endif
@@ -469,12 +465,12 @@
                                 </span>
                                 @if(!$isSurveyorLengkap)
                                     <span class="text-xs font-semibold text-slate-400 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                        <x-heroicon-o-lock-closed class="w-3.5 h-3.5 text-slate-400" />
                                         Terkunci
                                     </span>
                                 @elseif($isAsesmenDone)
                                     <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        <x-heroicon-o-check class="w-3.5 h-3.5 shrink-0" />
                                         <span>Sudah Diisi</span>
                                     </span>
                                 @else
@@ -506,13 +502,13 @@
                         @if($isSurveyorLengkap)
                             <button type="button" @click="activeModal = 'asesmen'; as_step = 1" 
                                     class="w-full py-3.5 px-4 {{ $isAsesmenDone ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-500 hover:bg-amber-600 ring-4 ring-amber-100 animate-pulse' }} text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-[0.98]">
-                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <x-heroicon-o-pencil-square class="w-4 h-4 shrink-0" />
                                 <span>{{ $isAsesmenDone ? 'Edit Survey Asesmen' : 'Mulai Survey Asesmen Lapangan' }}</span>
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <x-heroicon-o-arrow-right class="w-4 h-4" />
                             </button>
                         @else
                             <button type="button" disabled class="w-full py-3.5 px-4 bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed text-xs font-bold rounded-xl flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                <x-heroicon-o-lock-closed class="w-4 h-4 text-slate-400" />
                                 <span>Isi & Simpan Data Petugas Dulu</span>
                             </button>
                         @endif
@@ -527,7 +523,7 @@
                         <div class="flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full {{ $isFinalDone ? 'bg-emerald-600' : ($isHkDone && $isAsesmenDone ? 'bg-amber-500' : 'bg-slate-400') }} text-white font-black text-xs flex items-center justify-center shrink-0">
                                 @if($isFinalDone)
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    <x-heroicon-o-check class="w-3.5 h-3.5" />
                                 @else
                                     4
                                 @endif
@@ -568,11 +564,11 @@
 
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 mt-3 border-t border-slate-100 gap-3">
                         <span class="text-[11px] text-[#64748B] inline-flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5 text-slate-500 shrink-0 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <x-heroicon-o-lock-closed class="w-3.5 h-3.5 text-slate-500 shrink-0 inline" />
                             <span>Setelah difinalkan, laporan tersimpan dan status survei ditandai selesai.</span>
                         </span>
                         <button type="submit" class="w-full sm:w-auto px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                            <x-heroicon-o-arrow-down-tray class="w-4 h-4 shrink-0" />
                             <span>Simpan & Finalkan Hasil Survei</span>
                         </button>
                     </div>
@@ -645,9 +641,7 @@
             <div class="bg-gradient-to-r from-[#118243] via-[#0d6b37] to-[#0a522a] text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shadow-md shrink-0 border-b border-emerald-700">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/15 flex items-center justify-center text-white shadow-inner shrink-0">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
+                        <x-heroicon-o-bolt class="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                     <div>
                         <h3 class="font-bold text-sm sm:text-base text-white leading-tight tracking-tight">Formulir Had Kifayah BAZNAS</h3>
@@ -657,9 +651,7 @@
                     </div>
                 </div>
                 <button type="button" @click="activeModal = ''" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center transition shadow-xs">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
@@ -675,7 +667,7 @@
                         </template>
                         <template x-if="!tabHasError(1) && isStep1Valid()">
                             <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
-                                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                <x-heroicon-o-check class="w-2.5 h-2.5" />
                             </span>
                         </template>
                         <template x-if="!tabHasError(1) && !isStep1Valid()">
@@ -695,7 +687,7 @@
                         </template>
                         <template x-if="!tabHasError(2) && isStep2Valid()">
                             <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
-                                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                <x-heroicon-o-check class="w-2.5 h-2.5" />
                             </span>
                         </template>
                         <template x-if="!tabHasError(2) && !isStep2Valid()">
@@ -715,7 +707,7 @@
                         </template>
                         <template x-if="!tabHasError(3) && isStep3Valid()">
                             <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
-                                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                <x-heroicon-o-check class="w-2.5 h-2.5" />
                             </span>
                         </template>
                         <template x-if="!tabHasError(3) && !isStep3Valid()">
@@ -735,7 +727,7 @@
                         </template>
                         <template x-if="!tabHasError(4) && isStep4Valid()">
                             <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
-                                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                <x-heroicon-o-check class="w-2.5 h-2.5" />
                             </span>
                         </template>
                         <template x-if="!tabHasError(4) && !isStep4Valid()">
@@ -755,7 +747,7 @@
                         </template>
                         <template x-if="!tabHasError(5) && isStep5Valid()">
                             <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
-                                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                <x-heroicon-o-check class="w-2.5 h-2.5" />
                             </span>
                         </template>
                         <template x-if="!tabHasError(5) && !isStep5Valid()">
@@ -893,7 +885,7 @@
                         <!-- BANNER CATATAN PENGISIAN -->
                         <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-xl flex items-center gap-2.5 text-xs text-amber-900 font-semibold shadow-xs">
                             <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <x-heroicon-o-information-circle class="w-3.5 h-3.5" />
                             </span>
                             <span><strong>Catatan:</strong> Semua kolom pada tahap ini <u>wajib diisi</u>. Jika tidak ada / tidak memiliki nilai, <strong>isi dengan angka 0</strong>.</span>
                         </div>
@@ -1024,7 +1016,7 @@
                         <!-- BANNER CATATAN PENGISIAN -->
                         <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-xl flex items-center gap-2.5 text-xs text-amber-900 font-semibold shadow-xs">
                             <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <x-heroicon-o-information-circle class="w-3.5 h-3.5" />
                             </span>
                             <span><strong>Catatan:</strong> Semua kolom pada tahap ini <u>wajib diisi</u>. Jika tidak ada / tidak memiliki tanggungan, <strong>isi dengan angka 0</strong>.</span>
                         </div>
@@ -1288,9 +1280,7 @@
 
                             <button type="submit" 
                                     class="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-gradient-to-r from-emerald-600 to-[#118243] hover:from-emerald-700 hover:to-[#0e6c37] active:scale-[0.98] text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                </svg>
+                                <x-heroicon-o-bolt class="w-4 h-4 shrink-0" />
                                 <span>Hitung & Simpan Had Kifayah</span>
                             </button>
                         </div>
@@ -1317,9 +1307,7 @@
                      class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-rose-300 space-y-4">
                     <div class="flex items-start gap-3">
                         <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
+                            <x-heroicon-o-exclamation-triangle class="w-6 h-6" />
                         </div>
                         <div>
                             <h4 class="font-bold text-sm text-slate-800">Ada Form yang Belum Diisi!</h4>
@@ -1497,9 +1485,7 @@
             <div class="bg-gradient-to-r from-[#118243] via-[#0d6b37] to-[#0a522a] text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shadow-md shrink-0 border-b border-emerald-700">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/15 flex items-center justify-center text-white shadow-inner shrink-0">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
+                        <x-heroicon-o-pencil-square class="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                     <div>
                         <h3 class="font-bold text-sm sm:text-base text-white leading-tight tracking-tight">Survey Asesmen Lapangan</h3>
@@ -1509,9 +1495,7 @@
                     </div>
                 </div>
                 <button type="button" @click="activeModal = ''" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center transition shadow-xs">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
                 </button>
             </div>
 
@@ -1522,7 +1506,7 @@
                             :class="tabHasError(1) ? 'bg-rose-50 text-rose-700 border-2 border-rose-500 ring-2 ring-rose-200' : (as_step === 1 ? 'bg-[#118243] text-white shadow-md ring-2 ring-emerald-600/30' : (isStep1Valid() ? 'bg-emerald-50 text-emerald-800 border-2 border-emerald-300' : 'bg-white text-slate-600 border-2 border-slate-300 hover:border-slate-400'))"
                             class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs active:scale-95">
                         <template x-if="tabHasError(1)"><span class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-black">!</span></template>
-                        <template x-if="!tabHasError(1) && isStep1Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></span></template>
+                        <template x-if="!tabHasError(1) && isStep1Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><x-heroicon-o-check class="w-2.5 h-2.5" /></span></template>
                         <template x-if="!tabHasError(1) && !isStep1Valid()"><span class="w-4 h-4 rounded-full flex items-center justify-center text-[10px]" :class="as_step === 1 ? 'bg-white text-[#118243]' : 'bg-slate-200 text-slate-700'">1</span></template>
                         <span>1. Identitas</span>
                     </button>
@@ -1531,7 +1515,7 @@
                             :class="tabHasError(2) ? 'bg-rose-50 text-rose-700 border-2 border-rose-500 ring-2 ring-rose-200' : (as_step === 2 ? 'bg-[#118243] text-white shadow-md ring-2 ring-emerald-600/30' : (isStep2Valid() ? 'bg-emerald-50 text-emerald-800 border-2 border-emerald-300' : 'bg-white text-slate-600 border-2 border-slate-300 hover:border-slate-400'))"
                             class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs active:scale-95">
                         <template x-if="tabHasError(2)"><span class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-black">!</span></template>
-                        <template x-if="!tabHasError(2) && isStep2Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></span></template>
+                        <template x-if="!tabHasError(2) && isStep2Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><x-heroicon-o-check class="w-2.5 h-2.5" /></span></template>
                         <template x-if="!tabHasError(2) && !isStep2Valid()"><span class="w-4 h-4 rounded-full flex items-center justify-center text-[10px]" :class="as_step === 2 ? 'bg-white text-[#118243]' : 'bg-slate-200 text-slate-700'">2</span></template>
                         <span>2. Ekonomi</span>
                     </button>
@@ -1540,7 +1524,7 @@
                             :class="tabHasError(3) ? 'bg-rose-50 text-rose-700 border-2 border-rose-500 ring-2 ring-rose-200' : (as_step === 3 ? 'bg-[#118243] text-white shadow-md ring-2 ring-emerald-600/30' : (isStep3Valid() ? 'bg-emerald-50 text-emerald-800 border-2 border-emerald-300' : 'bg-white text-slate-600 border-2 border-slate-300 hover:border-slate-400'))"
                             class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs active:scale-95">
                         <template x-if="tabHasError(3)"><span class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-black">!</span></template>
-                        <template x-if="!tabHasError(3) && isStep3Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></span></template>
+                        <template x-if="!tabHasError(3) && isStep3Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><x-heroicon-o-check class="w-2.5 h-2.5" /></span></template>
                         <template x-if="!tabHasError(3) && !isStep3Valid()"><span class="w-4 h-4 rounded-full flex items-center justify-center text-[10px]" :class="as_step === 3 ? 'bg-white text-[#118243]' : 'bg-slate-200 text-slate-700'">3</span></template>
                         <span>3. Aset & Rumah</span>
                     </button>
@@ -1549,7 +1533,7 @@
                             :class="tabHasError(4) ? 'bg-rose-50 text-rose-700 border-2 border-rose-500 ring-2 ring-rose-200' : (as_step === 4 ? 'bg-[#118243] text-white shadow-md ring-2 ring-emerald-600/30' : (isStep4Valid() ? 'bg-emerald-50 text-emerald-800 border-2 border-emerald-300' : 'bg-white text-slate-600 border-2 border-slate-300 hover:border-slate-400'))"
                             class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs active:scale-95">
                         <template x-if="tabHasError(4)"><span class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-black">!</span></template>
-                        <template x-if="!tabHasError(4) && isStep4Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></span></template>
+                        <template x-if="!tabHasError(4) && isStep4Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><x-heroicon-o-check class="w-2.5 h-2.5" /></span></template>
                         <template x-if="!tabHasError(4) && !isStep4Valid()"><span class="w-4 h-4 rounded-full flex items-center justify-center text-[10px]" :class="as_step === 4 ? 'bg-white text-[#118243]' : 'bg-slate-200 text-slate-700'">4</span></template>
                         <span>4. Usaha & BPJS</span>
                     </button>
@@ -1558,7 +1542,7 @@
                             :class="tabHasError(5) ? 'bg-rose-50 text-rose-700 border-2 border-rose-500 ring-2 ring-rose-200' : (as_step === 5 ? 'bg-[#118243] text-white shadow-md ring-2 ring-emerald-600/30' : (isStep5Valid() ? 'bg-emerald-50 text-emerald-800 border-2 border-emerald-300' : 'bg-white text-slate-600 border-2 border-slate-300 hover:border-slate-400'))"
                             class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-xs active:scale-95">
                         <template x-if="tabHasError(5)"><span class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-black">!</span></template>
-                        <template x-if="!tabHasError(5) && isStep5Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></span></template>
+                        <template x-if="!tabHasError(5) && isStep5Valid()"><span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center"><x-heroicon-o-check class="w-2.5 h-2.5" /></span></template>
                         <template x-if="!tabHasError(5) && !isStep5Valid()"><span class="w-4 h-4 rounded-full flex items-center justify-center text-[10px]" :class="as_step === 5 ? 'bg-white text-[#118243]' : 'bg-slate-200 text-slate-700'">5</span></template>
                         <span>5. Penilaian</span>
                     </button>
@@ -1581,7 +1565,7 @@
                     <div x-show="as_step === 1" class="space-y-5">
                         <div class="p-3 bg-emerald-50 border-2 border-emerald-300 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900 font-semibold shadow-xs">
                             <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <x-heroicon-o-information-circle class="w-3.5 h-3.5" />
                             </span>
                             <span><strong>Informasi:</strong> Data yang telah tercatat pada sistem/permohonan otomatis terisi sebagai default. Silakan verifikasi dan lengkapi kolom yang masih kosong sesuai kondisi faktual lapangan.</span>
                         </div>
@@ -1793,14 +1777,14 @@
                                     </select>
                                     <div class="pt-1">
                                         <label class="block font-semibold text-slate-700 text-[11px] mb-1.5 flex items-center gap-1">
-                                            <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            <x-heroicon-o-camera class="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                             <span>Foto Kondisi Atap (Drag & Drop / Kamera)</span>
                                         </label>
                                         <div @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false" @drop.prevent="isDragging = false; const dt = $event.dataTransfer; if (dt.files.length) { $refs.fileInputAtap.files = dt.files; fileName = dt.files[0].name; previewUrl = URL.createObjectURL(dt.files[0]); }" :class="isDragging ? 'border-[#118243] bg-emerald-50/80 ring-2 ring-emerald-300' : 'border-dashed border-slate-300 bg-white hover:border-emerald-500 hover:bg-emerald-50/20'" class="relative rounded-xl border-2 p-3 text-center transition flex flex-col items-center justify-center cursor-pointer min-h-[95px]" @click="$refs.fileInputAtap.click()">
                                             <input type="file" name="as_foto_atap" x-ref="fileInputAtap" accept="image/*" capture="environment" class="hidden" @change="if ($event.target.files.length) { fileName = $event.target.files[0].name; previewUrl = URL.createObjectURL($event.target.files[0]); }">
                                             <template x-if="!previewUrl">
                                                 <div class="flex flex-col items-center space-y-1">
-                                                    <svg class="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                                    <x-heroicon-o-arrow-up-tray class="w-6 h-6 text-slate-400" />
                                                     <p class="text-[11px] font-bold text-slate-700">Tarik & Lepas file foto ke sini</p>
                                                     <p class="text-[10px] text-slate-500">atau <span class="text-[#118243] font-semibold underline">klik untuk buka kamera / galeri HP</span></p>
                                                 </div>
@@ -1813,13 +1797,13 @@
                                                         <span class="text-[10px] text-slate-500">File siap diupload (Klik untuk ganti)</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5 shrink-0">
-                                                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                        <x-heroicon-o-check class="w-4 h-4 text-emerald-600 shrink-0" />
                                                         <button type="button" @click.stop="fileName = ''; previewUrl = ''; $refs.fileInputAtap.value = '';" class="px-2 py-1 text-[11px] font-bold text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">Hapus</button>
                                                     </div>
                                                 </div>
                                             </template>
                                         </div>
-                                        @if($as?->foto_atap)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><svg class="w-3 h-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span>Foto atap sudah ada di sistem.</span></p>@endif
+                                        @if($as?->foto_atap)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><x-heroicon-o-check class="w-3 h-3 text-emerald-600 shrink-0" /><span>Foto atap sudah ada di sistem.</span></p>@endif
                                     </div>
                                 </div>
                                 <div class="space-y-3 p-4 bg-slate-50/80 rounded-2xl border border-slate-200" x-data="{ isDragging: false, fileName: '', previewUrl: '' }">
@@ -1833,14 +1817,14 @@
                                     </select>
                                     <div class="pt-1">
                                         <label class="block font-semibold text-slate-700 text-[11px] mb-1.5 flex items-center gap-1">
-                                            <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            <x-heroicon-o-camera class="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                             <span>Foto Kondisi Lantai (Drag & Drop / Kamera)</span>
                                         </label>
                                         <div @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false" @drop.prevent="isDragging = false; const dt = $event.dataTransfer; if (dt.files.length) { $refs.fileInputLantai.files = dt.files; fileName = dt.files[0].name; previewUrl = URL.createObjectURL(dt.files[0]); }" :class="isDragging ? 'border-[#118243] bg-emerald-50/80 ring-2 ring-emerald-300' : 'border-dashed border-slate-300 bg-white hover:border-emerald-500 hover:bg-emerald-50/20'" class="relative rounded-xl border-2 p-3 text-center transition flex flex-col items-center justify-center cursor-pointer min-h-[95px]" @click="$refs.fileInputLantai.click()">
                                             <input type="file" name="as_foto_lantai" x-ref="fileInputLantai" accept="image/*" capture="environment" class="hidden" @change="if ($event.target.files.length) { fileName = $event.target.files[0].name; previewUrl = URL.createObjectURL($event.target.files[0]); }">
                                             <template x-if="!previewUrl">
                                                 <div class="flex flex-col items-center space-y-1">
-                                                    <svg class="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                                    <x-heroicon-o-arrow-up-tray class="w-6 h-6 text-slate-400" />
                                                     <p class="text-[11px] font-bold text-slate-700">Tarik & Lepas file foto ke sini</p>
                                                     <p class="text-[10px] text-slate-500">atau <span class="text-[#118243] font-semibold underline">klik untuk buka kamera / galeri HP</span></p>
                                                 </div>
@@ -1853,13 +1837,13 @@
                                                         <span class="text-[10px] text-slate-500">File siap diupload (Klik untuk ganti)</span>
                                                     </div>
                                                     <div class="flex items-center gap-1.5 shrink-0">
-                                                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                        <x-heroicon-o-check class="w-4 h-4 text-emerald-600 shrink-0" />
                                                         <button type="button" @click.stop="fileName = ''; previewUrl = ''; $refs.fileInputLantai.value = '';" class="px-2 py-1 text-[11px] font-bold text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">Hapus</button>
                                                     </div>
                                                 </div>
                                             </template>
                                         </div>
-                                        @if($as?->foto_lantai)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><svg class="w-3 h-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span>Foto lantai sudah ada di sistem.</span></p>@endif
+                                        @if($as?->foto_lantai)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><x-heroicon-o-check class="w-3 h-3 text-emerald-600 shrink-0" /><span>Foto lantai sudah ada di sistem.</span></p>@endif
                                     </div>
                                 </div>
                             </div>
@@ -1932,14 +1916,14 @@
                                 </div>
                                 <div class="sm:col-span-2 md:col-span-3 pt-2" x-data="{ isDragging: false, fileName: '', previewUrl: '' }">
                                     <label class="block font-bold text-slate-700 mb-1.5 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <x-heroicon-o-camera class="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                         <span>Foto Tempat Tinggal / Tampak Depan (Drag & Drop / Kamera)</span>
                                     </label>
                                     <div @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false" @drop.prevent="isDragging = false; const dt = $event.dataTransfer; if (dt.files.length) { $refs.fileInputRumah.files = dt.files; fileName = dt.files[0].name; previewUrl = URL.createObjectURL(dt.files[0]); }" :class="isDragging ? 'border-[#118243] bg-emerald-50/80 ring-2 ring-emerald-300' : 'border-dashed border-slate-300 bg-white hover:border-emerald-500 hover:bg-emerald-50/20'" class="relative rounded-xl border-2 p-3.5 text-center transition flex flex-col items-center justify-center cursor-pointer min-h-[95px]" @click="$refs.fileInputRumah.click()">
                                         <input type="file" name="as_foto_tempat_tinggal" x-ref="fileInputRumah" accept="image/*" capture="environment" class="hidden" @change="if ($event.target.files.length) { fileName = $event.target.files[0].name; previewUrl = URL.createObjectURL($event.target.files[0]); }">
                                         <template x-if="!previewUrl">
                                             <div class="flex flex-col items-center space-y-1">
-                                                <svg class="w-7 h-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                                <x-heroicon-o-home class="w-7 h-7 text-slate-400" />
                                                 <p class="text-[11px] font-bold text-slate-700">Tarik & Lepas foto rumah tampak depan ke sini</p>
                                                 <p class="text-[10px] text-slate-500">atau <span class="text-[#118243] font-semibold underline">klik untuk ambil foto kamera / galeri</span></p>
                                             </div>
@@ -1952,13 +1936,13 @@
                                                     <span class="text-[10px] text-slate-500">File siap diupload (Klik untuk ganti foto)</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5 shrink-0">
-                                                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    <x-heroicon-o-check class="w-4 h-4 text-emerald-600 shrink-0" />
                                                     <button type="button" @click.stop="fileName = ''; previewUrl = ''; $refs.fileInputRumah.value = '';" class="px-2 py-1 text-[11px] font-bold text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">Hapus</button>
                                                 </div>
                                             </div>
                                         </template>
                                     </div>
-                                    @if($as?->foto_tempat_tinggal)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><svg class="w-3 h-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span>Foto tempat tinggal sudah ada di sistem.</span></p>@endif
+                                    @if($as?->foto_tempat_tinggal)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><x-heroicon-o-check class="w-3 h-3 text-emerald-600 shrink-0" /><span>Foto tempat tinggal sudah ada di sistem.</span></p>@endif
                                 </div>
                             </div>
                         </div>
@@ -1991,14 +1975,14 @@
                                 </div>
                                 <div x-show="as_punya_usaha === 'Ada'" x-transition class="md:col-span-2" x-data="{ isDragging: false, fileName: '', previewUrl: '' }">
                                     <label class="block font-bold text-slate-700 mb-1.5 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <x-heroicon-o-camera class="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                         <span>Foto Tempat / Kegiatan Usaha (Drag & Drop / Kamera)</span>
                                     </label>
                                     <div @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false" @drop.prevent="isDragging = false; const dt = $event.dataTransfer; if (dt.files.length) { $refs.fileInputUsaha.files = dt.files; fileName = dt.files[0].name; previewUrl = URL.createObjectURL(dt.files[0]); }" :class="isDragging ? 'border-[#118243] bg-emerald-50/80 ring-2 ring-emerald-300' : 'border-dashed border-slate-300 bg-white hover:border-emerald-500 hover:bg-emerald-50/20'" class="relative rounded-xl border-2 p-3.5 text-center transition flex flex-col items-center justify-center cursor-pointer min-h-[95px]" @click="$refs.fileInputUsaha.click()">
                                         <input type="file" name="as_foto_usaha" x-ref="fileInputUsaha" accept="image/*" capture="environment" class="hidden" @change="if ($event.target.files.length) { fileName = $event.target.files[0].name; previewUrl = URL.createObjectURL($event.target.files[0]); }">
                                         <template x-if="!previewUrl">
                                             <div class="flex flex-col items-center space-y-1">
-                                                <svg class="w-7 h-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                                <x-heroicon-o-building-office-2 class="w-7 h-7 text-slate-400" />
                                                 <p class="text-[11px] font-bold text-slate-700">Tarik & Lepas foto usaha ke sini</p>
                                                 <p class="text-[10px] text-slate-500">atau <span class="text-[#118243] font-semibold underline">klik untuk buka kamera / galeri</span></p>
                                             </div>
@@ -2011,13 +1995,13 @@
                                                     <span class="text-[10px] text-slate-500">File siap diupload (Klik untuk ganti)</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5 shrink-0">
-                                                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    <x-heroicon-o-check class="w-4 h-4 text-emerald-600 shrink-0" />
                                                     <button type="button" @click.stop="fileName = ''; previewUrl = ''; $refs.fileInputUsaha.value = '';" class="px-2 py-1 text-[11px] font-bold text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">Hapus</button>
                                                 </div>
                                             </div>
                                         </template>
                                     </div>
-                                    @if($as?->foto_usaha)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><svg class="w-3 h-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span>Foto usaha sudah tersimpan di sistem.</span></p>@endif
+                                    @if($as?->foto_usaha)<p class="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1"><x-heroicon-o-check class="w-3 h-3 text-emerald-600 shrink-0" /><span>Foto usaha sudah tersimpan di sistem.</span></p>@endif
                                 </div>
                             </div>
                         </div>
@@ -2067,7 +2051,7 @@
                             <div class="grid grid-cols-5 gap-2 sm:gap-3 py-2">
                                 <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
                                     <button type="button" @click="as_skor_penilaian = star" :class="as_skor_penilaian === star ? 'bg-amber-400 border-amber-500 text-slate-900 shadow-md ring-4 ring-amber-100 scale-105' : (as_skor_penilaian >= star ? 'bg-amber-100 border-amber-300 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-amber-50 hover:text-amber-500')" class="py-3 px-1 rounded-2xl border-2 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer active:scale-95">
-                                        <svg class="w-6 h-6 sm:w-7 sm:h-7 transition-colors" :class="as_skor_penilaian >= star ? 'text-amber-500 fill-amber-400' : 'text-slate-300 fill-none'" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                        <x-heroicon-s-star class="w-6 h-6 sm:w-7 sm:h-7 transition-colors" :class="as_skor_penilaian >= star ? 'text-amber-500' : 'text-slate-300'" />
                                         <span class="text-xs font-black mt-1" x-text="star"></span>
                                     </button>
                                 </template>
@@ -2094,12 +2078,12 @@
                             <div class="grid grid-cols-2 gap-3">
                                 <label class="p-3.5 rounded-xl border-2 cursor-pointer flex items-center justify-center gap-2.5 transition active:scale-95 text-xs font-bold" :class="as_hasil_survei === 'LAYAK' ? 'bg-emerald-50 border-[#118243] text-emerald-900 ring-4 ring-emerald-100' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
                                     <input type="radio" name="as_hasil_survei" value="LAYAK" x-model="as_hasil_survei" class="hidden">
-                                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                    <x-heroicon-o-check class="w-4 h-4 text-emerald-600 shrink-0" />
                                     <span>LAYAK DIBANTU</span>
                                 </label>
                                 <label class="p-3.5 rounded-xl border-2 cursor-pointer flex items-center justify-center gap-2.5 transition active:scale-95 text-xs font-bold" :class="as_hasil_survei === 'TIDAK LAYAK' ? 'bg-rose-50 border-rose-500 text-rose-900 ring-4 ring-rose-100' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
                                     <input type="radio" name="as_hasil_survei" value="TIDAK LAYAK" x-model="as_hasil_survei" class="hidden">
-                                    <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    <x-heroicon-o-x-mark class="w-4 h-4 text-rose-600 shrink-0" />
                                     <span>TIDAK LAYAK</span>
                                 </label>
                             </div>
@@ -2132,7 +2116,7 @@
                         </div>
                         <div class="flex items-center gap-2 order-2 sm:order-2">
                             <button type="submit" class="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-gradient-to-r from-emerald-600 to-[#118243] hover:from-emerald-700 hover:to-[#0e6c37] active:scale-[0.98] text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                <x-heroicon-o-check class="w-4 h-4 shrink-0" />
                                 <span>Simpan Hasil Asesmen</span>
                             </button>
                         </div>
@@ -2159,9 +2143,7 @@
                      class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-rose-300 space-y-4">
                     <div class="flex items-start gap-3">
                         <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
+                            <x-heroicon-o-exclamation-triangle class="w-6 h-6" />
                         </div>
                         <div>
                             <h4 class="font-bold text-sm text-slate-800">Ada Form yang Belum Diisi!</h4>
