@@ -32,8 +32,8 @@ class PenggunaController extends Controller
         $personId = $request->input('person_id');
 
         $validated = $request->validate([
-            'nik' => ['required', 'string', 'max:16', Rule::unique('persons')->ignore($personId)],
-            'nomor_kk' => 'nullable|string|max:16',
+            'nik' => ['required', 'string', 'digits:16', 'regex:/^[0-9]{16}$/', Rule::unique('persons')->ignore($personId)],
+            'nomor_kk' => ['nullable', 'string', 'digits:16', 'regex:/^[0-9]{16}$/'],
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
             'tempat_lahir' => 'nullable|string|max:255',

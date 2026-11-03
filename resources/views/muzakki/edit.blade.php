@@ -34,51 +34,60 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
-                <input type="text" name="nama" value="{{ old('nama', $muzakki->person->nama ?? '') }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="nama" value="{{ old('nama', $muzakki->person->nama ?? '') }}" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('nama') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('nama')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">NIK (16 Digit) *</label>
-                <input type="text" name="nik" value="{{ old('nik', $muzakki->person->nik ?? '') }}" maxlength="16" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="nik" value="{{ old('nik', $muzakki->person->nik ?? '') }}" inputmode="numeric" maxlength="16" minlength="16" pattern="[0-9]{16}" title="Harus 16 digit angka" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('nik') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('nik')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Kelamin</label>
-                <select name="jenis_kelamin" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <select name="jenis_kelamin" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('jenis_kelamin') border-rose-500 focus:ring-rose-500/20 @enderror">
                     <option value="">-- Pilih --</option>
                     <option value="L" {{ old('jenis_kelamin', $muzakki->person->jenis_kelamin ?? '') == 'L' ? 'selected' : '' }}>Pria / Laki-laki</option>
                     <option value="P" {{ old('jenis_kelamin', $muzakki->person->jenis_kelamin ?? '') == 'P' ? 'selected' : '' }}>Wanita / Perempuan</option>
                 </select>
+                @error('jenis_kelamin')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Pekerjaan</label>
-                <input type="text" name="pekerjaan" value="{{ old('pekerjaan', $muzakki->pekerjaan) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="pekerjaan" value="{{ old('pekerjaan', $muzakki->pekerjaan) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('pekerjaan') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('pekerjaan')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Tempat Lahir</label>
-                <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir', $muzakki->person->tempat_lahir ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir', $muzakki->person->tempat_lahir ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('tempat_lahir') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('tempat_lahir')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Lahir</label>
-                <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', optional($muzakki->person->tanggal_lahir)->format('Y-m-d')) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', optional($muzakki->person->tanggal_lahir)->format('Y-m-d')) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('tanggal_lahir') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('tanggal_lahir')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Handphone / WA</label>
-                <input type="text" name="handphone" value="{{ old('handphone', $muzakki->person->handphone ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="handphone" value="{{ old('handphone', $muzakki->person->handphone ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('handphone') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('handphone')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
-                <input type="email" name="email" value="{{ old('email', $muzakki->person->email ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="email" name="email" value="{{ old('email', $muzakki->person->email ?? '') }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('email') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('email')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div class="md:col-span-2">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Rumah (Sesuai KTP)</label>
-                <textarea name="alamat" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">{{ old('alamat', $muzakki->person->alamat ?? '') }}</textarea>
+                <textarea name="alamat" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('alamat') border-rose-500 focus:ring-rose-500/20 @enderror">{{ old('alamat', $muzakki->person->alamat ?? '') }}</textarea>
+                @error('alamat')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
         </div>
 
@@ -90,52 +99,61 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Pengumpul Zakat (UPZ)</label>
-                <select name="lembaga_id" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <select name="lembaga_id" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('lembaga_id') border-rose-500 focus:ring-rose-500/20 @enderror">
                     <option value="">-- Tanpa UPZ (Muzakki Langsung) --</option>
                     @foreach($upzs as $u)
                         <option value="{{ $u->id }}" {{ old('lembaga_id', $muzakki->lembaga_id) == $u->id ? 'selected' : '' }}>{{ $u->nama }}</option>
                     @endforeach
                 </select>
+                @error('lembaga_id')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">NPWZ (Nomor Pokok Wajib Zakat)</label>
-                <input type="text" name="npwz" value="{{ old('npwz', $muzakki->npwz) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="npwz" value="{{ old('npwz', $muzakki->npwz) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('npwz') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('npwz')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">NPWP</label>
-                <input type="text" name="npwp" value="{{ old('npwp', $muzakki->npwp) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="npwp" value="{{ old('npwp', $muzakki->npwp) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('npwp') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('npwp')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">NIP (Pegawai/ASN)</label>
-                <input type="text" name="nip" value="{{ old('nip', $muzakki->nip) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="nip" value="{{ old('nip', $muzakki->nip) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('nip') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('nip')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Zakat Rutin</label>
-                <input type="text" name="jenis_zakat" value="{{ old('jenis_zakat', $muzakki->jenis_zakat) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="jenis_zakat" value="{{ old('jenis_zakat', $muzakki->jenis_zakat) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('jenis_zakat') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('jenis_zakat')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Registrasi</label>
-                <input type="date" name="tanggal_registrasi" value="{{ old('tanggal_registrasi', optional($muzakki->tanggal_registrasi)->format('Y-m-d')) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="date" name="tanggal_registrasi" value="{{ old('tanggal_registrasi', optional($muzakki->tanggal_registrasi)->format('Y-m-d')) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('tanggal_registrasi') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('tanggal_registrasi')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div class="md:col-span-2">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Korespondensi</label>
-                <input type="text" name="alamat_korespondensi" value="{{ old('alamat_korespondensi', $muzakki->alamat_korespondensi) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                <input type="text" name="alamat_korespondensi" value="{{ old('alamat_korespondensi', $muzakki->alamat_korespondensi) }}" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('alamat_korespondensi') border-rose-500 focus:ring-rose-500/20 @enderror">
+                @error('alamat_korespondensi')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div class="md:col-span-2">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Kantor / Instansi</label>
-                <textarea name="alamat_kantor" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">{{ old('alamat_kantor', $muzakki->alamat_kantor) }}</textarea>
+                <textarea name="alamat_kantor" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('alamat_kantor') border-rose-500 focus:ring-rose-500/20 @enderror">{{ old('alamat_kantor', $muzakki->alamat_kantor) }}</textarea>
+                @error('alamat_kantor')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
 
             <div class="md:col-span-2">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Tambahan</label>
-                <textarea name="keterangan" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">{{ old('keterangan', $muzakki->keterangan) }}</textarea>
+                <textarea name="keterangan" rows="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @error('keterangan') border-rose-500 focus:ring-rose-500/20 @enderror">{{ old('keterangan', $muzakki->keterangan) }}</textarea>
+                @error('keterangan')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
             </div>
         </div>
 

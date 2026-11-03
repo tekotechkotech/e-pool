@@ -26,14 +26,14 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Email <span class="text-red-500">*</span></label>
-                            <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs">
-                            @error('email') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs @error('email') border-rose-500 focus:ring-rose-500/20 @enderror">
+                            @error('email')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
                         
                         <div x-data="{ show: false }">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Password Saat Ini</label>
                             <div class="relative">
-                                <input :type="show ? 'text' : 'password'" name="current_password" class="w-full pl-4 pr-11 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs" placeholder="Biarkan kosong jika tidak ingin mengubah">
+                                <input :type="show ? 'text' : 'password'" name="current_password" class="w-full pl-4 pr-11 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs @error('current_password') border-rose-500 focus:ring-rose-500/20 @enderror" placeholder="Biarkan kosong jika tidak ingin mengubah">
                                 <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors">
                                     <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
@@ -44,7 +44,7 @@
                                     </svg>
                                 </button>
                             </div>
-                            @error('current_password') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            @error('current_password')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
                         
                         <div class="hidden md:block"></div>
@@ -52,7 +52,7 @@
                         <div x-data="{ show: false }">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Password Baru</label>
                             <div class="relative">
-                                <input :type="show ? 'text' : 'password'" name="password" class="w-full pl-4 pr-11 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs">
+                                <input :type="show ? 'text' : 'password'" name="password" class="w-full pl-4 pr-11 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs @error('password') border-rose-500 focus:ring-rose-500/20 @enderror">
                                 <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors">
                                     <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
@@ -63,13 +63,13 @@
                                     </svg>
                                 </button>
                             </div>
-                            @error('password') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            @error('password')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
 
                         <div x-data="{ show: false }">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Konfirmasi Password</label>
                             <div class="relative">
-                                <input :type="show ? 'text' : 'password'" name="password_confirmation" class="w-full pl-4 pr-11 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs">
+                                <input :type="show ? 'text' : 'password'" name="password_confirmation" class="w-full pl-4 pr-11 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243] transition-colors bg-white shadow-xs @error('password_confirmation') border-rose-500 focus:ring-rose-500/20 @enderror">
                                 <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors">
                                     <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
@@ -80,6 +80,7 @@
                                     </svg>
                                 </button>
                             </div>
+                            @error('password_confirmation')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
                     </div>
                 </div>
@@ -109,18 +110,18 @@
                     >
                         <div>
                             <label class="block font-bold text-slate-700 uppercase mb-1">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all">
+                            <select name="jenis_kelamin" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all @error('jenis_kelamin') border-rose-500 focus:ring-rose-500/20 @enderror">
                                 <option value="">-- Pilih --</option>
                                 <option value="L" {{ old('jenis_kelamin', $person->jenis_kelamin ?? '') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                 <option value="P" {{ old('jenis_kelamin', $person->jenis_kelamin ?? '') == 'P' ? 'selected' : '' }}>Perempuan</option>
                             </select>
-                            @error('jenis_kelamin') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            @error('jenis_kelamin')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-700 uppercase mb-1">Handphone</label>
-                            <input type="text" name="handphone" value="{{ old('handphone', $person->handphone ?? '') }}" placeholder="08123456789" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all">
-                            @error('handphone') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            <input type="text" name="handphone" value="{{ old('handphone', $person->handphone ?? '') }}" placeholder="08123456789" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs shadow-xs focus:border-[#118243] focus:outline-none focus:ring-2 focus:ring-[#118243]/20 transition-all @error('handphone') border-rose-500 focus:ring-rose-500/20 @enderror">
+                            @error('handphone')<p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>@enderror
                         </div>
                     </x-form.person-fields>
                 </div>
