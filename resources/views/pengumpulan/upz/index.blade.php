@@ -285,7 +285,7 @@
                         <button type="button" @click="importModalOpen = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-all">Batal</button>
                         <button type="submit" class="px-5 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl font-semibold transition-all flex items-center gap-1.5">
                             <span>Lanjut ke Verifikasi (Preview)</span>
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <x-heroicon-o-arrow-right class="w-4 h-4" />
                         </button>
                     </div>
                 </form>
