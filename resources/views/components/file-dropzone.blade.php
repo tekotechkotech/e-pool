@@ -159,22 +159,15 @@
             <div class="flex justify-center items-center">
                 @if($icon === 'excel')
                     <div class="w-10 h-10 {{ $compact ? 'w-8 h-8' : '' }} rounded-xl bg-emerald-100 text-[#118243] flex items-center justify-center shadow-2xs">
-                        <svg class="{{ $compact ? 'w-4 h-4' : 'w-5 h-5' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                        <x-heroicon-o-document-chart-bar class="{{ $compact ? 'w-4 h-4' : 'w-5 h-5' }}" />
                     </div>
                 @elseif($icon === 'camera')
                     <div class="w-10 h-10 {{ $compact ? 'w-8 h-8' : '' }} rounded-xl bg-emerald-100 text-[#118243] flex items-center justify-center shadow-2xs">
-                        <svg class="{{ $compact ? 'w-4 h-4' : 'w-5 h-5' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        <x-heroicon-o-camera class="{{ $compact ? 'w-4 h-4' : 'w-5 h-5' }}" />
                     </div>
                 @else
                     <div class="w-10 h-10 {{ $compact ? 'w-8 h-8' : '' }} rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center group-hover:bg-emerald-100 group-hover:text-emerald-700 transition-colors shadow-2xs">
-                        <svg class="{{ $compact ? 'w-4 h-4' : 'w-5 h-5' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
+                        <x-heroicon-o-arrow-up-tray class="{{ $compact ? 'w-4 h-4' : 'w-5 h-5' }}" />
                     </div>
                 @endif
             </div>
@@ -204,9 +197,7 @@
                         class="text-[#118243] hover:text-[#0d6835] font-bold text-xs inline-flex items-center gap-1 shrink-0 ml-2 hover:underline"
                     >
                         <span>Lihat</span>
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
+                        <x-heroicon-o-arrow-top-right-on-square class="w-3.5 h-3.5" />
                     </a>
                 </div>
             @endif
@@ -222,25 +213,19 @@
                     </template>
                     <template x-if="fileType === 'excel'">
                         <div class="w-12 h-12 rounded-lg bg-emerald-100 text-emerald-800 flex flex-col items-center justify-center font-bold text-[10px] shrink-0 border border-emerald-200 shadow-2xs">
-                            <svg class="w-5 h-5 text-[#118243]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                            <x-heroicon-o-document-chart-bar class="w-5 h-5 text-[#118243]" />
                             <span>XLS</span>
                         </div>
                     </template>
                     <template x-if="fileType === 'pdf'">
                         <div class="w-12 h-12 rounded-lg bg-rose-100 text-rose-800 flex flex-col items-center justify-center font-bold text-[10px] shrink-0 border border-rose-200 shadow-2xs">
-                            <svg class="w-5 h-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
+                            <x-heroicon-o-document-text class="w-5 h-5 text-rose-600" />
                             <span>PDF</span>
                         </div>
                     </template>
                     <template x-if="fileType === 'doc'">
                         <div class="w-12 h-12 rounded-lg bg-slate-100 text-slate-700 flex flex-col items-center justify-center font-bold text-[10px] shrink-0 border border-slate-200 shadow-2xs">
-                            <svg class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                            <x-heroicon-o-document-text class="w-5 h-5 text-slate-500" />
                             <span>DOC</span>
                         </div>
                     </template>
@@ -280,9 +265,7 @@
 
     <!-- Error message alert -->
     <div x-show="errorMessage" x-cloak class="p-2.5 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 text-xs text-red-700 font-medium">
-        <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
+        <x-heroicon-o-exclamation-triangle class="w-4 h-4 text-red-500 shrink-0" />
         <span x-text="errorMessage"></span>
     </div>
 </div>
