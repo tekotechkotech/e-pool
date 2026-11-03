@@ -21,9 +21,17 @@
     $selectedTahun = $selectedTahun ?: date('Y');
     $daftarTahun = $daftarTahun ?? range(min((int)date('Y') - 2, 2024), max((int)date('Y') + 4, 2030));
 
-    $initialLembagaId = old('lembaga_id', '');
+    $isUpzUser = $isUpzUser ?? false;
+    $lockedUpz = $lockedUpz ?? null;
+    $initialLembagaId = old('lembaga_id', $lockedUpz ? $lockedUpz->id : '');
     $initialUpz = null;
-    if ($initialLembagaId && isset($upzs)) {
+    if ($lockedUpz) {
+        $initialUpz = [
+            'id' => $lockedUpz->id,
+            'nama' => $lockedUpz->nama,
+            'kode_simba' => $lockedUpz->kode_simba ?? '',
+        ];
+    } elseif ($initialLembagaId && isset($upzs)) {
         $found = $upzs->firstWhere('id', (int)$initialLembagaId);
         if ($found) {
             $initialUpz = [
@@ -48,8 +56,6 @@
             'status' => 'belum_terdaftar'
         ]
     ];
-    $itemsJson = json_encode(!empty($initialItems) ? array_values($initialItems) : $defaultItems);
-    $upzJson = json_encode($initialUpz);
 @endphp
 
 @section('content')
@@ -109,91 +115,125 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Pencarian Asynchronous UPZ -->
+            <!-- Pencarian Asynchronous UPZ / Locked UPZ Mandiri -->
             <div class="sm:col-span-2 lg:col-span-2">
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Pengumpul Zakat (UPZ) *</label>
                 
-                <!-- State Belum Memilih UPZ: Input Pencarian Asynchronous -->
-                <div x-show="!selectedLembagaId" class="relative">
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            x-model="upzSearchQuery" 
-                            @input.debounce.300ms="searchUpz()" 
-                            @focus="if(upzSearchQuery.replace(/\s+/g, '').length >= 4) searchDropdownOpen = true"
-                            @click.outside="searchDropdownOpen = false"
-                            placeholder="Ketik min. 4 huruf nama UPZ (misal: 'Dinas', 'Masjid', 'Kecamatan')..." 
-                            class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-slate-400">
-                        
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </div>
-
-                        <div x-show="isSearchingUpz" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none" style="display: none;">
-                            <svg class="animate-spin h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-                        </div>
-                    </div>
-
-                    <!-- Dropdown List Hasil Pencarian Asynchronous -->
-                    <div x-show="searchDropdownOpen" class="absolute z-30 left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto divide-y divide-slate-100" style="display: none;" x-cloak>
-                        <template x-if="upzSearchResults.length > 0">
-                            <div>
-                                <template x-for="u in upzSearchResults" :key="u.id">
-                                    <button type="button" @click="selectUpz(u)" class="w-full px-4 py-2.5 text-left hover:bg-emerald-50 flex items-center justify-between transition-colors group">
-                                        <div>
-                                            <div class="font-semibold text-slate-800 text-xs group-hover:text-emerald-800" x-text="u.nama"></div>
-                                            <div class="text-[11px] text-slate-400 font-mono" x-show="u.kode_simba" x-text="'Kode SIMBA: ' + u.kode_simba"></div>
-                                        </div>
-                                        <span class="text-xs text-emerald-600 font-medium group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
-                                            Pilih
-                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                @if($isUpzUser && $lockedUpz)
+                    <!-- UPZ User Mandiri State (Terkunci ke UPZ Akun Sendiri) -->
+                    <div class="space-y-2">
+                        <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-[#118243] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs sm:text-sm font-bold text-emerald-950">{{ $lockedUpz->nama }}</span>
+                                        @if($lockedUpz->kode_simba)
+                                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono font-medium">SIMBA: {{ $lockedUpz->kode_simba }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-[11px] text-emerald-700 flex items-center gap-2 mt-0.5">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-200/80 text-emerald-900">
+                                            Input Mandiri UPZ: {{ $lockedUpz->nama }}
                                         </span>
-                                    </button>
-                                </template>
-                            </div>
-                        </template>
-                        <template x-if="upzSearchResults.length === 0 && !isSearchingUpz && upzSearchQuery.replace(/\s+/g, '').length >= 4">
-                            <div class="px-4 py-3 text-xs text-slate-500 text-center">
-                                Tidak ada UPZ yang cocok dengan kata kunci "<span class="font-semibold text-slate-700" x-text="upzSearchQuery"></span>".
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="mt-1 text-[11px] text-slate-400 flex items-center justify-between">
-                        <span>Pencarian aktif otomatis (min. 4 karakter tanpa spasi).</span>
-                        <span x-show="upzSearchQuery.replace(/\s+/g, '').length > 0" x-text="'Panjang: ' + upzSearchQuery.replace(/\s+/g, '').length + '/4'"></span>
-                    </div>
-                </div>
-
-                <!-- State Sudah Memilih UPZ: Kartu UPZ Terpilih -->
-                <div x-show="selectedLembagaId && selectedUpz" style="display: none;">
-                    <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-lg bg-[#118243] text-white flex items-center justify-center font-bold text-sm shrink-0">
-                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs sm:text-sm font-bold text-emerald-950" x-text="selectedUpz ? selectedUpz.nama : ''"></span>
-                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono font-medium" x-show="selectedUpz && selectedUpz.kode_simba" x-text="'SIMBA: ' + (selectedUpz ? selectedUpz.kode_simba : '')"></span>
-                                </div>
-                                <div class="text-[11px] text-emerald-700 flex items-center gap-2 mt-0.5">
-                                    <span>UPZ Terpilih</span>
-                                    <span>•</span>
-                                    <span x-text="items.length + ' baris rincian muzakki'"></span>
+                                        <span>•</span>
+                                        <span x-text="items.length + ' baris rincian muzakki'"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button type="button" @click="changeUpz()" class="px-2.5 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg text-xs font-semibold shadow-xs transition-all flex items-center gap-1">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                Ganti UPZ
-                            </button>
+                        <div class="p-2.5 bg-emerald-50/50 rounded-xl border border-emerald-200/60 text-[11px] text-emerald-900 flex items-start gap-2">
+                            <svg class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Setoran yang diinput oleh Pengurus UPZ akan disimpan dengan status <strong>"Menunggu Verifikasi"</strong> oleh Admin BAZNAS sebelum dibukukan ke Buku Kas.</span>
                         </div>
                     </div>
-                </div>
+                    <input type="hidden" name="lembaga_id" value="{{ $lockedUpz->id }}">
+                @else
+                    <!-- Admin BAZNAS: Pencarian Asynchronous UPZ -->
+                    <!-- State Belum Memilih UPZ: Input Pencarian Asynchronous -->
+                    <div x-show="!selectedLembagaId" class="relative">
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                x-model="upzSearchQuery" 
+                                @input.debounce.300ms="searchUpz()" 
+                                @focus="if(upzSearchQuery.replace(/\s+/g, '').length >= 4) searchDropdownOpen = true"
+                                @click.outside="searchDropdownOpen = false"
+                                placeholder="Ketik min. 4 huruf nama UPZ (misal: 'Dinas', 'Masjid', 'Kecamatan')..." 
+                                class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-slate-400">
+                            
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </div>
 
-                <input type="hidden" name="lembaga_id" :value="selectedLembagaId" required>
+                            <div x-show="isSearchingUpz" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none" style="display: none;">
+                                <svg class="animate-spin h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown List Hasil Pencarian Asynchronous -->
+                        <div x-show="searchDropdownOpen" class="absolute z-30 left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto divide-y divide-slate-100" style="display: none;" x-cloak>
+                            <template x-if="upzSearchResults.length > 0">
+                                <div>
+                                    <template x-for="u in upzSearchResults" :key="u.id">
+                                        <button type="button" @click="selectUpz(u)" class="w-full px-4 py-2.5 text-left hover:bg-emerald-50 flex items-center justify-between transition-colors group">
+                                            <div>
+                                                <div class="font-semibold text-slate-800 text-xs group-hover:text-emerald-800" x-text="u.nama"></div>
+                                                <div class="text-[11px] text-slate-400 font-mono" x-show="u.kode_simba" x-text="'Kode SIMBA: ' + u.kode_simba"></div>
+                                            </div>
+                                            <span class="text-xs text-emerald-600 font-medium group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+                                                Pilih
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                            </span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
+                            <template x-if="upzSearchResults.length === 0 && !isSearchingUpz && upzSearchQuery.replace(/\s+/g, '').length >= 4">
+                                <div class="px-4 py-3 text-xs text-slate-500 text-center">
+                                    Tidak ada UPZ yang cocok dengan kata kunci "<span class="font-semibold text-slate-700" x-text="upzSearchQuery"></span>".
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="mt-1 text-[11px] text-slate-400 flex items-center justify-between">
+                            <span>Pencarian aktif otomatis (min. 4 karakter tanpa spasi).</span>
+                            <span x-show="upzSearchQuery.replace(/\s+/g, '').length > 0" x-text="'Panjang: ' + upzSearchQuery.replace(/\s+/g, '').length + '/4'"></span>
+                        </div>
+                    </div>
+
+                    <!-- State Sudah Memilih UPZ: Kartu UPZ Terpilih -->
+                    <div x-show="selectedLembagaId && selectedUpz" style="display: none;">
+                        <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-[#118243] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs sm:text-sm font-bold text-emerald-950" x-text="selectedUpz ? selectedUpz.nama : ''"></span>
+                                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono font-medium" x-show="selectedUpz && selectedUpz.kode_simba" x-text="'SIMBA: ' + (selectedUpz ? selectedUpz.kode_simba : '')"></span>
+                                    </div>
+                                    <div class="text-[11px] text-emerald-700 flex items-center gap-2 mt-0.5">
+                                        <span>UPZ Terpilih</span>
+                                        <span>•</span>
+                                        <span x-text="items.length + ' baris rincian muzakki'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" @click="changeUpz()" class="px-2.5 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg text-xs font-semibold shadow-xs transition-all flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    Ganti UPZ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="lembaga_id" :value="selectedLembagaId" required>
+                @endif
             </div>
 
             <!-- Tanggal Setor -->
@@ -609,10 +649,51 @@
             </div>
         </div>
 
-        <!-- 4. BOTTOM ACTION & EKSEKUSI 1X SIMPAN -->
+        <!-- 4. VERIFIKASI LANGSUNG (KHUSUS ADMIN BAZNAS) -->
+        @if(!$isUpzUser)
+            <div class="bg-emerald-50/40 border border-emerald-200/80 rounded-2xl p-4 sm:p-5 space-y-3">
+                <div class="flex items-start gap-3">
+                    <div class="pt-0.5">
+                        <input 
+                            type="checkbox" 
+                            id="is_verified" 
+                            name="is_verified" 
+                            value="1" 
+                            x-model="isVerified" 
+                            class="w-4 h-4 rounded text-[#118243] focus:ring-[#118243] border-slate-300"
+                        >
+                    </div>
+                    <div class="flex-1 space-y-1">
+                        <label for="is_verified" class="text-xs sm:text-sm font-bold text-slate-800 cursor-pointer flex items-center gap-2">
+                            <span>Tandai Data Sesuai & Langsung Terverifikasi</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Admin BAZNAS</span>
+                        </label>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Jika dicentang, data setoran langsung berstatus <strong>Terverifikasi</strong> dan dibukukan ke Buku Kas (DanaTransaksi). Jika tidak dicentang, setoran berstatus <strong>Menunggu Verifikasi</strong>.
+                        </p>
+                        <div x-show="isVerified" x-transition class="pt-2">
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Catatan Verifikasi (Opsional)</label>
+                            <textarea 
+                                name="catatan_verifikasi" 
+                                x-model="catatanVerifikasi" 
+                                rows="2" 
+                                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-slate-400 bg-white" 
+                                placeholder="Contoh: Telah dicek rekening koran BSI / Bank Jateng sesuai mutasi..."
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- 5. BOTTOM ACTION & EKSEKUSI 1X SIMPAN -->
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
             <div class="text-xs text-slate-500">
-                Data setoran akan langsung tercatat dan mensinkronkan transaksi masuk pada buku kas BAZNAS.
+                @if($isUpzUser)
+                    Setoran yang diinput oleh Pengurus UPZ akan disimpan dengan status <strong>Menunggu Verifikasi</strong> oleh Admin BAZNAS.
+                @else
+                    Data setoran akan langsung tercatat dan mensinkronkan transaksi masuk pada buku kas BAZNAS jika terverifikasi.
+                @endif
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                 <a href="{{ route('pengumpulan.upz.index') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs sm:text-sm transition-all text-center">
@@ -745,13 +826,17 @@
 <script>
 function setoranWorkspace() {
     return {
+        isUpzUser: {{ $isUpzUser ? 'true' : 'false' }},
+        isVerified: {{ old('is_verified', '1') ? 'true' : 'false' }},
+        catatanVerifikasi: '{{ old('catatan_verifikasi', '') }}',
+
         // UPZ Search & Selection
         upzSearchQuery: '',
         isSearchingUpz: false,
         upzSearchResults: [],
         searchDropdownOpen: false,
         selectedLembagaId: '{{ $initialLembagaId }}',
-        selectedUpz: {!! $upzJson !!},
+        selectedUpz: @json($initialUpz),
         loadingMuzakki: false,
 
         // Periode & Induk
@@ -780,7 +865,7 @@ function setoranWorkspace() {
         submittingForm: false,
 
         // Items Data
-        items: {!! $itemsJson !!},
+        items: @json(!empty($initialItems) ? array_values($initialItems) : $defaultItems),
 
         // Quick Register Modal State
         quickModalOpen: false,
