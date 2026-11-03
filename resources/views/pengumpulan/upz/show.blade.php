@@ -25,13 +25,32 @@
         <div>
             <div class="flex items-center gap-3">
                 <h1 class="text-2xl font-bold text-slate-800">{{ $setoran->nomor_setoran }}</h1>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                    {{ $setoran->status }}
-                </span>
+                @if($setoran->status === 'Terverifikasi')
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        {{ $setoran->status }}
+                    </span>
+                @elseif($setoran->status === 'Ditolak')
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
+                        <svg class="w-3.5 h-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        {{ $setoran->status }}
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                        <svg class="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        {{ $setoran->status }}
+                    </span>
+                @endif
             </div>
             <p class="text-sm text-slate-500">Detail data setoran ZIS UPZ {{ $setoran->upz->nama ?? '-' }}.</p>
         </div>
         <div class="flex items-center gap-3">
+            @if(auth()->user()?->isBaznasRole() || auth()->user()?->hasBaznasAppointment() || auth()->user()?->isSuperuser())
+                <a href="{{ route('pengumpulan.upz.edit', $setoran->id) }}" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Edit
+                </a>
+            @endif
             <a href="{{ route('pengumpulan.upz.cetak', $setoran->id) }}" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 Cetak Lampiran Setoran
@@ -41,6 +60,102 @@
             </a>
         </div>
     </div>
+
+    @if(auth()->user()?->isBaznasRole() || auth()->user()?->hasBaznasAppointment() || auth()->user()?->isSuperuser())
+        @if($setoran->status === 'Menunggu Verifikasi')
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4" x-data="{ tolakModal: false, verifikasiModal: false }">
+                <div class="space-y-1">
+                    <h3 class="text-sm font-bold text-amber-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Menunggu Verifikasi BAZNAS
+                    </h3>
+                    <p class="text-xs text-amber-700">Setoran ini belum diverifikasi dan belum dibukukan ke buku kas (DanaTransaksi). Silakan periksa rincian data dan bukti transfer.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="tolakModal = true" class="px-4 py-2 bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 rounded-xl text-xs font-semibold shadow-xs transition-all">
+                        Tolak Setoran
+                    </button>
+                    <button type="button" @click="verifikasiModal = true" class="px-4 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Verifikasi Setoran
+                    </button>
+                </div>
+
+                <!-- Modal Verifikasi -->
+                <div x-show="verifikasiModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" @keydown.escape.window="verifikasiModal = false">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200" @click.outside="verifikasiModal = false">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Verifikasi Setoran UPZ
+                            </h3>
+                            <button type="button" @click="verifikasiModal = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-500">Dengan memverifikasi setoran ini, status akan menjadi <strong>Terverifikasi</strong> dan nominal zakat/infak akan otomatis dibukukan ke buku kas (DanaTransaksi).</p>
+                        <form method="POST" action="{{ route('pengumpulan.upz.verifikasi', $setoran->id) }}" class="space-y-3">
+                            @csrf
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Verifikasi (Opsional)</label>
+                                <textarea name="catatan_verifikasi" rows="2" class="w-full text-xs border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243]" placeholder="Catatan kesesuaian data / rekening koran...">{{ $setoran->catatan_verifikasi }}</textarea>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                                <button type="button" @click="verifikasiModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">Batal</button>
+                                <button type="submit" class="px-4 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">Konfirmasi Verifikasi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal Tolak -->
+                <div x-show="tolakModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" @keydown.escape.window="tolakModal = false">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200" @click.outside="tolakModal = false">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                            <h3 class="text-base font-bold text-rose-700 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                Tolak Setoran UPZ
+                            </h3>
+                            <button type="button" @click="tolakModal = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-500">Wajib memberikan alasan atau catatan penolakan agar UPZ dapat memperbaiki data setoran.</p>
+                        <form method="POST" action="{{ route('pengumpulan.upz.tolak', $setoran->id) }}" class="space-y-3">
+                            @csrf
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Alasan Penolakan <span class="text-rose-500">*</span></label>
+                                <textarea name="catatan_verifikasi" required rows="3" class="w-full text-xs border border-rose-300 rounded-xl p-2.5 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500" placeholder="Jelaskan alasan penolakan..."></textarea>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                                <button type="button" @click="tolakModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">Batal</button>
+                                <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">Tolak Setoran</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endif
+
+    @if($setoran->verified_at || $setoran->catatan_verifikasi)
+        <div class="p-4 rounded-2xl border {{ $setoran->status === 'Ditolak' ? 'bg-rose-50/50 border-rose-200' : 'bg-emerald-50/50 border-emerald-200' }} shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="font-bold {{ $setoran->status === 'Ditolak' ? 'text-rose-800' : 'text-emerald-800' }}">
+                    {{ $setoran->status === 'Ditolak' ? 'Ditolak oleh:' : 'Diverifikasi oleh:' }}
+                </span>
+                <span class="font-semibold text-slate-900">{{ $setoran->verifiedBy?->person?->nama ?? $setoran->verifiedBy?->name ?? 'Staf BAZNAS' }}</span>
+                @if($setoran->verified_at)
+                    <span class="text-slate-400">pada {{ optional($setoran->verified_at)->format('d F Y H:i') }}</span>
+                @endif
+            </div>
+            @if($setoran->catatan_verifikasi)
+                <div class="text-slate-700 italic bg-white/80 px-3 py-1.5 rounded-xl border {{ $setoran->status === 'Ditolak' ? 'border-rose-200 text-rose-800' : 'border-emerald-200 text-slate-700' }}">
+                    Catatan: "{{ $setoran->catatan_verifikasi }}"
+                </div>
+            @endif
+        </div>
+    @endif
 
     <!-- Info Cards -->
     @php

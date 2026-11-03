@@ -157,6 +157,10 @@ Route::middleware(['auth', 'feature.toggle'])->group(function () {
             Route::post('/quick-store-muzakki', [SetoranUpzController::class, 'quickStoreMuzakki'])->name('quick-store-muzakki');
             Route::post('/import-confirm', [SetoranUpzController::class, 'importConfirm'])->name('import-confirm');
             Route::post('/{id}/upload-bukti', [SetoranUpzController::class, 'uploadBukti'])->name('upload-bukti');
+            Route::post('/{id}/verifikasi', [SetoranUpzController::class, 'verifikasi'])->name('verifikasi');
+            Route::post('/{id}/tolak', [SetoranUpzController::class, 'tolak'])->name('tolak');
+            Route::get('/{id}/edit', [SetoranUpzController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [SetoranUpzController::class, 'update'])->name('update');
             Route::get('/{id}', [SetoranUpzController::class, 'show'])->name('show');
             Route::get('/{id}/cetak', [SetoranUpzController::class, 'cetakLampiran'])->name('cetak');
             Route::delete('/{id}', [SetoranUpzController::class, 'destroy'])->name('destroy');

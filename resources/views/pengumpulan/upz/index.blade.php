@@ -26,23 +26,17 @@
         
         <div class="flex items-center gap-2.5 flex-wrap">
             <a :href="'{{ route('pengumpulan.upz.template') }}' + (modalUpzId ? '/' + modalUpzId : '')" class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all" title="Unduh template Excel">
-                <svg class="mr-1.5 h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
+                <x-heroicon-o-arrow-down-tray class="mr-1.5 h-4 w-4 text-emerald-600" />
                 Template Excel
             </a>
 
             <button type="button" @click="importModalOpen = true" class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
-                <svg class="mr-1.5 h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
+                <x-heroicon-o-arrow-up-tray class="mr-1.5 h-4 w-4 text-emerald-600" />
                 Import Excel
             </button>
 
             <a href="{{ route('pengumpulan.upz.create') }}" class="inline-flex items-center justify-center rounded-xl bg-[#118243] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0d6835] transition-all">
-                <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
+                <x-heroicon-o-plus class="mr-2 -ml-1 h-5 w-5" />
                 Input Setoran UPZ
             </a>
         </div>
@@ -50,12 +44,12 @@
 
     <!-- Filter & Search -->
     <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-        <form method="GET" action="{{ route('pengumpulan.upz.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <form method="GET" action="{{ route('pengumpulan.upz.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
             <div class="relative">
                 <input type="text" name="search" value="{{ $search }}" placeholder="No. Setoran / Ket..." 
                     class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <x-heroicon-o-magnifying-glass class="w-5 h-5" />
                 </div>
             </div>
 
@@ -86,9 +80,18 @@
                 </select>
             </div>
 
+            <div>
+                <select name="status" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm">
+                    <option value="">-- Semua Status --</option>
+                    <option value="Menunggu Verifikasi" {{ $status == 'Menunggu Verifikasi' ? 'selected' : '' }}>⏳ Menunggu Verifikasi</option>
+                    <option value="Terverifikasi" {{ $status == 'Terverifikasi' ? 'selected' : '' }}>✅ Terverifikasi</option>
+                    <option value="Ditolak" {{ $status == 'Ditolak' ? 'selected' : '' }}>❌ Ditolak</option>
+                </select>
+            </div>
+
             <div class="flex items-center gap-2">
-                <button type="submit" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl text-sm transition-all">Filter</button>
-                <a href="{{ route('pengumpulan.upz.index') }}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm transition-all">Reset</a>
+                <button type="submit" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl text-sm transition-all flex-1">Filter</button>
+                <a href="{{ route('pengumpulan.upz.index') }}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm transition-all text-center">Reset</a>
             </div>
         </form>
     </div>
@@ -133,9 +136,29 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex flex-col items-center gap-1.5">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                                        {{ $s->status }}
-                                    </span>
+                                    @if($s->status === 'Terverifikasi')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200/60">
+                                            <x-heroicon-o-check class="w-3.5 h-3.5 text-emerald-600" />
+                                            Terverifikasi
+                                        </span>
+                                        @if($s->verified_at)
+                                            <div class="text-[10px] text-slate-500 leading-tight">
+                                                <span>{{ $s->verifiedBy?->person?->nama ?? $s->verifiedBy?->name ?? 'Staf BAZNAS' }}</span>
+                                                <span class="block text-[9px] text-slate-400 font-mono">{{ optional($s->verified_at)->format('d/m/Y H:i') }}</span>
+                                            </div>
+                                        @endif
+                                    @elseif($s->status === 'Ditolak')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200/60">
+                                            <x-heroicon-o-x-mark class="w-3.5 h-3.5 text-rose-600" />
+                                            Ditolak
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200/60">
+                                            <x-heroicon-o-clock class="w-3.5 h-3.5 text-amber-600" />
+                                            Menunggu Verifikasi
+                                        </span>
+                                    @endif
+
                                     @if($s->bukti_setor)
                                         <a href="{{ asset('storage/' . $s->bukti_setor) }}" target="_blank" class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors" title="Lihat Bukti Transfer">
                                             📎 Ada Bukti
@@ -150,16 +173,21 @@
                             <td class="px-6 py-4 text-center">
                                 <div class="inline-flex items-center gap-1.5">
                                     <a href="{{ route('pengumpulan.upz.show', $s->id) }}" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Detail">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        <x-heroicon-o-eye class="w-4 h-4" />
                                     </a>
+                                    @if(auth()->user()?->isBaznasRole() || auth()->user()?->hasBaznasAppointment() || auth()->user()?->isSuperuser())
+                                        <a href="{{ route('pengumpulan.upz.edit', $s->id) }}" class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Setoran">
+                                            <x-heroicon-o-pencil-square class="w-4 h-4" />
+                                        </a>
+                                    @endif
                                     <a href="{{ route('pengumpulan.upz.cetak', $s->id) }}" target="_blank" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Cetak Lampiran Setoran">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                        <x-heroicon-o-printer class="w-4 h-4" />
                                     </a>
                                     <form action="{{ route('pengumpulan.upz.destroy', $s->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" @click="$confirm({ title: 'Hapus Setoran UPZ', message: 'Hapus setoran ini beserta sinkronisasi transaksi buku kas terkait?', confirmText: 'Hapus', isDanger: true }).then(ok => { if (ok) $el.closest('form').submit(); })" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
-                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            <x-heroicon-o-trash class="w-4 h-4" />
                                         </button>
                                     </form>
                                 </div>
@@ -196,7 +224,7 @@
                         <p class="text-xs text-slate-500">Unggah file spreadsheet (XLSX, XLS, CSV) hasil rekap UPZ.</p>
                     </div>
                     <button type="button" @click="importModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <x-heroicon-o-x-mark class="w-5 h-5" />
                     </button>
                 </div>
 
@@ -207,7 +235,7 @@
                         <div class="flex items-center justify-between mb-1">
                             <label class="block font-semibold text-slate-700">Unit Pengumpul Zakat (UPZ) *</label>
                             <a :href="'{{ route('pengumpulan.upz.template') }}' + (modalUpzId ? '/' + modalUpzId : '')" class="text-emerald-700 hover:underline flex items-center gap-1 font-semibold">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <x-heroicon-o-arrow-down-tray class="w-3.5 h-3.5" />
                                 Unduh Template UPZ
                             </a>
                         </div>
