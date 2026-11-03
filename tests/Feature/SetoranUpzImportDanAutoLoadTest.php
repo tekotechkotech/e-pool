@@ -41,6 +41,15 @@ class SetoranUpzImportDanAutoLoadTest extends TestCase
             'password' => bcrypt('password'),
         ]);
 
+        $pj = \App\Models\PengurusJabatan::firstOrCreate(['nama' => 'Admin BAZNAS'], ['kode' => 'ADM-BAZNAS', 'tingkat' => 'baznas', 'is_active' => true]);
+        \App\Models\Pengurus::create([
+            'jenis_pengurus' => 'Baznas',
+            'person_id' => $person->id,
+            'pengurus_jabatan_id' => $pj->id,
+            'lembaga_id' => null,
+            'is_active' => true,
+        ]);
+
         $this->actingAs($this->user);
 
         $this->upz = Upz::create([
@@ -237,6 +246,7 @@ class SetoranUpzImportDanAutoLoadTest extends TestCase
             'tahun' => '2026',
             'periode' => 'November 2026',
             'keterangan' => 'Konfirmasi Test Setoran',
+            'is_verified' => true,
             'items' => [
                 [
                     'muzakki_id' => $m1->id,
@@ -312,6 +322,7 @@ class SetoranUpzImportDanAutoLoadTest extends TestCase
             'tahun' => '2026',
             'periode' => 'November 2026',
             'keterangan' => 'Form Store Test Nihil',
+            'is_verified' => true,
             'items' => [
                 [
                     'nama' => 'Muzakki Positif',

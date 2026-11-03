@@ -39,6 +39,15 @@ class UnifiedSetoranWorkspaceTest extends TestCase
             'password' => bcrypt('password'),
         ]);
 
+        $pj = \App\Models\PengurusJabatan::firstOrCreate(['nama' => 'Admin BAZNAS'], ['kode' => 'ADM-BAZNAS', 'tingkat' => 'baznas', 'is_active' => true]);
+        \App\Models\Pengurus::create([
+            'jenis_pengurus' => 'Baznas',
+            'person_id' => $person->id,
+            'pengurus_jabatan_id' => $pj->id,
+            'lembaga_id' => null,
+            'is_active' => true,
+        ]);
+
         $this->actingAs($this->user);
 
         $this->upz = Upz::create([
@@ -275,6 +284,7 @@ class UnifiedSetoranWorkspaceTest extends TestCase
             'bulan' => 'November',
             'tahun' => '2026',
             'keterangan' => 'Setoran terpadu 1-click dengan bukti fisik transfer',
+            'is_verified' => true,
             'bukti_setor' => $fakeBukti,
             'items' => [
                 [

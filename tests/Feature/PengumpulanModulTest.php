@@ -104,6 +104,16 @@ class PengumpulanModulTest extends TestCase
             'email' => 'admin2@baznas.go.id',
             'password' => bcrypt('password'),
         ]);
+
+        $pj = \App\Models\PengurusJabatan::firstOrCreate(['nama' => 'Admin BAZNAS'], ['kode' => 'ADM-BAZNAS', 'tingkat' => 'baznas', 'is_active' => true]);
+        \App\Models\Pengurus::create([
+            'jenis_pengurus' => 'Baznas',
+            'person_id' => $person->id,
+            'pengurus_jabatan_id' => $pj->id,
+            'lembaga_id' => null,
+            'is_active' => true,
+        ]);
+
         $this->actingAs($user);
 
         $upz = Upz::create([
@@ -118,6 +128,7 @@ class PengumpulanModulTest extends TestCase
             'tanggal_setor' => '2026-10-26',
             'periode' => 'Oktober 2026',
             'keterangan' => 'Setoran rutin Oktober',
+            'is_verified' => true,
             'items' => [
                 [
                     'nama' => 'Muzakki A',
