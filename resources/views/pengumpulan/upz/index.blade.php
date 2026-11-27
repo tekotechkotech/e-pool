@@ -115,7 +115,14 @@
                     @forelse($setorans as $s)
                         <tr class="hover:bg-slate-50/70 transition-colors">
                             <td class="px-6 py-4">
-                                <div class="font-semibold text-slate-800">{{ $s->upz->nama ?? '-' }}</div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="font-semibold text-slate-800">{{ $s->upz->nama ?? '-' }}</div>
+                                    @if(($s->sumber_input ?? 'UPZ') === 'BAZNAS')
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">BAZNAS</span>
+                                    @else
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200">UPZ</span>
+                                    @endif
+                                </div>
                                 <div class="text-xs text-slate-400">Kode: {{ $s->upz->kode_simba ?? '-' }}</div>
                                 <div class="text-[11px] font-mono text-emerald-700 mt-0.5">
                                     <a href="{{ route('pengumpulan.upz.show', $s->id) }}" class="hover:underline">{{ $s->nomor_setoran }}</a>
@@ -156,6 +163,20 @@
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200/60">
                                             <x-heroicon-o-clock class="w-3.5 h-3.5 text-amber-600" />
                                             Menunggu Verifikasi
+                                        </span>
+                                    @endif
+
+                                    @if($s->status_rekonsiliasi === 'cocok_otomatis')
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            ✨ Cocok Otomatis
+                                        </span>
+                                    @elseif($s->status_rekonsiliasi === 'ada_selisih')
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                            ⚠️ Selisih Rp {{ number_format($s->selisih_nominal, 0, ',', '.') }}
+                                        </span>
+                                    @elseif($s->status_rekonsiliasi === 'disepakati')
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                            🤝 Diselaraskan
                                         </span>
                                     @endif
 

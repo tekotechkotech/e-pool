@@ -3,7 +3,7 @@
 @section('content')
 <div>
     <!-- Welcome Banner -->
-    <div class="bg-white rounded-[24px] p-8 mb-8 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 relative overflow-hidden">
+    <div class="bg-white rounded-[24px] p-8 mb-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-slate-100 relative overflow-hidden">
         <div class="absolute right-0 top-0 w-64 h-64 bg-[#eaf5ef] rounded-full opacity-50 blur-3xl translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
         
         <div class="relative z-10">
@@ -26,74 +26,125 @@
         </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5 mb-8">
+    <!-- Period Filter Bar -->
+    <div class="bg-white rounded-2xl p-4 mb-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <x-heroicon-o-calendar-days class="w-5 h-5 text-[#118243]" />
+            <span>Periode Statistik:</span>
+            <span class="px-2.5 py-1 rounded-lg bg-[#eaf5ef] text-[#118243] font-bold">
+                {{ $bulan !== 'semua' ? ($bulanNama ?? $bulan) : 'Semua Bulan' }} {{ $tahun !== 'semua' ? $tahun : 'Semua Tahun' }}
+            </span>
+        </div>
+        <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2 w-full sm:w-auto">
+            <select name="bulan" onchange="this.form.submit()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243]">
+                <option value="semua" {{ $bulan === 'semua' ? 'selected' : '' }}>-- Semua Bulan --</option>
+                @foreach($daftarBulan as $b)
+                    <option value="{{ $b }}" {{ $bulan === $b ? 'selected' : '' }}>{{ $b }}</option>
+                @endforeach
+            </select>
+
+            <select name="tahun" onchange="this.form.submit()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243]">
+                @foreach($daftarTahun as $t)
+                    <option value="{{ $t }}" {{ (string)$tahun === (string)$t ? 'selected' : '' }}>{{ $t }}</option>
+                @endforeach
+            </select>
+
+            @if($bulan !== 'semua')
+                <a href="{{ route('dashboard') }}" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors" title="Reset Filter">
+                    <x-heroicon-o-arrow-path class="w-4 h-4" />
+                </a>
+            @endif
+        </form>
+    </div>
+
+    <!-- Stats Grid (6 Cards: Muzakki, Munfiq, UPZ, ZIS Terkumpul, Setoran UPZ, Nominal Setoran) -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-8">
         <!-- Total Muzakki -->
-        <div class="bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#eaf5ef] rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-14 h-14 bg-[#eaf5ef] text-[#118243] rounded-2xl flex items-center justify-center shrink-0 border border-[#118243]/10">
-                    <x-heroicon-o-users class="w-7 h-7" />
+        <div class="bg-white rounded-[20px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-[#eaf5ef] rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-12 h-12 bg-[#eaf5ef] text-[#118243] rounded-2xl flex items-center justify-center shrink-0 border border-[#118243]/10">
+                    <x-heroicon-o-users class="w-6 h-6" />
                 </div>
                 <div>
-                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Muzakki</p>
-                    <h3 class="text-2xl font-bold text-slate-800">{{ number_format($stats['totalMuzakki'] ?? 0) }}</h3>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Muzakki</p>
+                    <h3 class="text-xl font-bold text-slate-800">{{ number_format($stats['totalMuzakki'] ?? 0) }}</h3>
+                    <p class="text-[10px] text-emerald-600 font-medium">Wajib Zakat</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Munfiq -->
+        <div class="bg-white rounded-[20px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-teal-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center shrink-0 border border-teal-100/50">
+                    <x-heroicon-o-heart class="w-6 h-6" />
+                </div>
+                <div>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Munfiq</p>
+                    <h3 class="text-xl font-bold text-teal-700">{{ number_format($stats['totalMunfiq'] ?? 0) }}</h3>
+                    <p class="text-[10px] text-teal-600 font-medium">Murni Infak</p>
                 </div>
             </div>
         </div>
         
         <!-- Total UPZ -->
-        <div class="bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 border border-blue-100/50">
-                    <x-heroicon-o-building-office-2 class="w-7 h-7" />
+        <div class="bg-white rounded-[20px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-blue-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 border border-blue-100/50">
+                    <x-heroicon-o-building-office-2 class="w-6 h-6" />
                 </div>
                 <div>
-                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Total UPZ</p>
-                    <h3 class="text-2xl font-bold text-slate-800">{{ number_format($stats['totalUpz'] ?? 0) }}</h3>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Total UPZ</p>
+                    <h3 class="text-xl font-bold text-slate-800">{{ number_format($stats['totalUpz'] ?? 0) }}</h3>
+                    <p class="text-[10px] text-blue-600 font-medium">Binaan Aktif</p>
                 </div>
             </div>
         </div>
         
         <!-- ZIS Terkumpul -->
-        <div class="bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shrink-0 border border-green-100/50">
-                    <x-heroicon-o-banknotes class="w-7 h-7" />
+        <div class="bg-white rounded-[20px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-green-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shrink-0 border border-green-100/50">
+                    <x-heroicon-o-banknotes class="w-6 h-6" />
                 </div>
                 <div>
-                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">ZIS Terkumpul</p>
-                    <h3 class="text-2xl font-bold text-slate-800">Rp {{ number_format($stats['totalZisTerkumpul'] ?? 0, 0, ',', '.') }}</h3>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">ZIS Terkumpul</p>
+                    <h3 class="text-base font-bold text-slate-800">Rp {{ number_format($stats['totalZisTerkumpul'] ?? 0, 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-green-600 font-medium">Buku Kas</p>
                 </div>
             </div>
         </div>
 
         <!-- Setoran UPZ -->
-        <div class="bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center shrink-0 border border-orange-100/50">
-                    <x-heroicon-o-document-text class="w-7 h-7" />
+        <div class="bg-white rounded-[20px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-orange-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center shrink-0 border border-orange-100/50">
+                    <x-heroicon-o-document-text class="w-6 h-6" />
                 </div>
                 <div>
-                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Setoran UPZ</p>
-                    <h3 class="text-2xl font-bold text-slate-800">{{ number_format($stats['totalSetoranUpz'] ?? 0) }}</h3>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Setoran UPZ</p>
+                    <h3 class="text-xl font-bold text-slate-800">{{ number_format($stats['totalSetoranUpz'] ?? 0) }}</h3>
+                    <p class="text-[10px] text-orange-600 font-medium">Terverifikasi</p>
                 </div>
             </div>
         </div>
         
         <!-- Nominal Setoran UPZ -->
-        <div class="bg-white rounded-[20px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-14 h-14 bg-emerald-50 text-[#118243] rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100/50">
-                    <x-heroicon-o-currency-dollar class="w-7 h-7" />
+        <div class="bg-white rounded-[20px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-emerald-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 pointer-events-none"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+                <div class="w-12 h-12 bg-emerald-50 text-[#118243] rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100/50">
+                    <x-heroicon-o-currency-dollar class="w-6 h-6" />
                 </div>
                 <div>
-                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Nominal Setoran UPZ</p>
-                    <h3 class="text-2xl font-bold text-slate-800">Rp {{ number_format($stats['nominalSetoranUpz'] ?? 0, 0, ',', '.') }}</h3>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Nominal Setoran</p>
+                    <h3 class="text-base font-bold text-slate-800">Rp {{ number_format($stats['nominalSetoranUpz'] ?? 0, 0, ',', '.') }}</h3>
+                    <p class="text-[10px] text-emerald-600 font-medium">Total Terhimpun</p>
                 </div>
             </div>
         </div>

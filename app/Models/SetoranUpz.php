@@ -26,6 +26,11 @@ class SetoranUpz extends Model
         'keterangan',
         'bukti_setor',
         'status',
+        'sumber_input',
+        'tipe_input',
+        'pasangan_setoran_id',
+        'status_rekonsiliasi',
+        'selisih_nominal',
         'user_id',
         'verified_by',
         'verified_at',
@@ -42,6 +47,7 @@ class SetoranUpz extends Model
             'total_fitrah' => 'integer',
             'total_titipan' => 'integer',
             'total_jumlah' => 'integer',
+            'selisih_nominal' => 'integer',
         ];
     }
 
@@ -68,5 +74,10 @@ class SetoranUpz extends Model
     public function verifiedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function pasangan(): BelongsTo
+    {
+        return $this->belongsTo(SetoranUpz::class, 'pasangan_setoran_id');
     }
 }

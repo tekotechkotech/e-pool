@@ -12,13 +12,13 @@
         </div>
         
         <div class="flex items-center gap-3">
-            <a href="{{ route('muzakki.template') }}" class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
-                <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-2 text-slate-500" />
-                Template CSV
+            <a href="{{ route('muzakki.template') }}" class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all" title="Unduh Template Excel (.xlsx)">
+                <x-heroicon-o-arrow-down-tray class="w-4 h-4 mr-2 text-emerald-600" />
+                Template Excel (.xlsx)
             </a>
             <a href="{{ route('muzakki.import') }}" class="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all">
                 <x-heroicon-o-arrow-up-tray class="w-4 h-4 mr-2 text-emerald-600" />
-                Import CSV UPZ
+                Import Excel / CSV
             </a>
             <a href="{{ route('muzakki.create') }}" class="inline-flex items-center justify-center rounded-xl bg-[#118243] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#0d6835] transition-all">
                 <x-heroicon-o-plus class="mr-2 -ml-1 h-5 w-5" />

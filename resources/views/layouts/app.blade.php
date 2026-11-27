@@ -144,7 +144,7 @@
         <div class="flex flex-col flex-1 min-w-0 bg-[#f4f9f6] relative h-full overflow-hidden">
 
             <!-- Top Navbar -->
-            <header class="bg-white/70 backdrop-blur-md sticky top-0 border-b border-slate-200/60 shadow-sm relative">
+            <header class="bg-white/70 backdrop-blur-md sticky top-0 border-b border-slate-200/60 shadow-sm relative z-50">
                 <div class="flex items-center justify-between px-6 lg:px-8 py-4">
                     <div class="flex items-center gap-4">
                         <button @click="sidebarOpen = true" type="button" class="lg:hidden text-slate-500 hover:text-[#118243] p-1.5 -ml-1.5 rounded-lg hover:bg-slate-50 transition-colors focus:outline-none" aria-label="Buka Menu">

@@ -16,13 +16,17 @@
                 <span class="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-700">Simba Export</span>
                 <h1 class="text-2xl font-bold text-slate-800">Export Simba: Kas Masuk ZIS</h1>
             </div>
-            <p class="text-sm text-slate-500">Preview & Unduh file CSV format resmi migrasi kas masuk Simba BAZNAS.</p>
+            <p class="text-sm text-slate-500">Preview & Unduh file migrasi kas masuk Simba BAZNAS dalam format Excel (.xlsx) atau CSV.</p>
         </div>
         
-        <div>
-            <a href="{{ request()->fullUrlWithQuery(['download' => 'csv']) }}" class="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 transition-all">
+        <div class="flex items-center gap-2.5">
+            <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-all" title="Unduh format Excel (.xlsx)">
                 <x-heroicon-o-arrow-down-tray class="mr-2 -ml-1 h-5 w-5" />
-                Download CSV Simba
+                Download Excel (.xlsx)
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['download' => 'csv']) }}" class="inline-flex items-center justify-center rounded-xl bg-sky-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 transition-all" title="Unduh format CSV">
+                <x-heroicon-o-document-text class="mr-2 -ml-1 h-5 w-5" />
+                Download CSV
             </a>
         </div>
     </div>

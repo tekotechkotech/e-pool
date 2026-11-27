@@ -23,8 +23,18 @@
 
     <div class="flex items-center justify-between">
         <div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
                 <h1 class="text-2xl font-bold text-slate-800">{{ $setoran->nomor_setoran }}</h1>
+                @if(($setoran->sumber_input ?? 'UPZ') === 'BAZNAS')
+                    <span class="px-2 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                        Input Sisi BAZNAS
+                    </span>
+                @else
+                    <span class="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200">
+                        Input Sisi UPZ
+                    </span>
+                @endif
+
                 @if($setoran->status === 'Terverifikasi')
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                         <x-heroicon-o-check class="w-3.5 h-3.5 text-emerald-600" />
@@ -39,6 +49,20 @@
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
                         <x-heroicon-o-clock class="w-3.5 h-3.5 text-amber-600" />
                         {{ $setoran->status }}
+                    </span>
+                @endif
+
+                @if($setoran->status_rekonsiliasi === 'cocok_otomatis')
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        ✨ Cocok Otomatis
+                    </span>
+                @elseif($setoran->status_rekonsiliasi === 'ada_selisih')
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                        ⚠️ Ada Selisih Rp {{ number_format($setoran->selisih_nominal, 0, ',', '.') }}
+                    </span>
+                @elseif($setoran->status_rekonsiliasi === 'disepakati')
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                        🤝 Diselaraskan
                     </span>
                 @endif
             </div>
@@ -61,81 +85,147 @@
         </div>
     </div>
 
-    @if(auth()->user()?->isBaznasRole() || auth()->user()?->hasBaznasAppointment() || auth()->user()?->isSuperuser())
-        @if($setoran->status === 'Menunggu Verifikasi')
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4" x-data="{ tolakModal: false, verifikasiModal: false }">
-                <div class="space-y-1">
-                    <h3 class="text-sm font-bold text-amber-900 flex items-center gap-2">
-                        <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-amber-600" />
-                        Menunggu Verifikasi BAZNAS
-                    </h3>
-                    <p class="text-xs text-amber-700">Setoran ini belum diverifikasi dan belum dibukukan ke buku kas (DanaTransaksi). Silakan periksa rincian data dan bukti transfer.</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" @click="tolakModal = true" class="px-4 py-2 bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 rounded-xl text-xs font-semibold shadow-xs transition-all">
-                        Tolak Setoran
-                    </button>
-                    <button type="button" @click="verifikasiModal = true" class="px-4 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5">
-                        <x-heroicon-o-check class="w-4 h-4" />
-                        Verifikasi Setoran
-                    </button>
-                </div>
+    @if($setoran->status_rekonsiliasi === 'cocok_otomatis')
+        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                <x-heroicon-o-check-badge class="w-7 h-7" />
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-emerald-900">✨ Terverifikasi Otomatis (Auto-Approval)</h3>
+                <p class="text-xs text-emerald-700 mt-0.5">Data setoran dari sisi UPZ dan sisi BAZNAS sama persis (Selisih Rp 0). Sistem telah membukukan kas masuk secara otomatis tanpa perlu verifikasi manual.</p>
+            </div>
+        </div>
+    @endif
 
-                <!-- Modal Verifikasi -->
-                <div x-show="verifikasiModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" @keydown.escape.window="verifikasiModal = false">
-                    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200" @click.outside="verifikasiModal = false">
-                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                                <x-heroicon-o-check-circle class="w-5 h-5 text-emerald-600" />
-                                Verifikasi Setoran UPZ
-                            </h3>
-                            <button type="button" @click="verifikasiModal = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                                <x-heroicon-o-x-mark class="w-4 h-4" />
-                            </button>
-                        </div>
-                        <p class="text-xs text-slate-500">Dengan memverifikasi setoran ini, status akan menjadi <strong>Terverifikasi</strong> dan nominal zakat/infak akan otomatis dibukukan ke buku kas (DanaTransaksi).</p>
-                        <form method="POST" action="{{ route('pengumpulan.upz.verifikasi', $setoran->id) }}" class="space-y-3">
-                            @csrf
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Verifikasi (Opsional)</label>
-                                <textarea name="catatan_verifikasi" rows="2" class="w-full text-xs border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243]" placeholder="Catatan kesesuaian data / rekening koran...">{{ $setoran->catatan_verifikasi }}</textarea>
-                            </div>
-                            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                                <button type="button" @click="verifikasiModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">Batal</button>
-                                <button type="submit" class="px-4 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">Konfirmasi Verifikasi</button>
-                            </div>
-                        </form>
+    @if($setoran->status_rekonsiliasi === 'ada_selisih' && $setoran->pasangan)
+        <div class="bg-white rounded-2xl border border-rose-200 shadow-sm p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-rose-100 gap-2">
+                <div class="flex items-center gap-2 text-rose-700 font-bold text-sm">
+                    <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-rose-600" />
+                    <span>Perbandingan Data Rekonsiliasi (Selisih: Rp {{ number_format($setoran->selisih_nominal, 0, ',', '.') }})</span>
+                </div>
+                <span class="text-xs text-slate-500">Periode: <strong>{{ $setoran->periode }}</strong></span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <!-- Data Setoran Ini -->
+                <div class="p-4 rounded-xl border {{ ($setoran->sumber_input ?? 'UPZ') === 'UPZ' ? 'bg-blue-50/50 border-blue-200' : 'bg-purple-50/50 border-purple-200' }}">
+                    <div class="font-bold text-slate-800 mb-2 flex items-center justify-between">
+                        <span>Data Sisi {{ $setoran->sumber_input ?? 'UPZ' }} ({{ $setoran->nomor_setoran }})</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-white border">{{ $setoran->sumber_input ?? 'UPZ' }}</span>
+                    </div>
+                    <div class="space-y-1 font-mono">
+                        <div class="flex justify-between"><span>Zakat:</span> <strong>Rp {{ number_format($setoran->total_zakat, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between"><span>Infak:</span> <strong>Rp {{ number_format($setoran->total_infak, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between"><span>Fitrah:</span> <strong>Rp {{ number_format($setoran->total_fitrah, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between"><span>Titipan:</span> <strong>Rp {{ number_format($setoran->total_titipan, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between pt-1 border-t border-slate-200 font-bold text-slate-900"><span>Total:</span> <strong>Rp {{ number_format($setoran->total_jumlah, 0, ',', '.') }}</strong></div>
                     </div>
                 </div>
 
-                <!-- Modal Tolak -->
-                <div x-show="tolakModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" @keydown.escape.window="tolakModal = false">
-                    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200" @click.outside="tolakModal = false">
-                        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                            <h3 class="text-base font-bold text-rose-700 flex items-center gap-2">
-                                <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-rose-600" />
-                                Tolak Setoran UPZ
-                            </h3>
-                            <button type="button" @click="tolakModal = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                                <x-heroicon-o-x-mark class="w-4 h-4" />
-                            </button>
-                        </div>
-                        <p class="text-xs text-slate-500">Wajib memberikan alasan atau catatan penolakan agar UPZ dapat memperbaiki data setoran.</p>
-                        <form method="POST" action="{{ route('pengumpulan.upz.tolak', $setoran->id) }}" class="space-y-3">
-                            @csrf
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Alasan Penolakan <span class="text-rose-500">*</span></label>
-                                <textarea name="catatan_verifikasi" required rows="3" class="w-full text-xs border border-rose-300 rounded-xl p-2.5 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500" placeholder="Jelaskan alasan penolakan..."></textarea>
-                            </div>
-                            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                                <button type="button" @click="tolakModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">Batal</button>
-                                <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">Tolak Setoran</button>
-                            </div>
-                        </form>
+                <!-- Data Setoran Tandingan -->
+                <div class="p-4 rounded-xl border {{ ($setoran->pasangan->sumber_input ?? 'UPZ') === 'UPZ' ? 'bg-blue-50/50 border-blue-200' : 'bg-purple-50/50 border-purple-200' }}">
+                    <div class="font-bold text-slate-800 mb-2 flex items-center justify-between">
+                        <span>Data Sisi {{ $setoran->pasangan->sumber_input ?? 'BAZNAS' }} ({{ $setoran->pasangan->nomor_setoran }})</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-white border">{{ $setoran->pasangan->sumber_input ?? 'BAZNAS' }}</span>
+                    </div>
+                    <div class="space-y-1 font-mono">
+                        <div class="flex justify-between"><span>Zakat:</span> <strong>Rp {{ number_format($setoran->pasangan->total_zakat, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between"><span>Infak:</span> <strong>Rp {{ number_format($setoran->pasangan->total_infak, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between"><span>Fitrah:</span> <strong>Rp {{ number_format($setoran->pasangan->total_fitrah, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between"><span>Titipan:</span> <strong>Rp {{ number_format($setoran->pasangan->total_titipan, 0, ',', '.') }}</strong></div>
+                        <div class="flex justify-between pt-1 border-t border-slate-200 font-bold text-slate-900"><span>Total:</span> <strong>Rp {{ number_format($setoran->pasangan->total_jumlah, 0, ',', '.') }}</strong></div>
                     </div>
                 </div>
             </div>
-        @endif
+        </div>
+    @endif
+
+    @if(($canVerify ?? false) && $setoran->status === 'Menunggu Verifikasi')
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4" x-data="{ tolakModal: false, verifikasiModal: false }">
+            <div class="space-y-1">
+                <h3 class="text-sm font-bold text-amber-900 flex items-center gap-2">
+                    <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-amber-600" />
+                    @if(($setoran->sumber_input ?? 'UPZ') === 'BAZNAS')
+                        Menunggu Verifikasi & Persetujuan Pihak UPZ
+                    @else
+                        Menunggu Verifikasi BAZNAS
+                    @endif
+                </h3>
+                <p class="text-xs text-amber-700">
+                    @if($setoran->status_rekonsiliasi === 'ada_selisih')
+                        Terdapat selisih nominal pada data tandingan. Anda dapat menyetujui/menyelaraskan data ini atau menolaknya.
+                    @elseif(($setoran->sumber_input ?? 'UPZ') === 'BAZNAS')
+                        Setoran ini diinput oleh pihak BAZNAS. Pihak UPZ dapat memeriksa rincian data dan melakukan verifikasi persetujuan.
+                    @else
+                        Setoran ini diinput oleh pengurus UPZ dan belum diverifikasi BAZNAS. Silakan periksa rincian data dan bukti transfer.
+                    @endif
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" @click="tolakModal = true" class="px-4 py-2 bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 rounded-xl text-xs font-semibold shadow-xs transition-all">
+                    Tolak Setoran
+                </button>
+                <button type="button" @click="verifikasiModal = true" class="px-4 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5">
+                    <x-heroicon-o-check class="w-4 h-4" />
+                    {{ $setoran->status_rekonsiliasi === 'ada_selisih' ? 'Setujui & Selaraskan' : 'Verifikasi Setoran' }}
+                </button>
+            </div>
+
+            <!-- Modal Verifikasi -->
+            <div x-show="verifikasiModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" @keydown.escape.window="verifikasiModal = false">
+                <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200" @click.outside="verifikasiModal = false">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <x-heroicon-o-check-circle class="w-5 h-5 text-emerald-600" />
+                            Konfirmasi Verifikasi Setoran
+                        </h3>
+                        <button type="button" @click="verifikasiModal = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                            <x-heroicon-o-x-mark class="w-4 h-4" />
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-500">Dengan memverifikasi setoran ini, status akan menjadi <strong>Terverifikasi</strong> dan nominal zakat/infak akan dibukukan ke buku kas (DanaTransaksi).</p>
+                    <form method="POST" action="{{ route('pengumpulan.upz.verifikasi', $setoran->id) }}" class="space-y-3">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Verifikasi (Opsional)</label>
+                            <textarea name="catatan_verifikasi" rows="2" class="w-full text-xs border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-[#118243]/20 focus:border-[#118243]" placeholder="Catatan kesesuaian data / rekening koran...">{{ $setoran->catatan_verifikasi }}</textarea>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                            <button type="button" @click="verifikasiModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-[#118243] hover:bg-[#0d6835] text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">Konfirmasi Verifikasi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal Tolak -->
+            <div x-show="tolakModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" @keydown.escape.window="tolakModal = false">
+                <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200" @click.outside="tolakModal = false">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <h3 class="text-base font-bold text-rose-700 flex items-center gap-2">
+                            <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-rose-600" />
+                            Tolak Setoran
+                        </h3>
+                        <button type="button" @click="tolakModal = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                            <x-heroicon-o-x-mark class="w-4 h-4" />
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-500">Wajib memberikan alasan atau catatan penolakan agar pihak penginput dapat memperbaiki data setoran.</p>
+                    <form method="POST" action="{{ route('pengumpulan.upz.tolak', $setoran->id) }}" class="space-y-3">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Alasan Penolakan <span class="text-rose-500">*</span></label>
+                            <textarea name="catatan_verifikasi" required rows="3" class="w-full text-xs border border-rose-300 rounded-xl p-2.5 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500" placeholder="Jelaskan alasan penolakan..."></textarea>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                            <button type="button" @click="tolakModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">Tolak Setoran</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     @endif
 
     @if($setoran->verified_at || $setoran->catatan_verifikasi)

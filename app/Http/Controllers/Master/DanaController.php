@@ -12,32 +12,30 @@ class DanaController extends Controller
 {
     public function index(Request $request)
     {
-        $danas = Dana::orderBy('urutan', 'asc')->orderBy('kode', 'asc')->get();
-        $selectedDanaId = $request->query('dana_id');
+        $search = $request->query('search');
+        $query = Dana::orderBy('urutan', 'asc')->orderBy('kode', 'asc');
 
-        $query = DanaTransaksi::with(['dana', 'referensi'])->orderBy('tanggal', 'desc')->orderBy('id', 'desc');
-        $baseQuery = DanaTransaksi::query();
-
-        if ($selectedDanaId) {
-            $query->where('dana_id', $selectedDanaId);
-            $baseQuery->where('dana_id', $selectedDanaId);
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('kode', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhere('kategori', 'like', "%{$search}%");
+            });
         }
 
-        $totalMasuk = (clone $baseQuery)->where('jenis', 'Masuk')->sum('nominal');
-        $totalKeluar = (clone $baseQuery)->where('jenis', 'Keluar')->sum('nominal');
-        $saldoAkhir = $totalMasuk - $totalKeluar;
-
-        $transaksis = $query->paginate(10)->withQueryString();
+        $danas = $query->get();
+        $selectedDanaId = $request->query('dana_id');
 
         $widgets = [
             'totalDana' => Dana::count(),
             'totalDanaAktif' => Dana::where('is_active', true)->count(),
-            'totalMasuk' => $totalMasuk,
-            'totalKeluar' => $totalKeluar,
-            'saldoAkhir' => $saldoAkhir,
+            'totalViaUpz' => Dana::where('via_upz', true)->count(),
         ];
 
-        return view('master.danas', compact('danas', 'transaksis', 'selectedDanaId', 'widgets'));
+        // Transaksis tetap dioperasikan sebagai koleksi kosong/opsional demi kompatibilitas
+        $transaksis = collect();
+
+        return view('master.danas', compact('danas', 'selectedDanaId', 'widgets', 'transaksis', 'search'));
     }
 
     public function store(Request $request)

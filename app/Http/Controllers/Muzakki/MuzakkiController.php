@@ -10,6 +10,8 @@ use App\Models\Wilayah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Exports\MuzakkiTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MuzakkiController extends Controller
@@ -194,16 +196,37 @@ class MuzakkiController extends Controller
     public function importProcess(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,txt|max:5120',
+            'file' => 'required|file|mimes:xlsx,xls,csv,txt|max:5120',
             'lembaga_id' => 'nullable|exists:lembagas,id',
         ]);
 
         $defaultLembagaId = $request->input('lembaga_id');
         $file = $request->file('file');
-        $handle = fopen($file->getRealPath(), 'r');
+        $ext = strtolower($file->getClientOriginalExtension());
 
-        if (!$handle) {
-            return back()->with('error', 'Gagal membuka file CSV.');
+        $rows = [];
+        if (in_array($ext, ['xlsx', 'xls'])) {
+            try {
+                $sheets = Excel::toArray(new class implements \Maatwebsite\Excel\Concerns\ToArray {
+                    public function array(array $array) { return $array; }
+                }, $file);
+                $rows = $sheets[0] ?? [];
+            } catch (\Throwable $e) {
+                return back()->with('error', 'Gagal membaca file Excel: ' . $e->getMessage());
+            }
+        } else {
+            $handle = fopen($file->getRealPath(), 'r');
+            if (!$handle) {
+                return back()->with('error', 'Gagal membuka file.');
+            }
+            while (($r = fgetcsv($handle, 4096, ',')) !== false) {
+                $rows[] = $r;
+            }
+            fclose($handle);
+        }
+
+        if (empty($rows)) {
+            return back()->with('error', 'File yang diunggah kosong atau tidak memiliki data.');
         }
 
         $headerFound = false;
@@ -215,8 +238,8 @@ class MuzakkiController extends Controller
 
         DB::beginTransaction();
         try {
-            while (($row = fgetcsv($handle, 4096, ',')) !== false) {
-                $cleanedRow = array_map(fn($v) => trim((string)$v), $row);
+            foreach ($rows as $row) {
+                $cleanedRow = array_map(fn($v) => trim((string)$v), (array)$row);
 
                 // Cari baris header
                 if (!$headerFound) {
@@ -318,69 +341,73 @@ class MuzakkiController extends Controller
                 $importedCount++;
             }
 
-            fclose($handle);
             DB::commit();
 
             return redirect()->route('muzakki.index')->with('success', "Import selesai: {$importedCount} data berhasil disimpan.");
         } catch (\Throwable $e) {
-            fclose($handle);
             DB::rollBack();
-            return back()->with('error', 'Gagal memproses file CSV: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses file: ' . $e->getMessage());
         }
     }
 
-    public function downloadTemplate(): StreamedResponse
+    public function downloadTemplate(Request $request)
     {
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="Format Input Data Muzaki dan Munfiq UPZ.csv"',
-        ];
+        $format = $request->query('format', 'xlsx');
 
-        return response()->stream(function () {
-            $handle = fopen('php://output', 'w');
-            fputs($handle, "\xEF\xBB\xBF"); // BOM UTF-8
+        if ($format === 'csv') {
+            $headers = [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename="Format Input Data Muzaki dan Munfiq UPZ.csv"',
+            ];
 
-            fputcsv($handle, [
-                'Nama',
-                'NPWP',
-                'NIK *',
-                'NIP',
-                'Tempat Lahir',
-                'tanggal lahir',
-                'jenis kelamin',
-                'pekerjaan',
-                'alamat korespondensi',
-                'alamat rumah*',
-                'alamat kantor',
-                'telepon',
-                'handphone *',
-                'email *',
-                'UPZ',
-                'zakat',
-                'catatan',
-            ]);
+            return response()->stream(function () {
+                $handle = fopen('php://output', 'w');
+                fputs($handle, "\xEF\xBB\xBF"); // BOM UTF-8
 
-            fputcsv($handle, [
-                'Ahmad Fulan',
-                '12313212432132',
-                '3301000000000001',
-                '198501012010011001',
-                'Cilacap',
-                '12/12/1990',
-                'Pria',
-                'PNS',
-                'rumah',
-                'Jl. Gatot Subroto No. 12, Cilacap',
-                'Kantor Dinas',
-                '028212345',
-                '081234567890',
-                'fulan@example.com',
-                'UPZ Dinas Kesehatan Kab. Cilacap',
-                'zakat profesi',
-                'Muzaki aktif',
-            ]);
+                fputcsv($handle, [
+                    'Nama',
+                    'NPWP',
+                    'NIK *',
+                    'NIP',
+                    'Tempat Lahir',
+                    'tanggal lahir',
+                    'jenis kelamin',
+                    'pekerjaan',
+                    'alamat korespondensi',
+                    'alamat rumah*',
+                    'alamat kantor',
+                    'telepon',
+                    'handphone *',
+                    'email *',
+                    'UPZ',
+                    'zakat',
+                    'catatan',
+                ]);
 
-            fclose($handle);
-        }, 200, $headers);
+                fputcsv($handle, [
+                    'Ahmad Fulan',
+                    '12313212432132',
+                    '3301000000000001',
+                    '198501012010011001',
+                    'Cilacap',
+                    '12/12/1990',
+                    'Pria',
+                    'PNS',
+                    'Jl. Mawar No. 10',
+                    'Jl. Mawar No. 10',
+                    'Kantor Dinas',
+                    '0282123456',
+                    '081234567890',
+                    'fulan@example.com',
+                    'UPZ Masjid Al-Ikhlas',
+                    'Zakat Penghasilan',
+                    'Data contoh pengisian',
+                ]);
+
+                fclose($handle);
+            }, 200, $headers);
+        }
+
+        return Excel::download(new MuzakkiTemplateExport, 'Format Input Data Muzaki dan Munfiq UPZ.xlsx');
     }
 }

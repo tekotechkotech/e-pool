@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Simba;
 
+use App\Exports\SimbaKasMasukExport;
+use App\Exports\SimbaMuzakkiExport;
 use App\Http\Controllers\Controller;
 use App\Models\Muzakki;
 use App\Models\SetoranUpz;
@@ -9,6 +11,7 @@ use App\Models\SetoranUpzItem;
 use App\Models\Upz;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SimbaExportController extends Controller
@@ -18,7 +21,8 @@ class SimbaExportController extends Controller
         $lembagaId = $request->query('lembaga_id');
         $tanggalMulai = $request->query('tanggal_mulai');
         $tanggalSelesai = $request->query('tanggal_selesai');
-        $isDownload = $request->query('download') === 'csv';
+        $downloadFormat = $request->query('download');
+        $isDownload = in_array($downloadFormat, ['csv', 'excel', 'xlsx']);
 
         $query = Muzakki::with(['person', 'upz'])->latest('tanggal_registrasi');
 
@@ -36,6 +40,12 @@ class SimbaExportController extends Controller
 
         if ($isDownload) {
             $muzakkis = $query->get();
+
+            if ($downloadFormat === 'excel' || $downloadFormat === 'xlsx') {
+                $filename = 'Export_Simba_Muzakki_' . date('Ymd_His') . '.xlsx';
+                return Excel::download(new SimbaMuzakkiExport($muzakkis), $filename);
+            }
+
             $filename = 'Export_Simba_Muzakki_' . date('Ymd_His') . '.csv';
 
             $headers = [
@@ -127,7 +137,8 @@ class SimbaExportController extends Controller
         $tahun = $request->query('tahun');
         $tanggalMulai = $request->query('tanggal_mulai');
         $tanggalSelesai = $request->query('tanggal_selesai');
-        $isDownload = $request->query('download') === 'csv';
+        $downloadFormat = $request->query('download');
+        $isDownload = in_array($downloadFormat, ['csv', 'excel', 'xlsx']);
 
         $daftarBulan = [
             'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -180,6 +191,12 @@ class SimbaExportController extends Controller
 
         if ($isDownload) {
             $items = $query->get();
+
+            if ($downloadFormat === 'excel' || $downloadFormat === 'xlsx') {
+                $filename = 'Export_Simba_Kas_Masuk_' . date('Ymd_His') . '.xlsx';
+                return Excel::download(new SimbaKasMasukExport($items), $filename);
+            }
+
             $filename = 'Export_Simba_Kas_Masuk_' . date('Ymd_His') . '.csv';
 
             $headers = [

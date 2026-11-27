@@ -63,13 +63,18 @@
     <!-- Top Breadcrumb & Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <div class="flex items-center gap-2 mb-1">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
                 <a href="{{ route('pengumpulan.upz.index') }}" class="text-xs font-semibold text-slate-500 hover:text-emerald-700 transition-colors">Setoran UPZ</a>
                 <span class="text-slate-400 text-xs">/</span>
-                <span class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">Unified Workspace</span>
+                @if($isUpzUser)
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800">Input Sisi UPZ</span>
+                @else
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800">Input Sisi BAZNAS</span>
+                @endif
+                <span class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">Auto-Reconciliation Enabled</span>
             </div>
             <h1 class="text-2xl font-bold text-slate-800">Input Setoran UPZ Baru</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Pencarian instan UPZ, drag-and-drop bukti setor & spreadsheet, serta pengisian massal dalam 1 ruang kerja.</p>
+            <p class="text-xs sm:text-sm text-slate-500">Pencarian instan UPZ, drag-and-drop spreadsheet (.xlsx / .csv), serta pencocokan otomatis dua arah (UPZ & BAZNAS).</p>
         </div>
         <div class="flex items-center gap-2">
             <template x-if="selectedLembagaId">
