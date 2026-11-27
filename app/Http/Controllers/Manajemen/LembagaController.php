@@ -39,13 +39,7 @@ class LembagaController extends Controller
             'kelurahan',
             'penguruses.person',
             'penguruses.pengurusJabatan',
-            'mustahiks.person'
         ];
-
-        if (class_exists(\App\Models\PengajuanBantuan::class)) {
-            $relations[] = 'pengajuanBantuans.pengajuanMustahiks.program';
-            $relations[] = 'pengajuanBantuans.pengajuanMustahiks.subprogram';
-        }
 
         $lembaga = Lembaga::where('is_upz', false)->with($relations)->findOrFail($id);
 

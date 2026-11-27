@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Dana;
 use App\Models\DanaTransaksi;
-use App\Models\Program;
-use App\Models\Asnaf;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporanRealisasiDanaExport;
@@ -15,10 +13,9 @@ class LaporanController extends Controller
 {
     public function realisasiDana(Request $request)
     {
-        $isSuper = auth()->user()?->isSuperuser();
-        $mode = $request->query('mode', $isSuper ? 'semua' : 'keluar');
-        if (!$isSuper) {
-            $mode = 'keluar';
+        $mode = $request->query('mode', 'masuk');
+        if (!in_array($mode, ['semua', 'masuk', 'keluar'], true)) {
+            $mode = 'masuk';
         }
 
         $periodeTipe = $request->query('periode_tipe', 'all');
@@ -150,10 +147,9 @@ class LaporanController extends Controller
 
     public function exportRealisasiDana(Request $request)
     {
-        $isSuper = auth()->user()?->isSuperuser();
-        $mode = $request->query('mode', $isSuper ? 'semua' : 'keluar');
-        if (!$isSuper) {
-            $mode = 'keluar';
+        $mode = $request->query('mode', 'masuk');
+        if (!in_array($mode, ['semua', 'masuk', 'keluar'], true)) {
+            $mode = 'masuk';
         }
 
         $periodeTipe = $request->query('periode_tipe', 'all');
@@ -178,112 +174,11 @@ class LaporanController extends Controller
         );
     }
 
-    public function programAsnaf(Request $request)
-    {
-        $periodeTipe = $request->query('periode_tipe', 'all');
-        $startDate = $request->query('start_date', Carbon::now()->startOfYear()->format('Y-m-d'));
-        $endDate = $request->query('end_date', Carbon::now()->format('Y-m-d'));
-        $filterDanaId = $request->query('dana_id');
-        $tampilan = $request->query('tampilan', 'nominal');
-
-        if ($periodeTipe === 'this_month') {
-            $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
-            $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
-        } elseif ($periodeTipe === 'this_year') {
-            $startDate = Carbon::now()->startOfYear()->format('Y-m-d');
-            $endDate = Carbon::now()->endOfYear()->format('Y-m-d');
-        }
-
-        $programs = Program::orderBy('id', 'asc')->get();
-        $asnafs = Asnaf::where('is_active', true)->orderBy('id', 'asc')->get();
-        $danas = Dana::active()->ordered()->get();
-
-        $allDisbursed = collect();
-
-        if (class_exists(\App\Models\PengajuanMustahik::class) && \Illuminate\Support\Facades\Schema::hasTable('pengajuan_mustahiks')) {
-            $query = \App\Models\PengajuanMustahik::with(['program', 'asnaf', 'sumberDana'])
-                ->whereNotNull('tanggal_penyaluran');
-
-            if ($periodeTipe !== 'all') {
-                if ($startDate) {
-                    $query->whereDate('tanggal_penyaluran', '>=', $startDate);
-                }
-                if ($endDate) {
-                    $query->whereDate('tanggal_penyaluran', '<=', $endDate);
-                }
-            }
-
-            if ($filterDanaId) {
-                $query->where('sumber_dana_id', $filterDanaId);
-            }
-
-            $allDisbursed = $query->get();
-        }
-
-        $matrix = [];
-        $totalPerAsnafNominal = [];
-        $totalPerAsnafCount = [];
-
-        foreach ($asnafs as $a) {
-            $totalPerAsnafNominal[$a->id] = 0;
-            $totalPerAsnafCount[$a->id] = 0;
-        }
-
-        $grandTotalNominal = 0;
-        $grandTotalCount = 0;
-
-        foreach ($programs as $prog) {
-            $matrix[$prog->id] = [
-                'program' => $prog,
-                'cells' => [],
-                'total_nominal' => 0,
-                'total_count' => 0,
-            ];
-
-            foreach ($asnafs as $a) {
-                $matching = $allDisbursed->where('program_id', $prog->id)->where('asnaf_id', $a->id);
-                $nom = (float) $matching->sum('nominal');
-                $cnt = (int) $matching->count();
-
-                $matrix[$prog->id]['cells'][$a->id] = [
-                    'nominal' => $nom,
-                    'count' => $cnt,
-                ];
-
-                $matrix[$prog->id]['total_nominal'] += $nom;
-                $matrix[$prog->id]['total_count'] += $cnt;
-
-                $totalPerAsnafNominal[$a->id] += $nom;
-                $totalPerAsnafCount[$a->id] += $cnt;
-
-                $grandTotalNominal += $nom;
-                $grandTotalCount += $cnt;
-            }
-        }
-
-        return view('laporan.program-asnaf', compact(
-            'programs',
-            'asnafs',
-            'danas',
-            'matrix',
-            'totalPerAsnafNominal',
-            'totalPerAsnafCount',
-            'grandTotalNominal',
-            'grandTotalCount',
-            'periodeTipe',
-            'startDate',
-            'endDate',
-            'filterDanaId',
-            'tampilan'
-        ));
-    }
-
     public function bukuKas(Request $request)
     {
-        $isSuper = auth()->user()?->isSuperuser();
-        $jenisTransaksi = $request->query('jenis_transaksi', $isSuper ? 'all' : 'Keluar');
-        if (!$isSuper) {
-            $jenisTransaksi = 'Keluar';
+        $jenisTransaksi = $request->query('jenis_transaksi', 'Masuk');
+        if (!in_array($jenisTransaksi, ['all', 'Masuk', 'Keluar'], true)) {
+            $jenisTransaksi = 'Masuk';
         }
 
         $selectedDanaId = $request->query('dana_id');

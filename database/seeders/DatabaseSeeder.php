@@ -12,14 +12,11 @@ class DatabaseSeeder extends Seeder
             WilayahSeeder::class,
             PengurusJabatanSeeder::class,
             UserPengurusSeeder::class,
-            AsnafSeeder::class,
-            ProgramSubprogramSeeder::class,
             DanaSeeder::class,
             LembagaSeeder::class,
             UpzSimbaSeeder::class,
             PengurusUpzSeeder::class,
             MuzakkiSeeder::class,
-            MustahikSeeder::class,
             MuzakkiDanSetoranSeeder::class,
         ]);
     }

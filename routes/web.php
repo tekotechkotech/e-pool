@@ -4,18 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PublicSurveyController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Master\DanaController;
-use App\Http\Controllers\Master\BarangController;
-use App\Http\Controllers\Master\ProgramController;
 use App\Http\Controllers\Manajemen\PenggunaController;
-use App\Http\Controllers\Manajemen\MustahikController;
-use App\Http\Controllers\Manajemen\KeluargaController;
 use App\Http\Controllers\Manajemen\BaznasController;
 use App\Http\Controllers\Manajemen\UpzController;
 use App\Http\Controllers\Manajemen\LembagaController;
-use App\Http\Controllers\FeatureToggleController;
 use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\Muzakki\MuzakkiController;
 use App\Http\Controllers\Pengumpulan\SetoranUpzController;
@@ -40,15 +34,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('login.submit');
 });
 
-// Route Survey Publik (Bisa diakses tanpa login/auth oleh Surveyor)
-Route::get('/survey/{token}', [PublicSurveyController::class, 'show'])->name('public.survey');
-Route::post('/survey/{token}/surveyor', [PublicSurveyController::class, 'saveSurveyorInfo'])->name('public.survey.surveyor');
-Route::post('/survey/{token}/had-kifayah', [PublicSurveyController::class, 'submitHadKifayah'])->name('public.survey.hadkifayah');
-Route::post('/survey/{token}/asesmen', [PublicSurveyController::class, 'submitAsesmen'])->name('public.survey.asesmen');
-Route::post('/survey/{token}', [PublicSurveyController::class, 'submitFinalSurvey'])->name('public.survey.submit');
-
 // Authenticated Routes
-Route::middleware(['auth', 'feature.toggle'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Halaman pilih jabatan
@@ -70,29 +57,11 @@ Route::middleware(['auth', 'feature.toggle'])->group(function () {
     Route::post('/master/danas/transaksi', [DanaController::class, 'storeTransaksi'])->name('master.danas.transaksi.store');
     Route::delete('/master/danas/transaksi/{id}', [DanaController::class, 'destroyTransaksi'])->name('master.danas.transaksi.destroy');
 
-    // Master Barang & Pengadaan
-    Route::get('/master/barangs', [BarangController::class, 'index'])->name('master.barangs');
-    Route::post('/master/barangs', [BarangController::class, 'storeBarang'])->name('master.barangs.store');
-    Route::delete('/master/barangs/{id}', [BarangController::class, 'destroyBarang'])->name('master.barangs.destroy');
-    Route::post('/master/barangs/pengadaan', [BarangController::class, 'storePengadaan'])->name('master.barangs.pengadaan.store');
-    Route::post('/master/barangs/mutasi-keluar', [BarangController::class, 'storeMutasiKeluar'])->name('master.barangs.mutasi-keluar.store');
-    Route::delete('/master/barangs/transaksi/{id}', [BarangController::class, 'destroyTransaksi'])->name('master.barangs.transaksi.destroy');
-
-    // Master Program & Asnaf
-    Route::get('/master/programs', [ProgramController::class, 'index'])->name('master.programs');
-    Route::post('/master/programs/program', [ProgramController::class, 'storeProgram'])->name('master.programs.program.store');
-    Route::delete('/master/programs/program/{id}', [ProgramController::class, 'destroyProgram'])->name('master.programs.program.destroy');
-    Route::post('/master/programs/subprogram', [ProgramController::class, 'storeSubprogram'])->name('master.programs.subprogram.store');
-    Route::delete('/master/programs/subprogram/{id}', [ProgramController::class, 'destroySubprogram'])->name('master.programs.subprogram.destroy');
-    Route::post('/master/programs/asnaf/{id}/up', [ProgramController::class, 'moveUpAsnaf'])->name('master.programs.asnaf.up');
-    Route::post('/master/programs/asnaf/{id}/down', [ProgramController::class, 'moveDownAsnaf'])->name('master.programs.asnaf.down');
-
     // Laporan
     Route::get('/laporan/realisasi-dana-export', [LaporanController::class, 'exportRealisasiDana'])->name('laporan.realisasi-dana.export');
     Route::get('/laporan/realisasi-dana/{mode?}', [LaporanController::class, 'realisasiDana'])
         ->where('mode', 'semua|masuk|keluar')
         ->name('laporan.realisasi-dana');
-    Route::get('/laporan/program-asnaf', [LaporanController::class, 'programAsnaf'])->name('laporan.program-asnaf');
     Route::get('/laporan/buku-kas/{mode?}', [LaporanController::class, 'bukuKas'])
         ->where('mode', 'semua|masuk|keluar')
         ->name('laporan.buku-kas');
@@ -101,13 +70,6 @@ Route::middleware(['auth', 'feature.toggle'])->group(function () {
     Route::get('/manajemen/pengguna', [PenggunaController::class, 'index'])->name('manajemen.pengguna');
     Route::post('/manajemen/pengguna', [PenggunaController::class, 'store'])->name('manajemen.pengguna.store');
     Route::delete('/manajemen/pengguna/{id}', [PenggunaController::class, 'destroy'])->name('manajemen.pengguna.destroy');
-
-    Route::get('/manajemen/mustahik', [MustahikController::class, 'index'])->name('manajemen.mustahik');
-    Route::post('/manajemen/mustahik', [MustahikController::class, 'store'])->name('manajemen.mustahik.store');
-    Route::delete('/manajemen/mustahik/{id}', [MustahikController::class, 'destroy'])->name('manajemen.mustahik.destroy');
-    Route::get('/manajemen/mustahik/template', [MustahikController::class, 'downloadTemplate'])->name('manajemen.mustahik.template');
-
-    Route::get('/manajemen/keluarga', [KeluargaController::class, 'index'])->name('manajemen.keluarga');
 
     Route::get('/manajemen/baznas', [BaznasController::class, 'index'])->name('manajemen.baznas');
     Route::post('/manajemen/baznas/pengurus', [BaznasController::class, 'storePengurus'])->name('manajemen.baznas.pengurus.store');
@@ -127,8 +89,6 @@ Route::middleware(['auth', 'feature.toggle'])->group(function () {
     Route::get('/manajemen/lembaga/{id}', [LembagaController::class, 'show'])->name('manajemen.lembaga.detail');
     Route::post('/manajemen/lembaga/{id}/pengurus', [LembagaController::class, 'storePengurus'])->name('manajemen.lembaga.pengurus.store');
     Route::delete('/manajemen/lembaga/{lembagaId}/pengurus/{pengurusId}', [LembagaController::class, 'destroyPengurus'])->name('manajemen.lembaga.pengurus.destroy');
-
-
 
     // Modul Pengumpulan E-POOL: Muzakki
     Route::prefix('muzakki')->name('muzakki.')->group(function () {
@@ -178,7 +138,4 @@ Route::middleware(['auth', 'feature.toggle'])->group(function () {
     Route::get('/laporan/lampiran-setoran', function () {
         return redirect()->route('pengumpulan.upz.index');
     })->name('laporan.lampiran-setoran');
-
-    // Feature toggle routes
-    Route::get('/fitur-tidak-tersedia', [FeatureToggleController::class, 'featureDisabled'])->name('feature.disabled');
 });

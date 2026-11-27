@@ -64,11 +64,6 @@ class Lembaga extends Model
         });
     }
 
-    public function mustahiks()
-    {
-        return $this->belongsToMany(Mustahik::class, 'lembaga_mustahiks')->withTimestamps();
-    }
-
     public function provinsi()
     {
         return $this->belongsTo(Wilayah::class, 'id_provinsi', 'id_wilayah');
@@ -87,14 +82,6 @@ class Lembaga extends Model
     public function kelurahan()
     {
         return $this->belongsTo(Wilayah::class, 'id_kelurahan', 'id_wilayah');
-    }
-
-    public function pengajuanBantuans()
-    {
-        if (!class_exists(PengajuanBantuan::class)) {
-            return $this->hasMany(self::class, 'id', 'id')->whereRaw('1 = 0');
-        }
-        return $this->hasMany(PengajuanBantuan::class, 'lembaga_id');
     }
 
     public function setorans()

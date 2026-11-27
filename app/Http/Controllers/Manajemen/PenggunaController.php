@@ -13,7 +13,7 @@ class PenggunaController extends Controller
     {
         $search = $request->query('search');
 
-        $query = Person::with(['user', 'mustahik.upzs', 'penguruses.upz', 'penguruses.pengurusJabatan', 'provinsi', 'kabupaten', 'kecamatan', 'kelurahan'])->orderBy('id', 'desc');
+        $query = Person::with(['user', 'penguruses.upz', 'penguruses.pengurusJabatan', 'provinsi', 'kabupaten', 'kecamatan', 'kelurahan'])->orderBy('id', 'desc');
 
         if ($search) {
             $query->where(function($q) use ($search) {

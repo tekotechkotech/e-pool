@@ -53,11 +53,6 @@ class Person extends Model
         return $this->hasOne(Muzakki::class);
     }
 
-    public function mustahik(): HasOne
-    {
-        return $this->hasOne(Mustahik::class);
-    }
-
     public function user(): HasOne
     {
         return $this->hasOne(User::class);

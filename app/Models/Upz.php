@@ -25,11 +25,6 @@ class Upz extends Lembaga
         return $this->hasMany(Pengurus::class, 'lembaga_id');
     }
 
-    public function mustahiks()
-    {
-        return $this->belongsToMany(Mustahik::class, 'lembaga_mustahiks', 'lembaga_id', 'mustahik_id')->withTimestamps();
-    }
-
     public function setorans()
     {
         return $this->hasMany(SetoranUpz::class, 'lembaga_id');

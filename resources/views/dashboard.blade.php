@@ -11,7 +11,7 @@
                 <span>Selamat datang kembali, <span class="text-[#118243]">{{ $user->person->nama ?? explode('@', $user->email)[0] }}</span>!</span>
                 <x-heroicon-o-sparkles class="w-7 h-7 text-[#118243]" />
             </h1>
-            <p class="text-slate-500 text-[15px] max-w-2xl">Pantau dan kelola pendistribusian & pendayagunaan dana ZIS dengan mudah, transparan, dan akuntabel.</p>
+            <p class="text-slate-500 text-[15px] max-w-2xl">Pantau dan kelola penerimaan & penghimpunan dana ZIS dengan mudah, transparan, dan akuntabel.</p>
             
             @if(count($roles) > 0)
             <div class="mt-6 flex flex-wrap gap-2">
@@ -213,17 +213,6 @@
                         <div class="flex-1">
                             <h4 class="font-semibold text-slate-800 group-hover:text-[#118243] transition-colors">Realisasi Jenis Dana</h4>
                             <p class="text-sm text-slate-500 mt-0.5">Laporan 18 bagan akun standar BAZNAS</p>
-                        </div>
-                        <x-heroicon-o-chevron-right class="w-5 h-5 text-slate-400 group-hover:text-[#118243] group-hover:translate-x-1 transition-all" />
-                    </a>
-
-                    <a href="{{ route('laporan.program-asnaf') }}" class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:border-[#118243] hover:bg-[#eaf5ef] transition-all group">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center transition-colors shadow-sm">
-                            <x-heroicon-o-chart-bar class="w-5 h-5" />
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-semibold text-slate-800 group-hover:text-[#118243] transition-colors">Matriks Program & Asnaf</h4>
-                            <p class="text-sm text-slate-500 mt-0.5">Penyaluran silang menurut program & 8 asnaf</p>
                         </div>
                         <x-heroicon-o-chevron-right class="w-5 h-5 text-slate-400 group-hover:text-[#118243] group-hover:translate-x-1 transition-all" />
                     </a>

@@ -43,21 +43,6 @@ class User extends Authenticatable
         return $this->person?->pengurus;
     }
 
-    public function pengajuanBantuans(): HasMany
-    {
-        return $this->hasMany(PengajuanBantuan::class, 'created_by');
-    }
-
-    public function persetujuans(): HasMany
-    {
-        return $this->hasMany(PengajuanPersetujuan::class, 'approved_by');
-    }
-
-    public function penyalurans(): HasMany
-    {
-        return $this->hasMany(PengajuanPenyaluran::class, 'created_by');
-    }
-
     public function activePenguruses()
     {
         return $this->person?->penguruses()
@@ -129,53 +114,6 @@ class User extends Authenticatable
     public function upzLembagaId(): ?int
     {
         return $this->isUpzRole() ? (int) $this->activeAppointment()->lembaga_id : null;
-    }
-
-    public function canAccessPengajuan(PengajuanBantuan $pengajuan): bool
-    {
-        if ($this->isSuperuser() || $this->hasBaznasAppointment()) {
-            return true;
-        }
-
-        return $this->isUpzRole()
-            && $pengajuan->jenis_permohonan === 'Lembaga'
-            && $pengajuan->lembaga_id !== null
-            && $this->upzLembagaId() === (int) $pengajuan->lembaga_id;
-    }
-
-    public function canPerformPengajuanAction(string $action, ?PengajuanBantuan $pengajuan = null): bool
-    {
-        if ($this->isSuperuser()) {
-            return true;
-        }
-
-        $roles = $this->activeJabatanNames();
-        $baznas = $this->isBaznasRole();
-        $upz = $this->isUpzRole();
-        $isUpzApplication = $pengajuan?->jenis_permohonan === 'Lembaga';
-
-        $allowed = match ($action) {
-            'view-umum' => $baznas,
-            'view-upz' => $baznas || $upz,
-            'people-search' => $baznas,
-            'create-umum' => in_array('Admin BAZNAS', $roles, true),
-            'create-upz' => in_array('Admin BAZNAS', $roles, true) || in_array('Sekretaris', $roles, true),
-            'edit' => in_array('Admin BAZNAS', $roles, true) || ($isUpzApplication && in_array('Sekretaris', $roles, true)),
-            'manage' => in_array('Admin BAZNAS', $roles, true) || ($isUpzApplication && in_array('Sekretaris', $roles, true)),
-            'approve-upz' => $isUpzApplication && in_array('Ketua', $roles, true),
-            'approve-umum' => !$isUpzApplication && in_array('Pimpinan BAZNAS', $roles, true),
-            'approve' => ($isUpzApplication && in_array('Ketua', $roles, true)) || in_array('Pimpinan BAZNAS', $roles, true),
-            'approve-baznas' => in_array('Pimpinan BAZNAS', $roles, true),
-            'transfer' => ($isUpzApplication && in_array('Pimpinan BAZNAS', $roles, true))
-                || (!$isUpzApplication && in_array('Staff Penyaluran', $roles, true)),
-            'beneficiary-payout' => $isUpzApplication && in_array('Bendahara', $roles, true),
-            'lpj' => (!$isUpzApplication && (in_array('Staff Penyaluran', $roles, true) || in_array('Admin BAZNAS', $roles, true)))
-                || ($isUpzApplication && (in_array('Sekretaris', $roles, true) || in_array('Bendahara', $roles, true))),
-            'view' => $baznas || $upz,
-            default => false,
-        };
-
-        return $allowed && (!$pengajuan || $this->canAccessPengajuan($pengajuan));
     }
 
     public function getNameAttribute(): string

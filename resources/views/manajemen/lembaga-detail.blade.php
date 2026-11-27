@@ -30,7 +30,7 @@
                         </span>
                     @endif
                 </div>
-                <p class="mt-1 text-sm text-gray-500">Detail informasi Lembaga dan riwayat pengajuan bantuan.</p>
+                <p class="mt-1 text-sm text-gray-500">Detail informasi Lembaga dan daftar pengurus.</p>
             </div>
         </div>
 
@@ -67,19 +67,11 @@
     </div>
 
     <!-- Tabs Container -->
-    @php
-        $pengajuans = (class_exists(\App\Models\PengajuanBantuan::class) && method_exists($lembaga, 'pengajuanBantuans'))
-            ? ($lembaga->pengajuanBantuans ?? collect())
-            : collect();
-    @endphp
     <div class="bg-white shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-slate-100 sm:rounded-2xl overflow-hidden">
         <div class="border-b border-gray-200">
             <nav class="flex -mb-px px-6 space-x-8">
                 <button type="button" @click="activeTab = 'pengurus'" :class="activeTab === 'pengurus' ? 'border-[#118243] text-[#118243]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="py-4 px-1 border-b-2 font-bold text-sm transition-colors">
                     Daftar Pengurus ({{ $lembaga->penguruses->count() }})
-                </button>
-                <button type="button" @click="activeTab = 'pengajuan'" :class="activeTab === 'pengajuan' ? 'border-[#118243] text-[#118243]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'" class="py-4 px-1 border-b-2 font-bold text-sm transition-colors">
-                    Riwayat Pengajuan Bantuan ({{ $pengajuans->count() }})
                 </button>
             </nav>
         </div>
@@ -135,53 +127,6 @@
                             @empty
                             <tr>
                                 <td colspan="6" class="px-6 py-8 text-center text-gray-400">Belum ada pengurus ditambahkan pada lembaga ini.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Pengajuan Tab Content -->
-            <div x-show="activeTab === 'pengajuan'">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-xs">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">No. Pengajuan</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">Program</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">Judul / Uraian</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase">Tgl Diterima</th>
-                                <th class="px-6 py-3 text-right font-semibold text-gray-500 uppercase">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @forelse($pengajuans as $pengajuan)
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-6 py-4 whitespace-nowrap font-bold text-[#118243]">
-                                    {{ $pengajuan->nomor_pengajuan ?? '-' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="font-semibold text-gray-900">{{ $pengajuan->program?->nama ?? '-' }}</div>
-                                    <div class="text-gray-500">{{ $pengajuan->subprogram?->nama ?? '-' }}</div>
-                                </td>
-                                <td class="px-6 py-4 text-gray-700">
-                                    {{ $pengajuan->judul_surat ?? '-' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
-                                    {{ !empty($pengajuan->tanggal_diterima) ? date('d/m/Y', strtotime($pengajuan->tanggal_diterima)) : '-' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right">
-                                    @if(\Illuminate\Support\Facades\Route::has('pengajuan.umum.show'))
-                                        <a href="{{ route('pengajuan.umum.show', $pengajuan->id) }}" class="text-[#118243] hover:underline font-bold">Detail &rarr;</a>
-                                    @else
-                                        <span class="text-gray-400 font-semibold">-</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">Belum ada permohonan bantuan dari lembaga ini.</td>
                             </tr>
                             @endforelse
                         </tbody>
